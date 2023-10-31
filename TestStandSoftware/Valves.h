@@ -3,7 +3,7 @@
  * Date:          27.01.2023
  *
  * Purpose:       Header file for the Valves <<device>> object. 
- *                Contains function definitions. Test
+ *                Contains function definitions.
  */
  
 #ifndef VALVES_H
