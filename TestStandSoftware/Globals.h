@@ -197,9 +197,11 @@ struct values_t {
   float temperature3;   //Ambient temperature
   float IR;             //Plume Temperature
   
-  bool venting;         //Is manual venting initiated
-  bool heating;         //Is heating on
-  bool ignition;        //Is ignition button pressed
+  bool purgingValveClosed;//Is purge valve opened (normally open)
+  bool heatingBlanketOn;         //Is heating on
+  bool ignitionEngaged;        //Is ignition button pressed
+  bool bottleValveOpened; //Is bottle valve open (normally closed)
+  bool prechamberValveOpened; //Is the final valve before the injection chamber open (normally closed)
 
 };
 

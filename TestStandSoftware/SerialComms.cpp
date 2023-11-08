@@ -47,14 +47,14 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(values.IR);            //Plume temperature
     Serial.print(" ");
 
-    Serial.print(values.venting);       //Manual vent button status
+    Serial.print(values.purgingValveClosed);       //Manual vent button status
     Serial.print(" ");
-    Serial.print(values.heating);       //Heating button status
+    Serial.print(values.heatingBlanketOn);       //Heating button status
     Serial.print(" ");
-    Serial.print(values.ignition);      //Ignition button status
+    Serial.print(values.ignitionEngaged);      //Ignition button status
     Serial.print(" ");
 
-    Serial.print(statusValues.ignitionActive);  //Ignition SW state
+    Serial.print(statusValues.ignitionEngagedActive);  //Ignition SW state
     Serial.print(" ");
     Serial.print(statusValues.valveActive);     //Valve SW state
     Serial.print(" ");

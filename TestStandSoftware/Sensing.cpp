@@ -10,7 +10,7 @@
 
 #include <Arduino_FreeRTOS.h>
 #include <Arduino.h>
-#include <MemoryFree.h>
+// #include <MemoryFree.h>
 
 #include "Sensors.h"
 #include "Sensing.h"
@@ -53,9 +53,11 @@ void senseLoop(){
     values.IR = readIR(0);  //Plume temperature
     
     //Read control signals
-    values.venting = readVenting();     //Manual vent button status
-    values.heating = readHeating();     //Heating button status
-    values.ignition = readIgnition();   //Ignition button status
+    values.purgingValveClosed = !readVenting();     //Purging button status (inverted due to normally open valve)
+    values.heatingBlanketOn = readHeating();     //Heating button status
+    values.ignitionEngaged = readIgnition();   //Ignition button status
+    values.bottleValveOpened = readBottleValve(); //Bottle valve status
+    values.prechamberValveOpened = readPrechamberValve(); //Prechamber valve status
 
     //Save timestamp
     values.timestamp = millis();        //Arduino time in ms

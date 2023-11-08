@@ -91,16 +91,16 @@ void countdownLoop(){
         break;
 
       case WAIT:
-        if (values.heating == true){
+        if (values.heatingBlanketOn == true){
           setNewMode(HEATING);
         }
 
-        else if ((values.ignition == true)){
+        else if ((values.ignitionEngaged == true)){
           setNewMode(SEQUENCE);
           ignitionPressTime = millis();
         }
 
-        setValve(0, values.venting);
+        setValve(0, values.purgingValveClosed);
         break;
 
       case HEATING:
@@ -115,15 +115,15 @@ void countdownLoop(){
         */
 
         //Go back to WAIT mode if not heating
-        if (values.heating == false){
+        if (values.heatingBlanketOn == false){
           setNewMode(WAIT);
         }
-        else if ((values.ignition == true)){
+        else if ((values.ignitionEngaged == true)){
           setNewMode(SEQUENCE);
           ignitionPressTime = millis();
         }
         
-        setValve(0, values.venting);
+        setValve(0, values.purgingValveClosed);
         break;
 
 
@@ -135,8 +135,8 @@ void countdownLoop(){
          */
         switch (currentSubstate){     
           case ALL_OFF:
-            if (values.ignition == false){
-              if (values.heating == true){
+            if (values.ignitionEngaged == false){
+              if (values.heatingBlanketOn == true){
                 setNewMode(HEATING);
               }
               else{
@@ -196,13 +196,13 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(0, values.venting);
+        setValve(0, values.purgingValveClosed);
         break;
 
         
       case SHUTDOWN:
         //Testfire over
-        setValve(0, values.venting);
+        setValve(0, values.purgingValveClosed);
         break;
     }
 
@@ -210,7 +210,7 @@ void countdownLoop(){
     statusValues.valveActive = valveState;
 
     getIgnition(&ignitionState);
-    statusValues.ignitionActive = ignitionState;
+    statusValues.ignitionEngagedActive = ignitionState;
 
     statusValues.mode = currentMode;
     statusValues.subState = currentSubstate;

@@ -1,4 +1,4 @@
-/* Filename:      TSSW_0.2.ino
+/* Filename:      TestStandSoftware.ino
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
  *
