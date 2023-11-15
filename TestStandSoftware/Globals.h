@@ -150,27 +150,10 @@ const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
 const int16_t valveCount = 3; 
 
 //How many 5V output pressure sensors does the system have
-const int16_t pressureCount5V = 1;
-
-//How many 20mA output pressure sensors does the system have
-const int16_t pressureCount20mA = 2;
+const int16_t pressureCount5V = 3;
 
 //What resistance is used with the current output pressure sensors. (Ohm)
 const int16_t pressureResistance = 250;
-
-//Current (20mA) pressure sensor minimum and maximum values
-const int16_t minPressureCurrent = 4;     //(mA)
-const int16_t maxPressureCurrent = 20;    //(mA)
-const float maxPressure20mA = 172.3689; //(bar)
-
-//Calibration data for the 20mA output pressure sensors
-//Data is incomplete, based only on zero point16_t offset
-const float pressureZero20mA = 0.5;         //Bar
-const float pressureSpan20mA = 172.3689;    //Bar
-//Slope of the calibrated data
-const float pressureLine_K20mA = maxPressure20mA / pressureSpan20mA;
-//Zero offset of the calibrated data
-const float pressureLine_B20mA = maxPressure20mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 //How many temperature sensors does the system have
 const int16_t tempCount = 4;
@@ -182,7 +165,7 @@ const int16_t infraCount = 1;
 const int16_t loadCellCount = 1;
 
 //How many total measurements per loop. Equal to the total count of sensors.
-const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + infraCount;
+const int16_t sensorCount = pressureCount5V  + tempCount + infraCount;
 
 //Structure for storing measurements with a timestamp
 struct values_t {
@@ -247,7 +230,7 @@ const int16_t sensorSettleTime = 2 * 1000;
 //Pressure sensor maximum pressure;
 const int16_t maxPressure5V = 100;
 
-//Pessure sensor calibration data for pressure sensors 0
+//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) BOTTLE
 const float pressureZero0 = -0.003;                          //Voltage
 const float pressureSpan0 = 5.003;                           //Voltage
 const float pressureLinearity0 = 0.12493;                    //in precentage. Not used for calibration
@@ -255,9 +238,25 @@ const float pressureLine_K0 = maxPressure5V / pressureSpan0; //Slope of the cali
 //Zero offset of the calibrated data
 const float pressureLine_B0 = maxPressure5V - pressureLine_K0 * (pressureSpan0 + pressureZero0);
 
+//Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) TBD
+const float pressureZero1 = 0.01;                          //Voltage
+const float pressureSpan1 = 4.997;                           //Voltage
+const float pressureLinearity1 = 0.10154;                    //in percent. Not used for calibration
+const float pressureLine_K1 = maxPressure5V / pressureSpan1; //Slope of the calibrated data
+//Zero offset of the calibrated data
+const float pressureLine_B1 = maxPressure5V - pressureLine_K1 * (pressureSpan1 + pressureZero1);
+
+//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) TBD
+const float pressureZero2 = 0.001;                          //Voltage
+const float pressureSpan2 = 5.002;                           //Voltage
+const float pressureLinearity2 = 0.11859;                    //in precentage. Not used for calibration
+const float pressureLine_K2 = maxPressure5V / pressureSpan2; //Slope of the calibrated data
+//Zero offset of the calibrated data
+const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 + pressureZero2);
+
 //Arrays of 5V pressure sensors calibration data
-const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0};
-const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0};
+const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2};
+const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2};
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;

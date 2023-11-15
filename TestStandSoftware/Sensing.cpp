@@ -39,9 +39,9 @@ void senseLoop(){
   //bool valveState;
   //bool ignitionState;
   while (true){
-    values.pressure0 = readPressure5V(0);     //Bottle pressure aka. Pre valve oxidizer line
-    values.pressure1 = readPressure20mA(0);   //Oxidizer line pressure aka after valve
-    values.pressure2 = readPressure20mA(1);   //Chamber pressure
+    values.pressure0 = readPressure5V(0);   //Bottle pressure aka. Pre valve oxidizer line
+    values.pressure1 = readPressure5V(1);   //Oxidizer line pressure aka after valve
+    values.pressure2 = readPressure5V(2);   //Chamber pressure
 
     values.loadCell0 = readLoad(0);           //Load cell for thrust
 
