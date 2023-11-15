@@ -13,29 +13,40 @@
 
 #include "Globals.h"
 
+// valvePins:
+// Arduino Pin 2 -> ConnectorPin 1 -> mainValve -> code value 0
+// Arduino Pin 3 -> ConnectorPin 2 -> dumpValve -> code value 1
+// Arduino Pin 4 -> ConnectorPin 3 -> bottleValve -> code value 2
+
 static const uint16_t valvePins[valveCount] = {2, 3, 4};
 static SemaphoreHandle_t valveSemaphore;
 
 void initValves(){
   //Set up pressure sensor
-  for (uint16_t i = 0; i<valveCount; i++){
-    pinMode(valvePins[i], OUTPUT);
-    digitalWrite(valvePins[i], LOW);
-  }
+
+  pinMode(pin_names_t::MAIN_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::MAIN_VALVE_PIN, LOW);
+  
+  pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::DUMP_VALVE_PIN, LOW);
+  
+  pinMode(pin_names_t::BOTTLE_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::BOTTLE_VALVE_PIN, LOW);
+  
   valveSemaphore = xSemaphoreCreateMutex();
   
 }
 
-void setValve(uint16_t valveNum, bool state){
+void setValve(pin_names_t valve_pin, bool state){
   if (xSemaphoreTake(valveSemaphore, 10) == pdTRUE){
-    digitalWrite(valvePins[valveNum], state);
+    digitalWrite(valve_pin, state);
     xSemaphoreGive(valveSemaphore);
   }
 }
 
-void getValve(uint16_t valveNum, bool* valveState){
+void getValve(pin_names_t valve_pin, bool* valveState){
   if (xSemaphoreTake(valveSemaphore, 10) == pdTRUE){
-    *valveState = digitalRead(valvePins[valveNum]); 
+    *valveState = digitalRead(valve_pin); 
     xSemaphoreGive(valveSemaphore);
   }
 }

@@ -100,7 +100,7 @@ void countdownLoop(){
           ignitionPressTime = millis();
         }
 
-        setValve(0, values.purgingValveClosed);
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
         break;
 
       case HEATING:
@@ -123,7 +123,7 @@ void countdownLoop(){
           ignitionPressTime = millis();
         }
         
-        setValve(0, values.purgingValveClosed);
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
         break;
 
 
@@ -157,7 +157,7 @@ void countdownLoop(){
           case IGNIT_ON:
               if (millis() - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
-                setValve(0, true);
+                setValve(pin_names_t::MAIN_VALVE_PIN, true);
               }
             break;
 
@@ -171,7 +171,7 @@ void countdownLoop(){
           case IGNIT_OFF:
               if (millis() - countdownStartTime > valveOffTime){
                 setNewSubstate(VALVE_OFF);
-                setValve(0, false);
+                setValve(pin_names_t::MAIN_VALVE_PIN, false);
               }
             break;
 
@@ -196,13 +196,13 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(0, values.purgingValveClosed);
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
         break;
 
         
       case SHUTDOWN:
         //Testfire over
-        setValve(0, values.purgingValveClosed);
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
         break;
     }
 

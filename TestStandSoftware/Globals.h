@@ -15,6 +15,13 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+//Pin Enumerators - Add Pins for different functionallities here
+typedef enum {
+  MAIN_VALVE_PIN = 2,
+  DUMP_VALVE_PIN = 3,
+  BOTTLE_VALVE_PIN = 4
+} pin_names_t;
+
 //Enumeration for the different modes of the system
 typedef enum {
   INIT,
@@ -191,7 +198,7 @@ struct values_t {
 //Structure for holding the internal state of the software and control system.
 struct statusValues_t{
   bool valveActive;     //Is the valve opened by the software
-  bool ignitionActive;  //Is the ignition activated by the software
+  bool ignitionEngagedActive;  //Is the ignition activated by the software
 
   int16_t mode;             //Which mode the software is in
   int16_t subState;         //Which substate the software is in

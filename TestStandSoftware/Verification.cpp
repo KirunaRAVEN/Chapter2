@@ -51,7 +51,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           setTestOutput(0, true);
           setIgnition(false);
-          setValve(0, false);
+          setValve(pin_names_t::MAIN_VALVE_PIN, false);
           }
         break;
         
@@ -149,7 +149,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           msg = "Manual vent button press detected\n";
           sendMessageToSerial(msg);
 
-          setValve(0, true);
+          setValve(pin_names_t::MAIN_VALVE_PIN, true);
 
           testStateChangeTime = millis();
           verificationState = VALVE_ON_TEST;
@@ -178,7 +178,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case VALVE_RELEASE:
         if (!buttonValues.purgingValveClosed){
-          setValve(0, false);
+          setValve(pin_names_t::MAIN_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;
 
