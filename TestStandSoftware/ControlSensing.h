@@ -42,4 +42,18 @@ bool readIgnition(void);
  */
 bool readHeating(void);
 
+/* Function:      Read the input pin of Remote for the valve of the bottle.
+ *
+ * IN:            Nothing
+ * OUT:           Boolean describing whether the button has been pressed
+ */
+bool readBottleValve(void);
+
+/* Function:      Read the input pin of Remote for the valve of the prechamber.
+ *
+ * IN:            Nothing
+ * OUT:           Boolean describing whether the button has been pressed
+ */
+bool readPrechamberValve(void);
+
 #endif
