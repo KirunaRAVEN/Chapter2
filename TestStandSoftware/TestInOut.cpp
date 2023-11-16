@@ -36,7 +36,7 @@ TEST INPUT SCHEMATIC:
 static const int16_t testInputPins[testInputCount] = {27, 31};
 static const int16_t testInputPullups[testPullupCount] = {23, 33, 35};
 static const int16_t testOutputPins[testOutputCount] = {29};
-static const int16_t testAnalogPins[testAnalogCount] = {15}; // A15
+static const int16_t testAnalogPins[testAnalogCount] = {A15};
 
 static SemaphoreHandle_t testPinInMutex;
 static SemaphoreHandle_t testPinOutMutex;
