@@ -177,7 +177,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case VALVE_RELEASE:
-        if (!buttonValues.purgingValveClosed){
+        if (!buttonValues.prechamberValveOpened){
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;

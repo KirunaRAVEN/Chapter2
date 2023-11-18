@@ -91,41 +91,14 @@ void countdownLoop(){
         break;
 
       case WAIT:
-        if (values.heatingBlanketOn == true){
-          setNewMode(HEATING);
-        }
-
-        else if ((values.ignitionEngaged == true)){
+        // The WAIT mode includes heating. The HEATING mode was removed. 
+        if (values.ignitionEngaged == true){
           setNewMode(SEQUENCE);
           ignitionPressTime = millis();
         }
 
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.purgingValveClosed);
         break;
-
-      case HEATING:
-        //Currently no way for software to control the heating. New relays are needed.
-        /*
-        if (values.temperature1 > tankTemperatureLimit){
-          setHeating(false);
-        }
-        else{
-          setHeating(true);
-        }
-        */
-
-        //Go back to WAIT mode if not heating
-        if (values.heatingBlanketOn == false){
-          setNewMode(WAIT);
-        }
-        else if ((values.ignitionEngaged == true)){
-          setNewMode(SEQUENCE);
-          ignitionPressTime = millis();
-        }
-        
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
-        break;
-
 
       case SEQUENCE:
         /* Nested switch - case for the substate. Substate is only active
@@ -196,13 +169,15 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
+        setValve(pin_names_t::DUMP_VALVE_PIN, false);
+        // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
+        // TODO: Do we also want the MAIN_VALVE_PIN open here as well?
         break;
-
+        
         
       case SHUTDOWN:
         //Testfire over
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.purgingValveClosed);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.purgingValveClosed);
         break;
     }
 
