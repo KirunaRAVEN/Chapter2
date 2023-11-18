@@ -28,7 +28,7 @@ void initValves(){
   digitalWrite(pin_names_t::MAIN_VALVE_PIN, LOW);
   
   pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::DUMP_VALVE_PIN, LOW);
+  digitalWrite(pin_names_t::DUMP_VALVE_PIN, HIGH); // because normally open
   
   pinMode(pin_names_t::BOTTLE_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::BOTTLE_VALVE_PIN, LOW);

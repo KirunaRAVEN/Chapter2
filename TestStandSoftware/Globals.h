@@ -27,14 +27,13 @@ typedef enum {
   INIT,
   TEST,
   WAIT,
-  HEATING,
   SEQUENCE,
   SAFE,
   SHUTDOWN
 } mode_t;
 
 //Used mainly for debugging and for user information
-const char modeStrings[7][10] = {"INIT", "TEST", "WAIT", "HEATING", "SEQUENCE", "SAFE", "SHUTDOWN"};
+const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SHUTDOWN"};
 
 //Enumeration for the different substates of the firing sequence
 typedef enum {

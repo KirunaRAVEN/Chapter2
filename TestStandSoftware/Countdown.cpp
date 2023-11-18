@@ -109,14 +109,9 @@ void countdownLoop(){
         switch (currentSubstate){     
           case ALL_OFF:
             if (values.ignitionEngaged == false){
-              if (values.heatingBlanketOn == true){
-                setNewMode(HEATING);
-              }
-              else{
-                setNewMode(WAIT);
-              }
+              setNewMode(WAIT);
             }
-
+            
             //We might not want to have a hard pressure limit
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence){
               if (millis() - ignitionPressTime > ignitionSafeTime){
@@ -173,7 +168,7 @@ void countdownLoop(){
         // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
         // TODO: Do we also want the MAIN_VALVE_PIN open here as well?
         break;
-        
+
         
       case SHUTDOWN:
         //Testfire over
