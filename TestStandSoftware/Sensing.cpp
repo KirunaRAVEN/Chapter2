@@ -10,7 +10,6 @@
 
 #include <Arduino_FreeRTOS.h>
 #include <Arduino.h>
-// #include <MemoryFree.h>
 
 #include "Sensors.h"
 #include "Sensing.h"
