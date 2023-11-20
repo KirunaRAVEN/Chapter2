@@ -11,7 +11,7 @@
 
 #include "Globals.h"
 
-static const int16_t pressurePins5V[pressureCount5V] = {A0, A1, A2};
+static const int16_t pressurePins5V[pressureCount5V] = {PRESSURE_INPUT_PIN0, PRESSURE_INPUT_PIN1, PRESSURE_INPUT_PIN2};
 
 void initPressure(){
   //Nothing to initialize currently

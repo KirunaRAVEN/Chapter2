@@ -13,6 +13,8 @@
 #include "Globals.h"
 static SemaphoreHandle_t serialMutex;
 
+
+
 void initSerial(){
 
   Serial.begin(serialBaud);

@@ -11,36 +11,30 @@
 
  #include "ControlSensing.h"
 
-static const int16_t ventingPin = 10;
-static const int16_t heatSensePin = 9;
-static const int16_t igniSensePin = 8;
-static const int16_t bottleValvePin = 32;
-static const int16_t prechamberValvePin = 34; // assigned to unused pin for future-proofing
-
 void initControlSensing(){
-  pinMode(ventingPin, INPUT);
-  pinMode(heatSensePin, INPUT);
-  pinMode(igniSensePin, INPUT);
-  pinMode(bottleValvePin, INPUT);
-  pinMode(prechamberValvePin, INPUT);
+  pinMode(DUMP_VALVE_BUTTON_PIN, INPUT);
+  pinMode(HEATING_SENSE_PIN, INPUT);
+  pinMode(IGNITION_SENSE_PIN, INPUT);
+  pinMode(FEEDING_VALVE_BUTTON_PIN, INPUT);
+  pinMode(MAIN_VALVE_BUTTON_PIN, INPUT);
 }
 
 bool readVenting(){
-  return digitalRead(ventingPin);
+  return digitalRead(DUMP_VALVE_BUTTON_PIN);
 }
 
 bool readIgnition(){
-  return digitalRead(igniSensePin);
+  return digitalRead(IGNITION_SENSE_PIN);
 }
 
 bool readHeating(){
-  return digitalRead(heatSensePin);
+  return digitalRead(HEATING_SENSE_PIN);
 }
 
 bool readBottleValve(){
-  return digitalRead(bottleValvePin);
+  return digitalRead(FEEDING_VALVE_BUTTON_PIN);
 }
 
 bool readPrechamberValve(){
-  return digitalRead(prechamberValvePin);
+  return digitalRead(MAIN_VALVE_BUTTON_PIN);
 }

@@ -18,7 +18,7 @@
 // Arduino Pin 3 -> ConnectorPin 2 -> dumpValve -> code value 1
 // Arduino Pin 4 -> ConnectorPin 3 -> bottleValve -> code value 2
 
-static const uint16_t valvePins[valveCount] = {2, 3, 4};
+static const uint16_t valvePins[valveCount] = {MAIN_VALVE_PIN, DUMP_VALVE_PIN, BOTTLE_VALVE_PIN};
 static SemaphoreHandle_t valveSemaphore;
 
 void initValves(){
