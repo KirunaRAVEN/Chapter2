@@ -48,11 +48,14 @@ void sendValuesToSerial(values_t values, statusValues_t statusValues){
 
 void sendMessageToSerial(char* message){
   saveMessage(message);
+  //writeMessage(message);
 }
 
+/*
 void sendIntMessageToSerial(int16_t integer){
   writeIntMessage(integer);
 }
+*/
 
 void getTestInput(testInput_t* testInput){
   readTestInput(testInput);

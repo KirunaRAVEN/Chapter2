@@ -187,9 +187,10 @@ void countdownLoop(){
 
     //If testing is done, start sending out the normal values.
     //NOTE: Could possibly forego this clause and just send them always
-    if (verificationDone){
-      sendValuesToSerial(values, statusValues);
-    }
+    //NOTE: Previous note is now in effect
+    //if (verificationDone){
+    sendValuesToSerial(values, statusValues);
+    //}
 
     xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
   }

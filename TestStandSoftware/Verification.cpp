@@ -264,7 +264,8 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case TEST_END:
         if (millis() - endCountTime >= 1000){
-          sendIntMessageToSerial(endCount);
+          msg = "";
+          sendMessageToSerial(itoa(endCount, msg, 10));
           msg = "...\n";
           sendMessageToSerial(msg);
 

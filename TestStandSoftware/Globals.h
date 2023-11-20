@@ -50,7 +50,7 @@ typedef enum {
   TMP36_INPUT_PIN = A4,
   INFRARED_INPUT_PIN = A6,
   ACTUATOR_TEST_ANALOG_PIN = A15
-}pin_names_analog_t
+}pin_names_analog_t;
 
 //Enumeration for the different modes of the system
 typedef enum {
