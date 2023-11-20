@@ -47,7 +47,7 @@ void sendValuesToSerial(values_t values, statusValues_t statusValues){
 }
 
 void sendMessageToSerial(char* message){
-  writeMessage(message);
+  saveMessage(message);
 }
 
 void sendIntMessageToSerial(int16_t integer){

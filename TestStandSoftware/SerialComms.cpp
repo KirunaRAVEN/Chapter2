@@ -12,7 +12,10 @@
 
 #include "Globals.h"
 static SemaphoreHandle_t serialMutex;
+static SemaphoreHandle_t messageMutex;
 
+static char datalineMessage[512];
+static char* msg = datalineMessage;
 
 
 void initSerial(){
@@ -21,6 +24,8 @@ void initSerial(){
   //Serial.println(serialBaud);
   while (!Serial){}
   serialMutex = xSemaphoreCreateMutex();
+  messageMutex = xSemaphoreCreateMutex();
+
   Serial.print(" r\n");
 }
 
@@ -63,12 +68,26 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(statusValues.mode);            //Current SW mode
     Serial.print(" ");
     Serial.print(statusValues.subState);        //Current SW substate
+    Serial.print(" ");
+    Serial.print(msg);
     Serial.print("\n");
+
+    //Clear message
+    msg = "";
 
     xSemaphoreGive(serialMutex);
   }
 }
 
+void saveMessage(char* message){
+    if (xSemaphoreTake(messageMutex, 10) == pdTRUE){
+      strcat(msg, message);
+      xSemaphoreGive(messageMutex);
+    }
+}
+
+//Commented out for now to try out the message field in the main data line.
+/*
 writeMessage(char* message){
   if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
     Serial.print(message);
@@ -82,3 +101,4 @@ writeIntMessage(int16_t integer){
     xSemaphoreGive(serialMutex);
   }
 }
+*/
