@@ -1,4 +1,4 @@
-/* Filename:      TSSW_0.2.ino
+/* Filename:      TestStandSoftware.ino
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
  *
@@ -16,5 +16,5 @@ void setup() {
   start();
 }
 
-//Ran continuously. When using FreeRTOS this loop is never used or entered
+//Ran continiously. When using FreeRTOS this loop is never used or entered
 void loop() {}
