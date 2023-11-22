@@ -16,5 +16,5 @@ void setup() {
   start();
 }
 
-//Ran continiously. When using FreeRTOS this loop is never used or entered
+//Ran continuously. When using FreeRTOS this loop is never used or entered
 void loop() {}
