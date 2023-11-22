@@ -32,43 +32,43 @@ void initSerial(){
 void writeValues(values_t values, statusValues_t statusValues){
   if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
     Serial.print("d");
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.timestamp);     //Arduino time in ms
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.pressure0);     //Feeding pressure
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.pressure1);     //Oxidizer line pressure aka after valve
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.pressure2);     //Chamber pressure
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.loadCell0);     //Load cell for thrust
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.temperature0);  //Bottle/Heating blanket temperature
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.temperature1);  //Not connected
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.temperature2);  //Nozzle temperature
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.temperature3);  //Ambient temperature
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.IR);            //Plume temperature
-    Serial.print(" ");
+    Serial.print(",");
 
     Serial.print(values.dumpValveButton);       //Manual vent button status
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.heatingBlanketButton);       //Heating button status
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(values.ignitionButton);      //Ignition button status
-    Serial.print(" ");
+    Serial.print(",");
 
     Serial.print(statusValues.ignitionEngagedActive);  //Ignition SW state
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(statusValues.valveActive);     //Valve SW state
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(statusValues.mode);            //Current SW mode
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(statusValues.subState);        //Current SW substate
-    Serial.print(" ");
+    Serial.print(",");
     Serial.print(msg);
     Serial.print("\n");
 
