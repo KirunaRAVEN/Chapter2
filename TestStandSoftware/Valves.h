@@ -23,7 +23,7 @@ void initValves(void);
  *                Boolean with state the valve will be set to
  * OUT:           Nothing
  */
-void setValve(uint16_t valveNum, bool state);
+void setValve(pin_names_t valve_pin, bool state);
 
 
 /* Function:      Read the state of a specidic valve.
@@ -32,6 +32,6 @@ void setValve(uint16_t valveNum, bool state);
  *                Boolean pointer where the state will be stored.
  * OUT:           Nothing
  */
-void getValve(uint16_t valveNum, bool* valveState);
+void getValve(pin_names_t valve_pin, bool* valveState);
 
 #endif

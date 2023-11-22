@@ -21,9 +21,6 @@
  * version should have more Mosfets and relays for improved controllability.
  */
 
-//uint16_t buzzerPin = 53;
-static const uint16_t buzzerPin = 4; // <-- Uses a valve driver mosfet controlled by pin 4
-
 static SemaphoreHandle_t buzzerSemaphore;
 static uint32_t buzzerStartTime;
 
@@ -38,10 +35,10 @@ static uint32_t buzzerStartTime;
 static bool timedSequence;
 
 void initBuzzer(){
-  pinMode(buzzerPin, OUTPUT);
+  pinMode(BUZZER_CONTROL_PIN, OUTPUT);
   
   //Turn Buzzer ON when software starts, turns off after ~1 second.
-  digitalWrite(buzzerPin, HIGH);
+  digitalWrite(BUZZER_CONTROL_PIN, HIGH);
   
   timedSequence = true;
   buzzerStartTime = millis();
@@ -52,7 +49,7 @@ void initBuzzer(){
 
 void setBuzzer(bool state){
   if (xSemaphoreTake(buzzerSemaphore, 10) == pdTRUE){
-    digitalWrite(buzzerPin, state);
+    digitalWrite(BUZZER_CONTROL_PIN, state);
     xSemaphoreGive(buzzerSemaphore);
   }
 }

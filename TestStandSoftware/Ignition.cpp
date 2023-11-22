@@ -13,25 +13,24 @@
 
 #include "Globals.h"
 
-static const int16_t igniterPin = 12;
 static SemaphoreHandle_t ignitionMutex;
 
 void initIgnition(){
-  pinMode(igniterPin, OUTPUT);
+  pinMode(IGNITER_CONTROL_PIN, OUTPUT);
 
   ignitionMutex = xSemaphoreCreateMutex();
 }
 
 void setIgnition(bool state){
   if (xSemaphoreTake(ignitionMutex, 10) == pdTRUE){ 
-    digitalWrite(igniterPin, state);
+    digitalWrite(IGNITER_CONTROL_PIN, state);
     xSemaphoreGive(ignitionMutex);
     }
 }
 
 void getIgnition(bool* ignitionState){
   if (xSemaphoreTake(ignitionMutex, 10) == pdTRUE){
-    *ignitionState = digitalRead(igniterPin);
+    *ignitionState = digitalRead(IGNITER_CONTROL_PIN);
     xSemaphoreGive(ignitionMutex);
   }
 }

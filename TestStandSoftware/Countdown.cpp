@@ -43,7 +43,7 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  //In forced sequence the system dismisses the tank pressure limit for firing.
+  //In forced sequence the system dismisses the feeding pressure limit for firing.
   bool forcedSequence = false;
 
   bool verificationDone = true;
@@ -65,7 +65,7 @@ void countdownLoop(){
     }
 
     if (testInput.forced == true){
-      //The ability to bypass the minimum tank pressure requirement.
+      //The ability to bypass the minimum tank/feeding pressure requirement.
       forcedSequence = true;
       setNewForcedIndicator(true);
     }else{
@@ -91,59 +91,27 @@ void countdownLoop(){
         break;
 
       case WAIT:
-        if (values.heating == true){
-          setNewMode(HEATING);
-        }
-
-        else if ((values.ignition == true)){
+        // The WAIT mode includes heating. The HEATING mode was removed. 
+        if (values.ignitionButton == true){
           setNewMode(SEQUENCE);
           ignitionPressTime = millis();
         }
 
-        setValve(0, values.venting);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
         break;
-
-      case HEATING:
-        //Currently no way for software to control the heating. New relays are needed.
-        /*
-        if (values.temperature1 > tankTemperatureLimit){
-          setHeating(false);
-        }
-        else{
-          setHeating(true);
-        }
-        */
-
-        //Go back to WAIT mode if not heating
-        if (values.heating == false){
-          setNewMode(WAIT);
-        }
-        else if ((values.ignition == true)){
-          setNewMode(SEQUENCE);
-          ignitionPressTime = millis();
-        }
-        
-        setValve(0, values.venting);
-        break;
-
 
       case SEQUENCE:
         /* Nested switch - case for the substate. Substate is only active
          * in the SEQUENCE mode. Substates are responsible for engaging and
-         * disengaging the ignition relay and opening and closing the oxidizer
+         * disengaging the ignition relay and opening and closing the main oxidizer
          * valve based on set timing found in the environmental Globals object.
          */
         switch (currentSubstate){     
           case ALL_OFF:
-            if (values.ignition == false){
-              if (values.heating == true){
-                setNewMode(HEATING);
-              }
-              else{
-                setNewMode(WAIT);
-              }
+            if (values.ignitionButton == false){
+              setNewMode(WAIT);
             }
-
+            
             //We might not want to have a hard pressure limit
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence){
               if (millis() - ignitionPressTime > ignitionSafeTime){
@@ -157,7 +125,7 @@ void countdownLoop(){
           case IGNIT_ON:
               if (millis() - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
-                setValve(0, true);
+                setValve(pin_names_t::MAIN_VALVE_PIN, true);
               }
             break;
 
@@ -171,7 +139,7 @@ void countdownLoop(){
           case IGNIT_OFF:
               if (millis() - countdownStartTime > valveOffTime){
                 setNewSubstate(VALVE_OFF);
-                setValve(0, false);
+                setValve(pin_names_t::MAIN_VALVE_PIN, false);
               }
             break;
 
@@ -196,30 +164,35 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(0, values.venting);
+        setValve(pin_names_t::DUMP_VALVE_PIN, false);
+        // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
+        // TODO: Do we also want the MAIN_VALVE_PIN open here as well?
         break;
 
         
       case SHUTDOWN:
         //Testfire over
-        setValve(0, values.venting);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
         break;
     }
 
-    getValve(0, &valveState);
-    statusValues.valveActive = valveState;
+    //Using measurement here  instead
+    //getValve(0, &valveState);
+    //statusValues.valveActive = valveState;
+    statusValues.valveActive = testInput.VALVE_IN;
 
     getIgnition(&ignitionState);
-    statusValues.ignitionActive = ignitionState;
+    statusValues.ignitionEngagedActive = ignitionState;
 
     statusValues.mode = currentMode;
     statusValues.subState = currentSubstate;
 
     //If testing is done, start sending out the normal values.
     //NOTE: Could possibly forego this clause and just send them always
-    if (verificationDone){
-      sendValuesToSerial(values, statusValues);
-    }
+    //NOTE: Previous note is now in effect
+    //if (verificationDone){
+    sendValuesToSerial(values, statusValues);
+    //}
 
     xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
   }

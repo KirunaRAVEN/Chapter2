@@ -22,11 +22,6 @@ static SemaphoreHandle_t modeMutex;
 static SemaphoreHandle_t substateMutex;
 static SemaphoreHandle_t warningMutex;
 
-//In test bench version V1 the indicator LEDs use the servo connector
-const int16_t forcedSequenceIndicatorPin = 7;
-const int16_t testModeIndicatorPin = 6;
-
-
 void setMode(mode_t newMode){
   if (xSemaphoreTake(modeMutex, 10) == pdTRUE){ 
     currentMode = newMode;
@@ -70,11 +65,11 @@ void getWarning(bool *warning){
 }
 
 void setForcedIndicator(bool state){
-  digitalWrite(forcedSequenceIndicatorPin, state);
+  digitalWrite(FORCED_SEQUENCE_LED_PIN, state);
 }
 
 void setTestModeIndicator(bool state){
-  digitalWrite(testModeIndicatorPin, state);
+  digitalWrite(TEST_MODE_LED_PIN, state);
 }
 
 void initMode(){
@@ -85,11 +80,11 @@ void initMode(){
   substateMutex = xSemaphoreCreateMutex();
   warningMutex = xSemaphoreCreateMutex();
 
-  pinMode(testModeIndicatorPin, OUTPUT);
-  digitalWrite(testModeIndicatorPin, LOW);
+  pinMode(TEST_MODE_LED_PIN, OUTPUT);
+  digitalWrite(TEST_MODE_LED_PIN, LOW);
 
-  pinMode(forcedSequenceIndicatorPin, OUTPUT);
-  digitalWrite(forcedSequenceIndicatorPin, LOW);
+  pinMode(FORCED_SEQUENCE_LED_PIN, OUTPUT);
+  digitalWrite(FORCED_SEQUENCE_LED_PIN, LOW);
 
   //Check if system is started in TEST mode or normal WAIT mode
   testInput_t startTestInput;

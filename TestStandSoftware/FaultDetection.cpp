@@ -15,7 +15,7 @@
 #include "Mode.h"
 #include "Buzzer.h"
 
-static int16_t tankPassCount;
+static int16_t feedingPassCount;
 static int16_t chamberPassCount;
 static int16_t casingPassCount;
 static mode_t fetchedMode;
@@ -24,7 +24,7 @@ static bool activateSafe;
 static bool activateWarning;
 
 void initFaultDetect(){
-  tankPassCount = 0;
+  feedingPassCount = 0;
   chamberPassCount = 0;
   casingPassCount = 0;
 }
@@ -39,12 +39,12 @@ void checkData(values_t values){
   getWarning(&fetchedWarning);
   
   //REDLINE TRIGGERS
-  if (values.pressure0 > tankPressureThreshold){
-    tankPassCount++;
-    if (tankPassCount > successivePasses){
+  if (values.pressure0 > feedingPressureThreshold){
+    feedingPassCount++;
+    if (feedingPassCount > successivePasses){
       activateSafe = true;
     }
-  }else{tankPassCount = 0;}
+  }else{feedingPassCount = 0;}
 
   if (values.pressure2 > chamberPressureThreshold){
     chamberPassCount++;
@@ -61,7 +61,7 @@ void checkData(values_t values){
   }else{casingPassCount = 0;}
 
   //WARNING TRIGGERS
-  if (values.pressure0 > tankPressureWarning){
+  if (values.pressure0 > feedingPressureWarning){
       activateWarning = true;
   }
 

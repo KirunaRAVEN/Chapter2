@@ -30,12 +30,16 @@ void initSerial(void);
 void writeValues(values_t values, statusValues_t statusValues);
 
 
+/* WriteMessage and WriteIntMessage are removed for now to test the 
+* functionality of a message field in the main data line
+*/
+
 /* Function:      Sends a text message using the Serial interface
  * 
  * IN:            Pointer to a character array with the text to be sent
  * OUT:           Nothing
  */
-void writeMessage(char* message);
+//void writeMessage(char* message);
 
 
 /* Function:      Sends a single integer using the Serial interface
@@ -47,7 +51,16 @@ void writeMessage(char* message);
  * IN:            A single int16_t integer to be sent
  * OUT:           Nothing
  */
-void writeIntMessage(int16_t integer);
+//void writeIntMessage(int16_t integer);
 
+
+/* Function:      Saves a message to be sent within the dataline.
+ *                Once the dataline with the message is sent, 
+ *                the message field is cleared.
+ * 
+ * IN:            A single int16_t integer to be sent
+ * OUT:           Nothing
+ */
+void saveMessage(char* message);
 
 #endif
