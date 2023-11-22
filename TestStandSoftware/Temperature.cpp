@@ -14,7 +14,7 @@
 
 static const uint16_t pinTMP36 = A4;
 
-static const uint16_t tempChipSelectPins[tempCount] = {24, 26, 28, 30};
+static const uint16_t tempChipSelectPins[tempCount] = {THERMOCOUPLE_CS_PIN0, THERMOCOUPLE_CS_PIN1, THERMOCOUPLE_CS_PIN2, THERMOCOUPLE_CS_PIN3};
 
 /* These pin definitions for SPI are not used, as the Adafruit_MAX31855
  * library configures and uses them internally.

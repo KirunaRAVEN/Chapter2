@@ -13,14 +13,12 @@
 #include "InfraRed.h"
 
 
-static const int16_t infraPin = A6;
-
 void initIR(){
   //Nothing to initialize currently
 }
 
 float readIR(uint16_t sensorNum){
-  float sensorValue = analogRead(infraPin);
+  float sensorValue = analogRead(INFRARED_INPUT_PIN);
   float temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR;
   return temperature;
 }

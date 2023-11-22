@@ -12,7 +12,7 @@
 #include "LoadCell.h"
 #include "Globals.h"
 
-static const int16_t loadPins[loadCellCount] = {A3};
+static const int16_t loadPins[loadCellCount] = {LOADCELL_INPUT_PIN};
 
 void initLoad(){
   //Nothing to initialize currently

@@ -33,10 +33,10 @@ TEST INPUT SCHEMATIC:
         |____________________________________________________________________
 */
 
-static const int16_t testInputPins[testInputCount] = {27, 31};
-static const int16_t testInputPullups[testPullupCount] = {23, 33, 35};
-static const int16_t testOutputPins[testOutputCount] = {29};
-static const int16_t testAnalogPins[testAnalogCount] = {A15};
+static const int16_t testInputPins[testInputCount] = {ACTUATOR_TEST_INPUT_PIN0, ACTUATOR_TEST_INPUT_PIN1};
+static const int16_t testInputPullups[testPullupCount] = {ACTUATOR_TEST_PULLUP_PIN0, ACTUATOR_TEST_PULLUP_PIN1, ACTUATOR_TEST_PULLUP_PIN2};
+static const int16_t testOutputPins[testOutputCount] = {ACTUATOR_TEST_OUTPUT_PIN};
+static const int16_t testAnalogPins[testAnalogCount] = {ACTUATOR_TEST_ANALOG_PIN};
 
 static SemaphoreHandle_t testPinInMutex;
 static SemaphoreHandle_t testPinOutMutex;
