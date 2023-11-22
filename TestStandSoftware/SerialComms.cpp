@@ -73,7 +73,7 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print("\n");
 
     //Clear message
-    msg = "";
+    strcpy(msg, " ");
 
     xSemaphoreGive(serialMutex);
   }
