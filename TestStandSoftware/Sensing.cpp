@@ -52,7 +52,7 @@ void senseLoop(){
     values.IR = readIR(0);  //Plume temperature
     
     //Read control signals
-    values.dumpValveButton = readVentingButton();         //Purging button status (inverted due to normally open valve)
+    values.dumpValveButton = readVentingButton();         //Purging button status (inverted afterwards due to normally open valve)
     values.heatingBlanketButton = readHeatingButton();    //Heating button status
     values.ignitionButton = readIgnitionButton();         //Ignition button status
     values.feedingButton = readFeedingValveButton();      //Feeding valve status

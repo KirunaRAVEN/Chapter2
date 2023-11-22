@@ -27,7 +27,7 @@ void initLatestValues(){
   latestValues.IR = 0;
   latestValues.timestamp = 0;
 
-  latestValues.dumpValveButton = true; // normally open, so no voltage opens
+  latestValues.dumpValveButton = false; // normally open, so no voltage opens
   latestValues.heatingBlanketButton = false;
   latestValues.ignitionButton = false;
   latestValues.mainValveButton = false;

@@ -97,7 +97,7 @@ void countdownLoop(){
           ignitionPressTime = millis();
         }
 
-        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
+        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
         break;
 
       case SEQUENCE:
@@ -172,7 +172,7 @@ void countdownLoop(){
         
       case SHUTDOWN:
         //Testfire over
-        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
+        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
         break;
     }
 
