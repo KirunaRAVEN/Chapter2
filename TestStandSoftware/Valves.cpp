@@ -3,7 +3,7 @@
  * Date:          27.01.2023
  *
  * Purpose:       Responsible for controlling the different valves used to 
- *                control the flow of the oxidizer.
+ *                control the flow of the oxidizer and purge gas.
  */
  
 #include <Arduino.h>
@@ -16,9 +16,9 @@
 // valvePins:
 // Arduino Pin 2 -> ConnectorPin 1 -> mainValve -> code value 0
 // Arduino Pin 3 -> ConnectorPin 2 -> dumpValve -> code value 1
-// Arduino Pin 4 -> ConnectorPin 3 -> bottleValve -> code value 2
+// Arduino Pin 4 -> ConnectorPin 3 -> feedingValve -> code value 2
 
-static const uint16_t valvePins[valveCount] = {MAIN_VALVE_PIN, DUMP_VALVE_PIN, BOTTLE_VALVE_PIN};
+static const uint16_t valvePins[valveCount] = {MAIN_VALVE_PIN, DUMP_VALVE_PIN, FEEDING_VALVE_PIN};
 static SemaphoreHandle_t valveSemaphore;
 
 void initValves(){
@@ -30,8 +30,8 @@ void initValves(){
   pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::DUMP_VALVE_PIN, HIGH); // because normally open
   
-  pinMode(pin_names_t::BOTTLE_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::BOTTLE_VALVE_PIN, LOW);
+  pinMode(pin_names_t::FEEDING_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::FEEDING_VALVE_PIN, LOW);
   
   valveSemaphore = xSemaphoreCreateMutex();
   

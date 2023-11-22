@@ -35,7 +35,7 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(" ");
     Serial.print(values.timestamp);     //Arduino time in ms
     Serial.print(" ");
-    Serial.print(values.pressure0);     //Bottle pressure aka. Pre valve oxidizer line
+    Serial.print(values.pressure0);     //Feeding pressure
     Serial.print(" ");
     Serial.print(values.pressure1);     //Oxidizer line pressure aka after valve
     Serial.print(" ");
@@ -54,11 +54,11 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(values.IR);            //Plume temperature
     Serial.print(" ");
 
-    Serial.print(values.purgingValveClosed);       //Manual vent button status
+    Serial.print(values.dumpValveButton);       //Manual vent button status
     Serial.print(" ");
-    Serial.print(values.heatingBlanketOn);       //Heating button status
+    Serial.print(values.heatingBlanketButton);       //Heating button status
     Serial.print(" ");
-    Serial.print(values.ignitionEngaged);      //Ignition button status
+    Serial.print(values.ignitionButton);      //Ignition button status
     Serial.print(" ");
 
     Serial.print(statusValues.ignitionEngagedActive);  //Ignition SW state

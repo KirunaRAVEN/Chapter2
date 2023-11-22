@@ -24,7 +24,7 @@ void initControlSensing(void);
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readVenting(void);
+bool readVentingButton(void);
 
 
 /* Function:      Read the input pin detecting if ignition is requested.
@@ -32,7 +32,7 @@ bool readVenting(void);
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readIgnition(void);
+bool readIgnitionButton(void);
 
 
 /* Function:      Read the input pin detecting if heating blankets are on.
@@ -40,20 +40,20 @@ bool readIgnition(void);
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readHeating(void);
+bool readHeatingButton(void);
 
-/* Function:      Read the input pin of Remote for the valve of the bottle.
+/* Function:      Read the input pin of Remote for the valve of the gas feeding.
  *
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readBottleValve(void);
+bool readFeedingValveButton(void);
 
-/* Function:      Read the input pin of Remote for the valve of the prechamber.
+/* Function:      Read the input pin of Remote for the valve of the main valve.
  *
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readPrechamberValve(void);
+bool readMainValveButton(void);
 
 #endif

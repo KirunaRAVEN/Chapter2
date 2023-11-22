@@ -27,11 +27,11 @@ void initLatestValues(){
   latestValues.IR = 0;
   latestValues.timestamp = 0;
 
-  latestValues.purgingValveClosed = true; // normally open, so no voltage opens
-  latestValues.heatingBlanketOn = false;
-  latestValues.ignitionEngaged = false;
-  latestValues.prechamberValveOpened = false;
-  latestValues.bottleValveOpened = false;
+  latestValues.dumpValveButton = true; // normally open, so no voltage opens
+  latestValues.heatingBlanketButton = false;
+  latestValues.ignitionButton = false;
+  latestValues.mainValveButton = false;
+  latestValues.feedingButton = false;
 
   latestValueMutex = xSemaphoreCreateMutex();
 }

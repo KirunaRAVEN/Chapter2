@@ -38,8 +38,8 @@ void senseLoop(){
   //bool valveState;
   //bool ignitionState;
   while (true){
-    values.pressure0 = readPressure5V(0);   //Bottle pressure aka. Pre valve oxidizer line
-    values.pressure1 = readPressure5V(1);   //Oxidizer line pressure aka after valve
+    values.pressure0 = readPressure5V(0);   //Feeding pressure
+    values.pressure1 = readPressure5V(1);   //Oxidizer line pressure
     values.pressure2 = readPressure5V(2);   //Chamber pressure
 
     values.loadCell0 = readLoad(0);           //Load cell for thrust
@@ -52,11 +52,11 @@ void senseLoop(){
     values.IR = readIR(0);  //Plume temperature
     
     //Read control signals
-    values.purgingValveClosed = !readVenting();     //Purging button status (inverted due to normally open valve)
-    values.heatingBlanketOn = readHeating();     //Heating button status
-    values.ignitionEngaged = readIgnition();   //Ignition button status
-    values.bottleValveOpened = readBottleValve(); //Bottle valve status
-    values.prechamberValveOpened = readPrechamberValve(); //Prechamber valve status
+    values.dumpValveButton = readVentingButton();         //Purging button status (inverted due to normally open valve)
+    values.heatingBlanketButton = readHeatingButton();    //Heating button status
+    values.ignitionButton = readIgnitionButton();         //Ignition button status
+    values.feedingButton = readFeedingValveButton();      //Feeding valve status
+    values.mainValveButton = readMainValveButton();       //Main oxidizer valve status
 
     //Save timestamp
     values.timestamp = millis();        //Arduino time in ms

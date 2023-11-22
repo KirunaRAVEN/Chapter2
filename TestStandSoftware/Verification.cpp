@@ -43,7 +43,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case OFF_STATE_BUTTON:
-        if (!buttonValues.purgingValveClosed && !buttonValues.ignitionEngaged && !buttonValues.heatingBlanketOn){
+        if (!buttonValues.dumpValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
           msg = "No button presses detected\n";
           sendMessageToSerial(msg);
           testStateChangeTime = millis();
@@ -58,10 +58,10 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case OFF_STATE_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          ignitionPowerPassed = (buttonValues.ignitionEngaged == false);
+          ignitionPowerPassed = (buttonValues.ignitionButton == false);
           ignitionGroundPassed = (testInput.IGN_GND_IN > ignitionGroundOpenPassLimit);
           ignitionSoftwarePassed = (testInput.IGN_SW_IN == false);
-          heatingPassed = (buttonValues.heatingBlanketOn == false);
+          heatingPassed = (buttonValues.heatingBlanketButton == false);
           valvePassed = (testInput.VALVE_IN == true);   //Inverted input
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && valvePassed;
@@ -103,7 +103,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case HEAT_ON_BUTTON:
-        if (buttonValues.heatingBlanketOn){
+        if (buttonValues.heatingBlanketButton){
           msg = "Heating button press detected\n";
           sendMessageToSerial(msg);
 
@@ -115,7 +115,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case HEAT_ON_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          heatingPassed = (buttonValues.heatingBlanketOn == true);
+          heatingPassed = (buttonValues.heatingBlanketButton == true);
 
           allPassed = allPassed && heatingPassed;
 
@@ -133,7 +133,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
       
       case HEAT_RELEASE:
-        if (!buttonValues.heatingBlanketOn){    
+        if (!buttonValues.heatingBlanketButton){    
           verificationState = VALVE_ON_BUTTON;
 
           msg = "Testing manual valve ON-state...\n";
@@ -145,7 +145,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
       
       case VALVE_ON_BUTTON:
-        if (buttonValues.purgingValveClosed){
+        if (buttonValues.dumpValveButton){
           msg = "Manual vent button press detected\n";
           sendMessageToSerial(msg);
 
@@ -177,7 +177,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case VALVE_RELEASE:
-        if (!buttonValues.prechamberValveOpened){
+        if (!buttonValues.mainValveButton){
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;
@@ -190,7 +190,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
       
       case IGN_ON_BUTTON:
-        if (buttonValues.ignitionEngaged){
+        if (buttonValues.ignitionButton){
           msg = "Ignition button press detected\n";
           sendMessageToSerial(msg);
 
@@ -204,7 +204,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case IGN_ON_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          ignitionPowerPassed = (buttonValues.ignitionEngaged == true);
+          ignitionPowerPassed = (buttonValues.ignitionButton == true);
           ignitionGroundPassed = (testInput.IGN_GND_IN < ignitionGroundClosedPassLimit);
           ignitionSoftwarePassed = (testInput.IGN_SW_IN == false); //Inverted output
 
@@ -235,7 +235,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case IGN_RELEASE:
-        if (!buttonValues.ignitionEngaged){
+        if (!buttonValues.ignitionButton){
           setTestOutput(0, false);
 
           msg = "Actuator testing completed...\n";

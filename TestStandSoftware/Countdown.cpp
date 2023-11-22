@@ -43,7 +43,7 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  //In forced sequence the system dismisses the tank pressure limit for firing.
+  //In forced sequence the system dismisses the feeding pressure limit for firing.
   bool forcedSequence = false;
 
   bool verificationDone = true;
@@ -65,7 +65,7 @@ void countdownLoop(){
     }
 
     if (testInput.forced == true){
-      //The ability to bypass the minimum tank pressure requirement.
+      //The ability to bypass the minimum tank/feeding pressure requirement.
       forcedSequence = true;
       setNewForcedIndicator(true);
     }else{
@@ -92,23 +92,23 @@ void countdownLoop(){
 
       case WAIT:
         // The WAIT mode includes heating. The HEATING mode was removed. 
-        if (values.ignitionEngaged == true){
+        if (values.ignitionButton == true){
           setNewMode(SEQUENCE);
           ignitionPressTime = millis();
         }
 
-        setValve(pin_names_t::DUMP_VALVE_PIN, values.purgingValveClosed);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
         break;
 
       case SEQUENCE:
         /* Nested switch - case for the substate. Substate is only active
          * in the SEQUENCE mode. Substates are responsible for engaging and
-         * disengaging the ignition relay and opening and closing the oxidizer
+         * disengaging the ignition relay and opening and closing the main oxidizer
          * valve based on set timing found in the environmental Globals object.
          */
         switch (currentSubstate){     
           case ALL_OFF:
-            if (values.ignitionEngaged == false){
+            if (values.ignitionButton == false){
               setNewMode(WAIT);
             }
             
@@ -172,7 +172,7 @@ void countdownLoop(){
         
       case SHUTDOWN:
         //Testfire over
-        setValve(pin_names_t::DUMP_VALVE_PIN, values.purgingValveClosed);
+        setValve(pin_names_t::DUMP_VALVE_PIN, values.dumpValveButton);
         break;
     }
 

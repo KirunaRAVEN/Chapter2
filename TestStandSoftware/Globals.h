@@ -19,7 +19,7 @@
 typedef enum {
   MAIN_VALVE_PIN = 2,
   DUMP_VALVE_PIN = 3,
-  BOTTLE_VALVE_PIN = 4,
+  FEEDING_VALVE_PIN = 4,
   TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
   FORCED_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,
@@ -206,8 +206,8 @@ const int16_t sensorCount = pressureCount5V  + tempCount + infraCount;
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //Oxidizer Bottle
-  float pressure1;      //Injector
+  float pressure0;      //Feeding line
+  float pressure1;      //Oxidizer line
   float pressure2;      //Combustion chamber
   float loadCell0;      //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
@@ -216,21 +216,21 @@ struct values_t {
   float temperature3;   //Ambient temperature
   float IR;             //Plume Temperature
   
-  bool purgingValveClosed;//Is purge valve opened (normally open)
-  bool heatingBlanketOn;         //Is heating on
-  bool ignitionEngaged;        //Is ignition button pressed
-  bool bottleValveOpened; //Is bottle valve open (normally closed)
-  bool prechamberValveOpened; //Is the final valve before the injection chamber open (normally closed)
+  bool dumpValveButton;             //Is dump valve button pressed (normally open)
+  bool heatingBlanketButton;        //Is heating button pressed
+  bool ignitionButton;              //Is ignition button pressed
+  bool feedingButton;               //Is feeding valve button pressed (normally closed)
+  bool mainValveButton;     //Is the main oxidizer valve button pressed (normally closed)
 
 };
 
 //Structure for holding the internal state of the software and control system.
 struct statusValues_t{
-  bool valveActive;     //Is the valve opened by the software
-  bool ignitionEngagedActive;  //Is the ignition activated by the software
+  bool valveActive;             //Is the valve opened by the software
+  bool ignitionEngagedActive;   //Is the ignition activated by the software
 
-  int16_t mode;             //Which mode the software is in
-  int16_t subState;         //Which substate the software is in
+  int16_t mode;                 //Which mode the software is in
+  int16_t subState;             //Which substate the software is in
 };
 
 //Sampling tick delay for the Sensing.senseLoop task (Ticks between excecutions)
@@ -266,7 +266,7 @@ const int16_t sensorSettleTime = 2 * 1000;
 //Pressure sensor maximum pressure;
 const int16_t maxPressure5V = 100;
 
-//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) BOTTLE
+//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) FEEDING
 const float pressureZero0 = -0.003;                          //Voltage
 const float pressureSpan0 = 5.003;                           //Voltage
 const float pressureLinearity0 = 0.12493;                    //in precentage. Not used for calibration
@@ -274,7 +274,7 @@ const float pressureLine_K0 = maxPressure5V / pressureSpan0; //Slope of the cali
 //Zero offset of the calibrated data
 const float pressureLine_B0 = maxPressure5V - pressureLine_K0 * (pressureSpan0 + pressureZero0);
 
-//Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) TBD
+//Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) LINE
 const float pressureZero1 = 0.01;                          //Voltage
 const float pressureSpan1 = 4.997;                           //Voltage
 const float pressureLinearity1 = 0.10154;                    //in percent. Not used for calibration
@@ -282,7 +282,7 @@ const float pressureLine_K1 = maxPressure5V / pressureSpan1; //Slope of the cali
 //Zero offset of the calibrated data
 const float pressureLine_B1 = maxPressure5V - pressureLine_K1 * (pressureSpan1 + pressureZero1);
 
-//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) TBD
+//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) CHAMBER
 const float pressureZero2 = 0.001;                          //Voltage
 const float pressureSpan2 = 5.002;                           //Voltage
 const float pressureLinearity2 = 0.11859;                    //in precentage. Not used for calibration
@@ -322,14 +322,14 @@ const int16_t loadCellAverageCount = 4;
  * represent when they are used.
  */
 
-//Minimum pressure required to start the firing sequence
-const int16_t minimumFiringPressure = 5;  //Placeholder value
+//Minimum pressure required to start the firing sequence (bar)
+const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
 //const int16_t closePressure0 = 2;
 
 //At what temperature are the heating blankets turned off
-const int16_t tankTemperatureLimit = 35;  //Placeholder value
+const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 
 //Buzzer warning length (ms)
 const int16_t buzzerOnTime = 1 * 500;
@@ -340,13 +340,13 @@ const uint32_t serialBaud = 115200;
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 5; //N successive passes lead to threshold trigger
 
-const int16_t tankPressureThreshold = 65; //Needs confirmation
-const int16_t chamberPressureThreshold = 60; //Placeholder Value
+const int16_t feedingPressureThreshold = 65; //Needs confirmation
+const int16_t chamberPressureThreshold = 25; //Needs confirmation
 const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //nst int16_t More Thresholds to be added
 
 //Warning thresholds
-const int16_t tankPressureWarning = 60;
+const int16_t feedingPressureWarning = 60;
 
 //Other stuff to come. Add any constants here instead of in each separate file.
 

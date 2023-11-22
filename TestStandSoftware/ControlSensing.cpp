@@ -19,22 +19,22 @@ void initControlSensing(){
   pinMode(MAIN_VALVE_BUTTON_PIN, INPUT);
 }
 
-bool readVenting(){
+bool readVentingButton(){
   return digitalRead(DUMP_VALVE_BUTTON_PIN);
 }
 
-bool readIgnition(){
+bool readIgnitionButton(){
   return digitalRead(IGNITION_SENSE_PIN);
 }
 
-bool readHeating(){
+bool readHeatingButton(){
   return digitalRead(HEATING_SENSE_PIN);
 }
 
-bool readBottleValve(){
+bool readFeedingValveButton(){
   return digitalRead(FEEDING_VALVE_BUTTON_PIN);
 }
 
-bool readPrechamberValve(){
+bool readMainValveButton(){
   return digitalRead(MAIN_VALVE_BUTTON_PIN);
 }
