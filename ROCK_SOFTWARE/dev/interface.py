@@ -18,6 +18,14 @@
     CHANGELOG: 
         - 15/11/23: Added escape key press handling, header comment
         - 08/11/23: Successful implementation of animation with dummy data
+
+    TODO:
+        - Add function to automatically save file upon closing
+        - read data properly from csv file
+        - add message box for software mode, substate and arduino time
+        - add function to compute the rolling average
+        - add display of latest value on graphs
+        - improve artist list in 
 '''
 
 # ================= #
