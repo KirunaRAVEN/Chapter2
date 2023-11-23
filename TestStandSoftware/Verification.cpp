@@ -43,7 +43,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case OFF_STATE_BUTTON:
-        if (!buttonValues.dumpValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
+        if (!buttonValues.mainValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
           msg = "No button presses detected\n";
           sendMessageToSerial(msg);
           testStateChangeTime = millis();
@@ -145,7 +145,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
       
       case VALVE_ON_BUTTON:
-        if (buttonValues.dumpValveButton){
+        if (buttonValues.mainValveButton){
           msg = "Manual vent button press detected\n";
           sendMessageToSerial(msg);
 
