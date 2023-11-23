@@ -17,7 +17,7 @@ static SemaphoreHandle_t ignitionMutex;
 
 void initIgnition(){
   pinMode(IGNITER_CONTROL_PIN, OUTPUT);
-
+  digitalWrite(IGNITER_CONTROL_PIN, LOW);
   ignitionMutex = xSemaphoreCreateMutex();
 }
 
