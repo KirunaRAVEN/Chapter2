@@ -39,6 +39,10 @@ void countdownLoop(){
   substate_t currentSubstate;
   testInput_t testInput;
 
+  // Add the capability to print lines to the ground station computer if needed
+  static char message[64];
+  static char* msg = message;
+
   statusValues_t statusValues;
   bool valveState;
   bool ignitionState;
@@ -126,11 +130,19 @@ void countdownLoop(){
             
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
-            else if ((values.pressure0 > minimumFiringPressure) || forcedSequence){
-              if (millis() - ignitionPressTime > ignitionSafeTime){
+            else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
+              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.feedingButton == true){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
+              }
+              else if (values.dumpValveButton == true){
+                msg = "Warning: Cannot begin sequence with dump valve open. \n";
+                sendMessageToSerial(msg);
+              }
+              else if (values.feedingButton == false){
+                msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
+                sendMessageToSerial(msg);
               }
             }
             break;
