@@ -75,6 +75,14 @@ void countdownLoop(){
 
     //Fetch latest measurements
     forwardGetLatestValues(&values);
+
+    // The dump valve is within the main loop as it must always be accessible.
+    // A check is done for SAFE mode to avoid conflicts, as SAFE mode has the
+    // dump valve hard-coded to open regardless of button input.
+    if (currentMode != SAFE){
+        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+    }
+
     
     //MODE switch case
     switch(currentMode){
@@ -97,7 +105,11 @@ void countdownLoop(){
           ignitionPressTime = millis();
         }
 
-        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+        // In WAIT mode, the operator should have the ability to open and close any controllable valve
+        // Dump valve commented out as it is checked in every single loop regardless of mode
+        // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.mainValveButton);
+        setValve(pin_names_t::FEEDING_VALVE_PIN, values.feedingButton);
         break;
 
       case SEQUENCE:
@@ -112,7 +124,8 @@ void countdownLoop(){
               setNewMode(WAIT);
             }
             
-            //We might not want to have a hard pressure limit
+            //We might not want to have a hard pressure limit. Minimum firing 
+            //pressure currently set to 0 bar.
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence){
               if (millis() - ignitionPressTime > ignitionSafeTime){
                 countdownStartTime = millis();
@@ -164,15 +177,18 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(pin_names_t::DUMP_VALVE_PIN, false);
+        setValve(pin_names_t::DUMP_VALVE_PIN, false); // FALSE because it is normally open
+        setValve(pin_names_t::FEEDING_VALVE_PIN, false); // FALSE because it is normally closed
         // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
+
         // TODO: Do we also want the MAIN_VALVE_PIN open here as well?
         break;
 
         
       case SHUTDOWN:
         //Testfire over
-        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+        // Dump valve commented out as it is checked in every single loop regardless of mode
+        //setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
         break;
     }
 
