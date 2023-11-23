@@ -65,7 +65,7 @@ void readTestInput(testInput_t* testInput){
 
     testInput->IGN_GND_IN = analogRead(testAnalogPins[0]);
     
-    testInput->VALVE_IN = digitalRead(testInputPins[1]);
+    testInput->MAIN_VALVE_IN = digitalRead(testInputPins[1]);
     testInput->IGN_SW_IN = digitalRead(testInputPins[0]);
   
     xSemaphoreGive(testPinInMutex);

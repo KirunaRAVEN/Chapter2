@@ -62,7 +62,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           ignitionGroundPassed = (testInput.IGN_GND_IN > ignitionGroundOpenPassLimit);
           ignitionSoftwarePassed = (testInput.IGN_SW_IN == false);
           heatingPassed = (buttonValues.heatingBlanketButton == false);
-          valvePassed = (testInput.VALVE_IN == true);   //Inverted input
+          valvePassed = (testInput.MAIN_VALVE_IN == true);   //Inverted input
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && valvePassed;
 
@@ -159,7 +159,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case VALVE_ON_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          valvePassed = (testInput.VALVE_IN == false);   //Inverted input
+          valvePassed = (testInput.MAIN_VALVE_IN == false);   //Inverted input
 
           allPassed = allPassed && valvePassed;
 

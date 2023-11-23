@@ -179,7 +179,7 @@ void countdownLoop(){
     //Using measurement here  instead
     //getValve(0, &valveState);
     //statusValues.valveActive = valveState;
-    statusValues.valveActive = testInput.VALVE_IN;
+    statusValues.valveActive = testInput.MAIN_VALVE_IN;
 
     getIgnition(&ignitionState);
     statusValues.ignitionEngagedActive = ignitionState;
