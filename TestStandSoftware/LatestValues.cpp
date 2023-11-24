@@ -19,7 +19,7 @@ void initLatestValues(){
   latestValues.pressure0 = 0;      //Feeding line
   latestValues.pressure1 = 0;      //Oxidizer line
   latestValues.pressure2 = 0;      //Combustion chamber
-  latestValues.loadCell0 = 0;      //Back of the engine
+  latestValues.loadCell = 0;      //Back of the engine
   latestValues.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   latestValues.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
   latestValues.temperature2 = 0;   //Nozzle temperature

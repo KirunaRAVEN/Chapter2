@@ -12,18 +12,16 @@
 #include "LoadCell.h"
 #include "Globals.h"
 
-static const int16_t loadPins[loadCellCount] = {LOADCELL_INPUT_PIN};
-
 void initLoad(){
   //Nothing to initialize currently
 }
 
-float readLoad(uint16_t cellNum){
+float readLoad(){
   float sum = 0;
   float sensorValue = 0;
 
   for(uint16_t i = 0; i<loadCellAverageCount; i++){
-    sensorValue = analogRead(loadPins[cellNum]);
+    sensorValue = analogRead(LOADCELL_INPUT_PIN);
     sensorValue = (sensorValue / maxADC) * refADC * calibrationADC;
     sum += sensorValue;  
   }

@@ -24,6 +24,6 @@ void initLoad(void);
  * IN:            Load cell number to read
  * OUT:           float value with the load cell measurement of the given sensor number
  */
-float readLoad(uint16_t cellNum);
+float readLoad();
 
 #endif

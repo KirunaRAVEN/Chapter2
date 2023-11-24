@@ -29,16 +29,16 @@ typedef enum {
   BUZZER_CONTROL_PIN = 19,
   MAIN_VALVE_BUTTON_PIN = 20,
   FEEDING_VALVE_BUTTON_PIN = 21,
-  ACTUATOR_TEST_PULLUP_PIN0 = 23,
+  AUTO_TEST_START_PIN = 23,
   THERMOCOUPLE_CS_PIN0 = 24, 
   THERMOCOUPLE_CS_PIN1 = 26,
-  ACTUATOR_TEST_INPUT_PIN0 = 27, 
+  IGN_SW_RELAY_TEST_PIN = 27,
   THERMOCOUPLE_CS_PIN2 = 28, 
-  ACTUATOR_TEST_OUTPUT_PIN = 29,
+  IGN_GND_RELAY_TEST_DRIVE_PIN = 29,
   THERMOCOUPLE_CS_PIN3 = 30,
-  ACTUATOR_TEST_INPUT_PIN1 = 31,
-  ACTUATOR_TEST_PULLUP_PIN1 = 33,
-  ACTUATOR_TEST_PULLUP_PIN2 = 35
+  MAIN_VALVE_TEST_PIN = 31,
+  FORCED_SEQUENECE_PIN = 33,
+  SW_RESET_PIN = 35
 } pin_names_t;
 
 //Pin Enumerators for Analog Pins
@@ -49,7 +49,7 @@ typedef enum {
   LOADCELL_INPUT_PIN = A3,
   TMP36_INPUT_PIN = A4,
   INFRARED_INPUT_PIN = A6,
-  ACTUATOR_TEST_ANALOG_PIN = A15
+  IGN_GND_RELAY_TEST_MEASURE_PIN = A15
 }pin_names_analog_t;
 
 //Enumeration for the different modes of the system
@@ -209,7 +209,7 @@ struct values_t {
   float pressure0;      //Feeding line
   float pressure1;      //Oxidizer line
   float pressure2;      //Combustion chamber
-  float loadCell0;      //Back of the engine
+  float loadCell;      //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
   float temperature2;   //Nozzle temperature
@@ -262,6 +262,13 @@ const substate_t startSubstate = ALL_OFF;
 
 //How long the system waits until starting automatic sequence (ms)
 const int16_t sensorSettleTime = 2 * 1000;
+
+//Which pressure sensors corresponds to which "location"
+typedef enum{
+  FEEDING_PRESSURE = 0,
+  LINE_PRESSURE = 1,
+  CHAMBER_PRESSURE = 2
+}pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
 const int16_t maxPressure5V = 100;
@@ -316,6 +323,14 @@ const float loadCellLine_B = maxLoad - loadCellLine_K * (loadCellSpan + loadCell
 
 //How many measurements are taken per value to reduce noise
 const int16_t loadCellAverageCount = 4;
+
+//Which thermocouple corresponds to which "location"
+typedef enum{
+  NOT_CONNECTED0 = 0,
+  NOT_CONNECTED_1 = 1,
+  NOZZLE_TC = 2,
+  AMBIENT_TC = 3
+}tempSensorNames_t;
 
 /*
  * Change the names of automation limit variables here to better

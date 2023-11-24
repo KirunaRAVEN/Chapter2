@@ -41,7 +41,7 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(values.pressure2);     //Chamber pressure
     Serial.print(",");
-    Serial.print(values.loadCell0);     //Load cell for thrust
+    Serial.print(values.loadCell);     //Load cell for thrust
     Serial.print(",");
     Serial.print(values.temperature0);  //Bottle/Heating blanket temperature
     Serial.print(",");

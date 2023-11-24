@@ -49,7 +49,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           testStateChangeTime = millis();
           verificationState = OFF_STATE_TEST;
 
-          setTestOutput(0, true);
+          setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
           setIgnition(false);
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
           }
@@ -104,7 +104,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           msg = valvePassed ? "Passed\n" : "Failed\n";
           sendMessageToSerial(msg);
 
-          setTestOutput(0, false);
+          setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
           
           verificationState = HEAT_ON_BUTTON;
         
@@ -207,7 +207,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           msg = "Ignition button press detected\n";
           sendMessageToSerial(msg);
 
-          setTestOutput(0, true);
+          setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
 
           testStateChangeTime = millis();
           verificationState = IGN_ON_TEST;
@@ -249,7 +249,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case IGN_RELEASE:
         if (!buttonValues.ignitionButton){
-          setTestOutput(0, false);
+          setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
 
           msg = "Actuator testing completed...\n";
           sendMessageToSerial(msg);

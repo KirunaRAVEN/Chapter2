@@ -38,18 +38,18 @@ void senseLoop(){
   //bool valveState;
   //bool ignitionState;
   while (true){
-    values.pressure0 = readPressure5V(0);   //Feeding pressure
-    values.pressure1 = readPressure5V(1);   //Oxidizer line pressure
-    values.pressure2 = readPressure5V(2);   //Chamber pressure
+    values.pressure0 = readPressure5V(FEEDING_PRESSURE);    //Feeding pressure
+    values.pressure1 = readPressure5V(LINE_PRESSURE);       //Oxidizer line pressure
+    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);    //Chamber pressure
 
-    values.loadCell0 = readLoad(0);         //Load cell for thrust
+    values.loadCell = readLoad();  //Load cell for thrust
 
-    values.temperature0 = readTMP36();      //Bottle/Heating blanket temperature
-    values.temperature1 = readTemp(1);      //Not connected
-    values.temperature2 = readTemp(2);      //Nozzle temperature
-    values.temperature3 = readTemp(3);      //Ambient temperature
+    values.temperature0 = readTMP36();                  //Bottle/Heating blanket temperature
+    values.temperature1 = readTemp(NOT_CONNECTED_1);    //Not connected
+    values.temperature2 = readTemp(NOZZLE_TC);          //Nozzle temperature
+    values.temperature3 = readTemp(AMBIENT_TC);         //Ambient temperature
 
-    values.IR = readIR(0);  //Plume temperature
+    values.IR = readIR();   //Plume temperature
     
     //Read control signals
     values.dumpValveButton = readVentingButton();         //Purging button status (inverted afterwards due to normally open valve)

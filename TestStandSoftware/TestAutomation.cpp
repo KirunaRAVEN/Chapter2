@@ -61,8 +61,8 @@ void getTestInput(testInput_t* testInput){
   readTestInput(testInput);
 }
 
-void setTestOutput(uint16_t pinIndex, bool pinState){
-  activateOutputPin(pinIndex, pinState);
+void setTestOutput(uint16_t pinNumber, bool pinState){
+  activateOutputPin(pinNumber, pinState);
 }
 
 void setNewBuzzerState(bool newState){

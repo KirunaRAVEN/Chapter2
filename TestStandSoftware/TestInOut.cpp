@@ -33,25 +33,25 @@ TEST INPUT SCHEMATIC:
         |____________________________________________________________________
 */
 
-static const int16_t testInputPins[testInputCount] = {ACTUATOR_TEST_INPUT_PIN0, ACTUATOR_TEST_INPUT_PIN1};
-static const int16_t testInputPullups[testPullupCount] = {ACTUATOR_TEST_PULLUP_PIN0, ACTUATOR_TEST_PULLUP_PIN1, ACTUATOR_TEST_PULLUP_PIN2};
-static const int16_t testOutputPins[testOutputCount] = {ACTUATOR_TEST_OUTPUT_PIN};
-static const int16_t testAnalogPins[testAnalogCount] = {ACTUATOR_TEST_ANALOG_PIN};
+//Trying out a more sensible way of writing the code and not using pin number lists of miniscule length.
+//static const int16_t testInputPins[testInputCount] = {IGN_SW_RELAY_TEST_PIN, MAIN_VALVE_TEST_PIN};
+//static const int16_t testInputPullups[testPullupCount] = {AUTO_TEST_START_PIN, FORCED_SEQUENECE_PIN, SW_RESET_PIN};
+//static const int16_t testOutputPins[testOutputCount] = {IGN_GND_RELAY_TEST_DRIVE_PIN};
+//static const int16_t testAnalogPins[testAnalogCount] = {IGN_GND_RELAY_TEST_MEASURE_PIN};
 
 static SemaphoreHandle_t testPinInMutex;
 static SemaphoreHandle_t testPinOutMutex;
 
 void initTestInOut(){
-  for (uint16_t i = 0; i<testPullupCount; i++){
-    pinMode(testInputPullups[i], INPUT_PULLUP);
-  }
-  for (uint16_t i = 0; i<testInputCount; i++){
-    pinMode(testInputPins[i], INPUT);
-  }
-  for (uint16_t i = 0; i<testOutputCount; i++){
-    pinMode(testOutputPins[i], OUTPUT);
-  } 
+  pinMode(AUTO_TEST_START_PIN, INPUT_PULLUP);
+  pinMode(FORCED_SEQUENECE_PIN, INPUT_PULLUP);
+  pinMode(SW_RESET_PIN, INPUT_PULLUP);
 
+  pinMode(IGN_SW_RELAY_TEST_PIN, INPUT);
+  pinMode(MAIN_VALVE_TEST_PIN, INPUT);
+
+  pinMode(IGN_GND_RELAY_TEST_DRIVE_PIN, OUTPUT);
+  
   testPinInMutex = xSemaphoreCreateMutex();
   testPinOutMutex = xSemaphoreCreateMutex();
 }
@@ -59,22 +59,24 @@ void initTestInOut(){
 void readTestInput(testInput_t* testInput){
   if (xSemaphoreTake(testPinInMutex, 10) == pdTRUE){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
-    testInput->startTest = !digitalRead(testInputPullups[0]); //Inverted input
-    testInput->forced = !digitalRead(testInputPullups[1]);    //Inverted input
-    testInput->resetSW = !digitalRead(testInputPullups[2]);   //Inverted input
+    testInput->startTest = !digitalRead(AUTO_TEST_START_PIN);   //Inverted input
+    testInput->forced = !digitalRead(FORCED_SEQUENECE_PIN);     //Inverted input
+    testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
 
-    testInput->IGN_GND_IN = analogRead(testAnalogPins[0]);
+    testInput->IGN_GND_IN = analogRead(IGN_GND_RELAY_TEST_MEASURE_PIN);
     
-    testInput->MAIN_VALVE_IN = digitalRead(testInputPins[1]);
-    testInput->IGN_SW_IN = digitalRead(testInputPins[0]);
+    testInput->MAIN_VALVE_IN = digitalRead(MAIN_VALVE_TEST_PIN);
+    testInput->IGN_SW_IN = digitalRead(IGN_SW_RELAY_TEST_PIN);
   
     xSemaphoreGive(testPinInMutex);
   }
 }
 
-void activateOutputPin(uint16_t pinIndex, bool pinState){
+//Allowing any pin to be changed by this instead of pins in a list is slightly sus
+//Either keep this and trust the process, go back to a list of pins for this or include a check.
+void activateOutputPin(uint16_t pinNumber, bool pinState){
   if (xSemaphoreTake(testPinOutMutex, 10) == pdTRUE){
-    digitalWrite(testOutputPins[pinIndex], pinState);
+    digitalWrite(pinNumber, pinState);
     xSemaphoreGive(testPinOutMutex);
   }
 }
