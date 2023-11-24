@@ -53,6 +53,19 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           setIgnition(false);
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
           }
+          // Logic to warn the console user which buttons are still pressed before test sequence can continue.
+          else if (buttonValues.mainValveButton == true){
+            msg = "Please release the main valve button.\n";
+            sendMessageToSerial(msg);
+          }
+          else if (buttonValues.ignitionButton == true){
+            msg = "Please release the ignition button.\n";
+            sendMessageToSerial(msg);
+          }
+          else if (buttonValues.heatingBlanketButton == true){
+            msg = "Please release the heating blanket button.\n";
+            sendMessageToSerial(msg);
+          }
         break;
         
       case OFF_STATE_TEST:
