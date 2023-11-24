@@ -63,6 +63,8 @@ void readTestInput(testInput_t* testInput){
     testInput->forced = !digitalRead(FORCED_SEQUENECE_PIN);     //Inverted input
     testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
 
+    //Analog to digital calibration is not included here due to the 
+    //error being way less than the margins for this specific value
     testInput->IGN_GND_IN = analogRead(IGN_GND_RELAY_TEST_MEASURE_PIN);
     
     testInput->MAIN_VALVE_IN = digitalRead(MAIN_VALVE_TEST_PIN);

@@ -20,6 +20,17 @@ float readLoad(){
   float sum = 0;
   float sensorValue = 0;
 
+  /* Measurement to value explanation:
+   * For loop = measure multiple values and take average, load cells are noisy by default.
+   * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
+   * sensorValue = measured voltage on the pin, within 0...1023
+   * maxADC = 1023, since we are using 10-bit analog to digital converter
+   * refADV = expected ADC voltage of 5.00V
+   * LoadCellLine_K = mapping from voltage to Newtons. Includes calibration values
+   * LoadCellLine_B = mapping from voltage to Newtons. Includes calibration values
+   * Newtons = K * Voltage + B
+   */
+
   for(uint16_t i = 0; i<loadCellAverageCount; i++){
     sensorValue = analogRead(LOADCELL_INPUT_PIN);
     sensorValue = (sensorValue / maxADC) * refADC * calibrationADC;
