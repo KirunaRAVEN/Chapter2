@@ -152,7 +152,7 @@ typedef enum{
   NORMAL_PRIORITY = 1,
   HIGH_PRIORITY = 2,
   CRITICAL_PRIORITY = 3
-}taskPriorities_t
+}taskPriorities_t;
 
 //How many bytes allocated to task memory.
 const int16_t taskMemoryBytes = 512;
