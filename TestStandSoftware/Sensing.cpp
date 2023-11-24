@@ -42,12 +42,12 @@ void senseLoop(){
     values.pressure1 = readPressure5V(1);   //Oxidizer line pressure
     values.pressure2 = readPressure5V(2);   //Chamber pressure
 
-    values.loadCell0 = readLoad(0);           //Load cell for thrust
+    values.loadCell0 = readLoad(0);         //Load cell for thrust
 
-    values.temperature0 = readTMP36();  //Bottle/Heating blanket temperature
-    values.temperature1 = readTemp(1);  //Not connected
-    values.temperature2 = readTemp(2);  //Nozzle temperature
-    values.temperature3 = readTemp(3);  //Ambient temperature
+    values.temperature0 = readTMP36();      //Bottle/Heating blanket temperature
+    values.temperature1 = readTemp(1);      //Not connected
+    values.temperature2 = readTemp(2);      //Nozzle temperature
+    values.temperature3 = readTemp(3);      //Ambient temperature
 
     values.IR = readIR(0);  //Plume temperature
     
@@ -59,7 +59,7 @@ void senseLoop(){
     values.mainValveButton = readMainValveButton();       //Main oxidizer valve status
 
     //Save timestamp
-    values.timestamp = millis();        //Arduino time in ms
+    values.timestamp = millis();            //Arduino time in ms
     
     sendToCheck(values);
     setLatest(values);

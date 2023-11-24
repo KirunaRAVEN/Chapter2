@@ -220,7 +220,7 @@ struct values_t {
   bool heatingBlanketButton;        //Is heating button pressed
   bool ignitionButton;              //Is ignition button pressed
   bool feedingButton;               //Is feeding valve button pressed (normally closed)
-  bool mainValveButton;     //Is the main oxidizer valve button pressed (normally closed)
+  bool mainValveButton;             //Is the main oxidizer valve button pressed (normally closed)
 
 };
 
@@ -267,26 +267,26 @@ const int16_t sensorSettleTime = 2 * 1000;
 const int16_t maxPressure5V = 100;
 
 //Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) FEEDING
-const float pressureZero0 = -0.003;                          //Voltage
-const float pressureSpan0 = 5.003;                           //Voltage
-const float pressureLinearity0 = 0.12493;                    //in precentage. Not used for calibration
-const float pressureLine_K0 = maxPressure5V / pressureSpan0; //Slope of the calibrated data
+const float pressureZero0 = -0.003;                           //Voltage
+const float pressureSpan0 = 5.003;                            //Voltage
+const float pressureLinearity0 = 0.12493;                     //in precentage. Not used for calibration
+const float pressureLine_K0 = maxPressure5V / pressureSpan0;  //Slope of the calibrated data
 //Zero offset of the calibrated data
 const float pressureLine_B0 = maxPressure5V - pressureLine_K0 * (pressureSpan0 + pressureZero0);
 
 //Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) LINE
-const float pressureZero1 = 0.01;                          //Voltage
-const float pressureSpan1 = 4.997;                           //Voltage
-const float pressureLinearity1 = 0.10154;                    //in percent. Not used for calibration
-const float pressureLine_K1 = maxPressure5V / pressureSpan1; //Slope of the calibrated data
+const float pressureZero1 = 0.01;                             //Voltage
+const float pressureSpan1 = 4.997;                            //Voltage
+const float pressureLinearity1 = 0.10154;                     //in percent. Not used for calibration
+const float pressureLine_K1 = maxPressure5V / pressureSpan1;  //Slope of the calibrated data
 //Zero offset of the calibrated data
 const float pressureLine_B1 = maxPressure5V - pressureLine_K1 * (pressureSpan1 + pressureZero1);
 
 //Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) CHAMBER
-const float pressureZero2 = 0.001;                          //Voltage
-const float pressureSpan2 = 5.002;                           //Voltage
-const float pressureLinearity2 = 0.11859;                    //in precentage. Not used for calibration
-const float pressureLine_K2 = maxPressure5V / pressureSpan2; //Slope of the calibrated data
+const float pressureZero2 = 0.001;                            //Voltage
+const float pressureSpan2 = 5.002;                            //Voltage
+const float pressureLinearity2 = 0.11859;                     //in precentage. Not used for calibration
+const float pressureLine_K2 = maxPressure5V / pressureSpan2;  //Slope of the calibrated data
 //Zero offset of the calibrated data
 const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 + pressureZero2);
 
@@ -329,6 +329,7 @@ const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the fir
 //const int16_t closePressure0 = 2;
 
 //At what temperature are the heating blankets turned off
+//Software has no ability to control the heating blanket in the current design.
 const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 
 //Buzzer warning length (ms)
@@ -340,8 +341,8 @@ const uint32_t serialBaud = 115200;
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 5; //N successive passes lead to threshold trigger
 
-const int16_t feedingPressureThreshold = 65; //Needs confirmation
-const int16_t chamberPressureThreshold = 25; //Needs confirmation
+const int16_t feedingPressureThreshold = 65;    //Needs confirmation
+const int16_t chamberPressureThreshold = 25;    //Needs confirmation
 const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //nst int16_t More Thresholds to be added
 

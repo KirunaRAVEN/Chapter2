@@ -23,6 +23,7 @@ static SemaphoreHandle_t valveSemaphore;
 
 void initValves(){
   //Set up pressure sensor
+  //If this comment was me, I don't know what it means. -E.M.
 
   pinMode(pin_names_t::MAIN_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::MAIN_VALVE_PIN, LOW);

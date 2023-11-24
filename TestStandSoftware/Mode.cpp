@@ -22,6 +22,8 @@ static SemaphoreHandle_t modeMutex;
 static SemaphoreHandle_t substateMutex;
 static SemaphoreHandle_t warningMutex;
 
+//initMode() -function found at the end of the file
+
 void setMode(mode_t newMode){
   if (xSemaphoreTake(modeMutex, 10) == pdTRUE){ 
     currentMode = newMode;
@@ -72,6 +74,8 @@ void setTestModeIndicator(bool state){
   digitalWrite(TEST_MODE_LED_PIN, state);
 }
 
+
+//Init function at the bottom due to the need to call function defined before in this file.
 void initMode(){
   currentMode = startMode;
   currentSubstate = startSubstate;

@@ -204,7 +204,7 @@ void countdownLoop(){
       case SHUTDOWN:
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
-        //setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+        // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
         break;
     }
 
