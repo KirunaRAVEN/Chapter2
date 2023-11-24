@@ -136,13 +136,17 @@ void countdownLoop(){
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
               }
-              else if (values.dumpValveButton == true){
-                msg = "Warning: Cannot begin sequence with dump valve open. \n";
-                sendMessageToSerial(msg);
-              }
-              else if (values.feedingButton == false){
-                msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
-                sendMessageToSerial(msg);
+              else {
+                // TODO: Add flag so that this message is only sent once. Do it here
+                // and not inside the if cases so only one boolean is needed.
+                if (values.dumpValveButton == true){
+                  msg = "Warning: Cannot begin sequence with dump valve open. \n";
+                  sendMessageToSerial(msg);
+                }
+                if (values.feedingButton == false){
+                  msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
+                  sendMessageToSerial(msg);
+                }
               }
             }
             break;
