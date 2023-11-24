@@ -12,8 +12,7 @@
 #include "Globals.h"
 #include "Adafruit_MAX31855.h"
 
-static const uint16_t pinTMP36 = A4;
-
+//This pin number list was kept due to the higher number of thermocouples, and the fact that reading TCs is done with differently
 static const uint16_t tempChipSelectPins[tempCount] = {THERMOCOUPLE_CS_PIN0, THERMOCOUPLE_CS_PIN1, THERMOCOUPLE_CS_PIN2, THERMOCOUPLE_CS_PIN3};
 
 /* These pin definitions for SPI are not used, as the Adafruit_MAX31855
@@ -60,7 +59,7 @@ float readTemp(uint16_t sensorNum){
 }
 
 float readTMP36(){
-  float sensorValue = analogRead(pinTMP36);
+  float sensorValue = analogRead(TMP36_INPUT_PIN);
   float temperature = (calibrationADC * (sensorValue / maxADC) * refADC - 0.5) * 100;
   return temperature;
 }

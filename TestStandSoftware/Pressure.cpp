@@ -11,6 +11,7 @@
 
 #include "Globals.h"
 
+//This pin list is kept to access both pin number and calibration list data with the same index given to readPressure5V()
 static const int16_t pressurePins5V[pressureCount5V] = {PRESSURE_INPUT_PIN0, PRESSURE_INPUT_PIN1, PRESSURE_INPUT_PIN2};
 
 void initPressure(){
