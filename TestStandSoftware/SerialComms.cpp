@@ -60,6 +60,10 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(values.ignitionButton);        //Ignition button status
     Serial.print(",");
+    Serial.print(values.feedingButton);        //Feeding button status
+    Serial.print(",");
+    Serial.print(values.mainValveButton);        //Main button status
+    Serial.print(",");
 
     Serial.print(statusValues.ignitionEngagedActive);  //Ignition SW state
     Serial.print(",");
