@@ -26,9 +26,9 @@ void initCountdown(){
     xTaskCreate(
     countdownLoop        //Name of the task function
     ,  "CountdownLoop"   // A name just for humans
-    ,  512               // This stack size can be checked & adjusted by reading the Stack Highwater
+    ,  taskMemoryBytes   // This stack size can be checked & adjusted by reading the Stack Highwater
     ,  NULL              // Ppinter to passed variable
-    ,  3                 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    ,  CRITICAL_PRIORITY // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,  NULL);            // Handle to the created task
 }
 

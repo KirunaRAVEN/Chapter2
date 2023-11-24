@@ -14,7 +14,7 @@
 static SemaphoreHandle_t serialMutex;
 static SemaphoreHandle_t messageMutex;
 
-static char datalineMessage[512];
+static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
 static char* msg = datalineMessage;
 
 

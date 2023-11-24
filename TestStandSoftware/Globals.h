@@ -147,6 +147,16 @@ typedef enum{
   BUZZER_TEST
 }buzzerPattern_t;
 
+typedef enum{
+  LOW_PRIORITY = 0,
+  NORMAL_PRIORITY = 1,
+  HIGH_PRIORITY = 2,
+  CRITICAL_PRIORITY = 3
+}taskPriorities_t
+
+//How many bytes allocated to task memory.
+const int16_t taskMemoryBytes = 512;
+
 /*
  * All delays are absolute in relation to the firing sequence start time.
  * Time is set  when firing sequence is entered: Ignition pressed + pressure met.
