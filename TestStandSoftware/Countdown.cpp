@@ -38,6 +38,7 @@ void countdownLoop(){
   mode_t currentMode;
   substate_t currentSubstate;
   testInput_t testInput;
+  static bool ignitionValveStateFlag;
 
   // Add the capability to print lines to the ground station computer if needed
   static char message[64];
@@ -109,6 +110,9 @@ void countdownLoop(){
           ignitionPressTime = millis();
         }
 
+        // If the system returns to WAIT mode for any reason, the flag is reset to its default value.
+        ignitionValveStateFlag = false; 
+
         // In WAIT mode, the operator should have the ability to open and close any controllable valve
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
@@ -137,15 +141,20 @@ void countdownLoop(){
                 setIgnition(true);
               }
               else {
-                // TODO: Add flag so that this message is only sent once. Do it here
-                // and not inside the if cases so only one boolean is needed.
-                if (values.dumpValveButton == true){
-                  msg = "Warning: Cannot begin sequence with dump valve open. \n";
-                  sendMessageToSerial(msg);
+                if (ignitionValveStateFlag == false){
+                  if (values.dumpValveButton == true){
+                    msg = "Warning: Cannot begin sequence with dump valve open. \n";
+                    sendMessageToSerial(msg);
+                  }
+                  if (values.feedingButton == false){
+                    msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
+                    sendMessageToSerial(msg);
+                  }
                 }
-                if (values.feedingButton == false){
-                  msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
-                  sendMessageToSerial(msg);
+                // This statement is required because otherwise the flag would happen as a result of
+                // the ignitionSafeTime not being reached (which is guaranteed to happen initially)
+                if (values.dumpValveButton == true) || (values.feedingButton == false){
+                  ignitionValveStateFlag = true;
                 }
               }
             }
