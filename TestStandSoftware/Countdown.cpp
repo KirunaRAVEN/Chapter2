@@ -144,10 +144,12 @@ void countdownLoop(){
                 if (ignitionValveStateFlag == false){
                   if (values.dumpValveButton == true){
                     msg = "Warning: Cannot begin sequence with dump valve open. \n";
+                    //The "ignitionValveStateFlag" could probably be set here***
                     sendMessageToSerial(msg);
                   }
                   if (values.feedingButton == false){
                     msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
+                    //***and here
                     sendMessageToSerial(msg);
                   }
                 }
