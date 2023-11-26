@@ -65,7 +65,6 @@ mpl.rcParams['agg.path.chunksize'] = 10
 modes = ["INIT",
          "TEST",
          "WAIT",
-         "HEATING",
          "SEQUENCE",
          "SAFE",
          "SHUTDOWN"]
@@ -112,7 +111,7 @@ at_Ind = dataIndices[6]
 ir_Ind = dataIndices[7]
 
 # Set up the data list
-csvDataCount = 18
+csvDataCount = 21
 data = []
 for i in range(csvDataCount):
     # Set the initial values
@@ -125,7 +124,7 @@ smoothingFactor = 0.5
 loopTime = 0
 
 # Estimating the pointer position in a long file
-lineLengthEstimate = 120
+lineLengthEstimate = 150
 last_pos = 0
 if os.path.getsize('data.csv') >= data_points * lineLengthEstimate:
     with open('data.csv', 'rb') as csv_file:
@@ -353,11 +352,11 @@ def update(frame):
                     else:
                         data[i] += [val]
             #Else it is a message line --> Print out
-            else:
-                if len(row) > 0:
-                    messageListUpdated = True
-                    messageList += [row]
-                    messageList = messageList[-maxMessageCount:]
+            #else:
+            if row[-1] != " ":
+                messageListUpdated = True
+                messageList += [row[-1]]
+                messageList = messageList[-maxMessageCount:]
                                 
         last_pos = csv_file.tell()  
         
@@ -386,13 +385,13 @@ def update(frame):
     
     # Get states from csv after updating the list
     # Use last value from the list
-    h_state = int(data[12][-1])  # CSV column 12
-    v_state = int(data[15][-1])  # CSV column 15
-    ir_state = int(data[14][-1]) # CSV column 14
+    h_state = int(data[13][-1])  # CSV column 13
+    v_state = int(data[16][-1])  # CSV column 16
+    ign_state = int(data[14][-1]) # CSV column 14
     
     heatingIndicator.set_state(h_state)
     valveIndicator.set_state(v_state)
-    ignitionRelayIndicator.set_state(ir_state)
+    ignitionRelayIndicator.set_state(ign_state)
         
     # Get values from csv after updating the list
     # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
@@ -402,15 +401,14 @@ def update(frame):
     lc_value = "{:4.1f}".format(sum(data[5][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 5
     
     # No smoothing for mode/substate strings or time
-    # To get string use modes[data[16][-1]] & substates[data[17][-1]]
-    sw_value = modes[int(data[16][-1])] + "\n\n" + substates[int(data[17][-1])] + "\n\n" + msToTime(int(data[1][-1]))  #CSV columns 16 & 17 & 1 respectively
+    # To get string use modes[data[19][-1]] & substates[data[20][-1]]
+    sw_value = modes[int(data[19][-1])] + "\n\n" + substates[int(data[20][-1])] + "\n\n" + msToTime(int(data[1][-1]))  #CSV columns 19 & 20 & 1 respectively
     
     if messageListUpdated:
         mi_value = ""
         for message in messageList:
-            for word in message:
-                mi_value += word + " "
-            mi_value += "\n"
+            mi_value += message
+            #mi_value += "\n"
         messageInfo.set_value(mi_value)
      
     bottlePressureInfo.set_value(bp_value)
