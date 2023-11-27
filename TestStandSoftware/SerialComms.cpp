@@ -31,49 +31,49 @@ void initSerial(){
 
 void writeValues(values_t values, statusValues_t statusValues){
   if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
-    Serial.print("d");
+    Serial.print("d");                  //Dataline index 1
     Serial.print(",");
-    Serial.print(values.timestamp);     //Arduino time in ms
+    Serial.print(values.timestamp);     //Arduino time in ms. Dataline index 2
     Serial.print(",");
-    Serial.print(values.pressure0);     //Feeding pressure
+    Serial.print(values.pressure0);     //Feeding pressure Dataline index 3
     Serial.print(",");
-    Serial.print(values.pressure1);     //Oxidizer line pressure aka after valve
+    Serial.print(values.pressure1);     //Oxidizer line pressure aka after valve. Dataline index 4 
     Serial.print(",");
-    Serial.print(values.pressure2);     //Chamber pressure
+    Serial.print(values.pressure2);     //Chamber pressure. Dataline index 5
     Serial.print(",");
-    Serial.print(values.loadCell);     //Load cell for thrust
+    Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 6
     Serial.print(",");
-    Serial.print(values.temperature0);  //Bottle/Heating blanket temperature
+    Serial.print(values.temperature0);  //Bottle/Heating blanket temperature. Dataline index 7
     Serial.print(",");
-    Serial.print(values.temperature1);  //Not connected
+    Serial.print(values.temperature1);  //Not connected. Dataline index 8
     Serial.print(",");
-    Serial.print(values.temperature2);  //Nozzle temperature
+    Serial.print(values.temperature2);  //Nozzle temperature. Dataline index 9
     Serial.print(",");
-    Serial.print(values.temperature3);  //Ambient temperature
+    Serial.print(values.temperature3);  //Ambient temperature. Dataline index 10
     Serial.print(",");
-    Serial.print(values.IR);            //Plume temperature
-    Serial.print(",");
-
-    Serial.print(values.dumpValveButton);       //Manual vent button status
-    Serial.print(",");
-    Serial.print(values.heatingBlanketButton);  //Heating button status
-    Serial.print(",");
-    Serial.print(values.ignitionButton);        //Ignition button status
-    Serial.print(",");
-    Serial.print(values.feedingButton);         //Feeding button status
-    Serial.print(",");
-    Serial.print(values.mainValveButton);       //Main valve button status
+    Serial.print(values.IR);            //Plume temperature. Dataline index 11
     Serial.print(",");
 
-    Serial.print(statusValues.ignitionEngagedActive);   //Ignition SW state
+    Serial.print(values.dumpValveButton);       //Manual vent button status. Dataline index 12
     Serial.print(",");
-    Serial.print(statusValues.valveActive);             //Valve SW state
+    Serial.print(values.heatingBlanketButton);  //Heating button status. Dataline index 13
     Serial.print(",");
-    Serial.print(statusValues.mode);                    //Current SW mode
+    Serial.print(values.ignitionButton);        //Ignition button status. Dataline index 14
     Serial.print(",");
-    Serial.print(statusValues.subState);                //Current SW substate
+    Serial.print(values.feedingButton);         //Feeding button status. Dataline index 15
     Serial.print(",");
-    Serial.print(msg);                                  //Message field
+    Serial.print(values.mainValveButton);       //Main valve button status. Dataline index 16
+    Serial.print(",");
+
+    Serial.print(statusValues.ignitionEngagedActive);   //Ignition SW state. Dataline index 17
+    Serial.print(",");
+    Serial.print(statusValues.valveActive);             //Valve SW state. Dataline index 18
+    Serial.print(",");
+    Serial.print(statusValues.mode);                    //Current SW mode. Dataline index 19
+    Serial.print(",");
+    Serial.print(statusValues.subState);                //Current SW substate. Dataline index 20
+    Serial.print(",");
+    Serial.print(msg);                                  //Message field. Dataline index 21
     Serial.print("\n");
 
     //Clear message

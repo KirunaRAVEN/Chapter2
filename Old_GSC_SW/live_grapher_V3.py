@@ -111,7 +111,7 @@ at_Ind = dataIndices[6]
 ir_Ind = dataIndices[7]
 
 # Set up the data list
-csvDataCount = 21
+csvDataCount = 22
 data = []
 for i in range(csvDataCount):
     # Set the initial values
@@ -336,26 +336,30 @@ def update(frame):
         csv_reader = csv.reader(csv_file)
         csv_file.seek(last_pos)
         for row in csv_reader:
+            #print(row)
             #If it is a data line
             #Rock timestamp = index 0
             #Data indicator = index 1
             if len(row) > 1 and row[1] == "d":
                 #Remove the "d"
-                row = [row[0]] + row[2:]
+                #row = [row[0]] + row[2:]
                 #Continue noramlly
                 for i, column in enumerate(row):
                     try: val = float(column)
                     except: val = column
                     #Only smooth sensor data, not time or binary values
-                    if 2 <= i <= 10:
+                    if 3 <= i <= 11:
                         data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
                     else:
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if row[-1] != " ":
+            if row[21] != " ":
+                #print(messageList)
                 messageListUpdated = True
-                messageList += [row[-1]]
+                splitRow = row[21].split("\\n")
+                for newRow in splitRow:
+                    messageList += [newRow]
                 messageList = messageList[-maxMessageCount:]
                                 
         last_pos = csv_file.tell()  
@@ -396,19 +400,20 @@ def update(frame):
     # Get values from csv after updating the list
     # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
     # Smooths the data making it easier to read    
-    bp_value = "{:4.1f}".format(sum(data[2][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 2
-    bt_value = "{:4.1f}".format(sum(data[6][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
-    lc_value = "{:4.1f}".format(sum(data[5][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 5
+    bp_value = "{:4.1f}".format(sum(data[bp_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
+    bt_value = "{:4.1f}".format(sum(data[bt_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
+    lc_value = "{:4.1f}".format(sum(data[lc_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
     
     # No smoothing for mode/substate strings or time
     # To get string use modes[data[19][-1]] & substates[data[20][-1]]
-    sw_value = modes[int(data[19][-1])] + "\n\n" + substates[int(data[20][-1])] + "\n\n" + msToTime(int(data[1][-1]))  #CSV columns 19 & 20 & 1 respectively
+    sw_value = modes[int(data[19][-1])] + "\n\n" + substates[int(data[20][-1])] + "\n\n" + msToTime(int(data[2][-1]))  #CSV columns 19 & 20 & 2 respectively
     
     if messageListUpdated:
         mi_value = ""
         for message in messageList:
+            message = message.replace("\\n", "\n")
             mi_value += message
-            #mi_value += "\n"
+            mi_value += "\n"
         messageInfo.set_value(mi_value)
      
     bottlePressureInfo.set_value(bp_value)

@@ -35,16 +35,16 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
   if (!testCompleted){
     switch (verificationState){
       case TEST_START:
-        msg = "Running testing sequence\n";
+        msg = "Running testing sequence\\n";
         sendMessageToSerial(msg);
-        msg = "Testing all OFF-states...\nRelease all buttons!\n\n";
+        msg = "Testing all OFF-states...\\nRelease all buttons!\\n";
         sendMessageToSerial(msg);
         verificationState = OFF_STATE_BUTTON;
         break;
 
       case OFF_STATE_BUTTON:
         if (!buttonValues.mainValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
-          msg = "No button presses detected\n";
+          msg = "No button presses detected\\n";
           sendMessageToSerial(msg);
           testStateChangeTime = millis();
           verificationState = OFF_STATE_TEST;
@@ -55,15 +55,15 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
           else if (buttonValues.mainValveButton == true){
-            msg = "Please release the main valve button.\n";
+            msg = "Please release the main valve button.\\n";
             sendMessageToSerial(msg);
           }
           else if (buttonValues.ignitionButton == true){
-            msg = "Please release the ignition button.\n";
+            msg = "Please release the ignition button.\\n";
             sendMessageToSerial(msg);
           }
           else if (buttonValues.heatingBlanketButton == true){
-            msg = "Please release the heating blanket button.\n";
+            msg = "Please release the heating blanket button.\\n";
             sendMessageToSerial(msg);
           }
         break;
@@ -79,45 +79,45 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && valvePassed;
 
-          msg = "Ignition 24V relay OFF-state:\n";
+          msg = "Ignition 24V relay OFF-state:\\n";
           sendMessageToSerial(msg);
-          msg = ignitionPowerPassed ? "Passed\n" : "Failed\n";
+          msg = ignitionPowerPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
           
-          msg = "Ignition GND relay OFF-state:\n";
+          msg = "Ignition GND relay OFF-state:\\n";
           sendMessageToSerial(msg);
-          msg = ignitionGroundPassed ? "Passed\n" : "Failed\n";
-          sendMessageToSerial(msg);
-
-          msg = "Ignition SW relay OFF-state:\n";
-          sendMessageToSerial(msg);
-          msg = ignitionSoftwarePassed ? "Passed\n" : "Failed\n";
+          msg = ignitionGroundPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Heating relay OFF-state:\n";
+          msg = "Ignition SW relay OFF-state:\\n";
           sendMessageToSerial(msg);
-          msg = heatingPassed ? "Passed\n" : "Failed\n";
+          msg = ignitionSoftwarePassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Main Valve OFF-state:\n";
+          msg = "Heating relay OFF-state:\\n";
           sendMessageToSerial(msg);
-          msg = valvePassed ? "Passed\n" : "Failed\n";
+          msg = heatingPassed ? "Passed\\n" : "Failed\\n";
+          sendMessageToSerial(msg);
+
+          msg = "Main Valve OFF-state:\\n";
+          sendMessageToSerial(msg);
+          msg = valvePassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
           
           verificationState = HEAT_ON_BUTTON;
         
-          msg = "Testing heating relay ON-state...\n";
+          msg = "Testing heating relay ON-state...\\n";
           sendMessageToSerial(msg);          
-          msg = "Press the Heating button!\n";
+          msg = "Press the Heating button!\\n";
           sendMessageToSerial(msg);
         }
         break;
 
       case HEAT_ON_BUTTON:
         if (buttonValues.heatingBlanketButton){
-          msg = "Heating button press detected\n";
+          msg = "Heating button press detected\\n";
           sendMessageToSerial(msg);
 
           testStateChangeTime = millis();
@@ -132,12 +132,12 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           allPassed = allPassed && heatingPassed;
 
-          msg = "Heating relay ON-state:\n";
+          msg = "Heating relay ON-state:\\n";
           sendMessageToSerial(msg);
-          msg = heatingPassed ? "Passed\n" : "Failed\n";
+          msg = heatingPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Release the Heating button\n\n";
+          msg = "Release the Heating button\\n";
           sendMessageToSerial(msg);
 
           verificationState = HEAT_RELEASE;
@@ -149,9 +149,9 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (!buttonValues.heatingBlanketButton){    
           verificationState = VALVE_ON_BUTTON;
 
-          msg = "Testing manual valve ON-state...\n";
+          msg = "Testing manual valve ON-state...\\n";
           sendMessageToSerial(msg);
-          msg = "Press the Manual Vent button!\n";
+          msg = "Press the Manual Vent button!\\n";
           sendMessageToSerial(msg);
 
         }
@@ -159,7 +159,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       
       case VALVE_ON_BUTTON:
         if (buttonValues.mainValveButton){
-          msg = "Manual vent button press detected\n";
+          msg = "Manual vent button press detected\\n";
           sendMessageToSerial(msg);
 
           setValve(pin_names_t::MAIN_VALVE_PIN, true);
@@ -177,12 +177,12 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           allPassed = allPassed && valvePassed;
 
 
-          msg = "Main valve ON-state:\n";
+          msg = "Main valve ON-state:\\n";
           sendMessageToSerial(msg);
-          msg = valvePassed ? "Passed\n" : "Failed\n";
+          msg = valvePassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Release the Manual Vent button\n\n";
+          msg = "Release the Manual Vent button\\n";
           sendMessageToSerial(msg);
 
           verificationState = VALVE_RELEASE;
@@ -195,16 +195,16 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           verificationState = IGN_ON_BUTTON;
 
-          msg = "Testing ignition relays ON-state...\n";
+          msg = "Testing ignition relays ON-state...\\n";
           sendMessageToSerial(msg);
-          msg = "Press the Ignition button!\n";
+          msg = "Press the Ignition button!\\n";
           sendMessageToSerial(msg);
         }
         break;
       
       case IGN_ON_BUTTON:
         if (buttonValues.ignitionButton){
-          msg = "Ignition button press detected\n";
+          msg = "Ignition button press detected\\n";
           sendMessageToSerial(msg);
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
@@ -224,22 +224,22 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed;
 
 
-          msg = "Ignition Power relay ON-state:\n";
+          msg = "Ignition Power relay ON-state:\\n";
           sendMessageToSerial(msg);
-          msg = ignitionPowerPassed ? "Passed\n" : "Failed\n";
-          sendMessageToSerial(msg);
-
-          msg = "Ignition Ground relay ON-state:\n";
-          sendMessageToSerial(msg);
-          msg = ignitionGroundPassed ? "Passed\n" : "Failed\n";
+          msg = ignitionPowerPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Ignition Software relay ON-state:\n";
+          msg = "Ignition Ground relay ON-state:\\n";
           sendMessageToSerial(msg);
-          msg = ignitionSoftwarePassed ? "Passed\n" : "Failed\n";
+          msg = ignitionGroundPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Release the Ignition button\n\n";
+          msg = "Ignition Software relay ON-state:\\n";
+          sendMessageToSerial(msg);
+          msg = ignitionSoftwarePassed ? "Passed\\n" : "Failed\\n";
+          sendMessageToSerial(msg);
+
+          msg = "Release the Ignition button\\n";
           sendMessageToSerial(msg);
 
           verificationState = IGN_RELEASE;
@@ -251,22 +251,22 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (!buttonValues.ignitionButton){
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
 
-          msg = "Actuator testing completed...\n";
+          msg = "Actuator testing completed...\\n";
           sendMessageToSerial(msg);
-          msg = "Verification status:\n";
+          msg = "Verification status:\\n";
           sendMessageToSerial(msg);
-          msg = allPassed ? "Passed\n" : "Failed\n";
+          msg = allPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
 
           if (allPassed){
-            msg = "All tests passed!\nStarting up software...\n";
+            msg = "All tests passed!\\nStarting up software...\\n";
             sendMessageToSerial(msg);
           }
           else{
-            msg = "Fault detected!\nFind and fix the issue!\n";
+            msg = "Fault detected!\\nFind and fix the issue!\\n";
             sendMessageToSerial(msg);
-            msg = "Restarting test sequence...\n";
+            msg = "Restarting test sequence...\\n";
             sendMessageToSerial(msg);
           }
           verificationState = TEST_END;
@@ -277,16 +277,17 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case TEST_END:
         if (millis() - endCountTime >= 1000){
-          msg = "";
-          sendMessageToSerial(itoa(endCount, msg, 10));
-          msg = "...\n";
+          //I'm sorry about this crime against humanity
+          char* listOfNumbers[11] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+          sendMessageToSerial(listOfNumbers[endCount]);
+          msg = "...";
           sendMessageToSerial(msg);
 
           endCountTime = millis();
           endCount--;
         }
         if (endCount == -1){
-          //msg = "0...\n";
+          //msg = "0...\\n";
           //sendMessageToSerial(msg);
           if (allPassed){
             testCompleted = true;
