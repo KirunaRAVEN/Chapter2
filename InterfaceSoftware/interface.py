@@ -16,7 +16,7 @@
         +-- data.csv
 
     CHANGELOG: 
-        - 06/12/23: Improve handling of graph labelling
+        - 06/12/23: Improve handling of graph labelling, make displays work, add rolling average
         - 15/11/23: Added escape key press handling, header comment
         - 08/11/23: Successful implementation of animation with dummy data
 
@@ -39,15 +39,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import numpy as np
 import csv
-import os
-
-
 
 # internal (functions)
 # from update import update 
-import indicatorClass
-import dataDisplayClass
+import indicatorClass as ic
+import displayClass as dc
 from dataDefinitions import data
+from rollingAverage import rollingAverage
 
 
 
@@ -57,8 +55,7 @@ from dataDefinitions import data
 # ================= #
 
 nData = len(data)
-
-
+nDataPoints = 25
 
 # ======================= #
 # === INTERFACE SETUP === #
@@ -94,6 +91,7 @@ dataPanel.subplots_adjust(left=0.05, right=0.99, bottom=0.03, top=0.97, wspace=0
 
 # fontsize definitions for axis labeling
 labelFontSize = 9
+tickFontSize = 7
 
 # add titles and axis labels to the graphs
 for i in range(4):
@@ -102,84 +100,88 @@ for i in range(4):
         yLabel = '%s [%s]' % (data[i+j*4]['yLabel'], data[i+j*4]['yUnit'])
         graphs[i,j].set_xlabel(xLabel, fontsize=labelFontSize)
         graphs[i,j].set_ylabel(yLabel, fontsize=labelFontSize)
+        graphs[i,j].set_xlim(0, nDataPoints-1)
         graphs[i,j].set_ylim(data[i+j*4]['yLowerBound'], data[i+j*4]['yUpperBound'])
         graphs[i,j].set_title(data[i+j*4]['title'])
-        graphs[i,j].tick_params(labelsize=labelFontSize)
+        graphs[i,j].tick_params(
+            axis='y',
+            labelsize=tickFontSize)
+        graphs[i,j].tick_params(
+            axis='x',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            bottom=False,      # ticks along the bottom edge are off
+            top=False,         # ticks along the top edge are off
+            labelbottom=False) # labels along the bottom edge are off
         graphs[i,j].grid(linestyle='--')
+
+dataLines = []
+avgLines = []
+for i in range(4):
+    for j in range(2):
+        dataLines.append(graphs[i][j].plot([], [], color='black')[0])
+        avgLines.append(graphs[i][j].axhline(color='red', linestyle=':'))
+
+    
 
 # ------------------ #
 # --- INFO PANEL --- #
 # ------------------ #
 
-# create subplots for the info panel
-indicatorObjects = lightsPanel.subplots(3, 1)
+# create indicator and state list for easy access
+indicatorObjects = [ic.indicatorLight('Heating\nBlanket'),
+              ic.indicatorLight('Main\nValve'),
+              ic.indicatorLight('Ignition\nRelay')]
+nIndicators = len(indicatorObjects)
+indicatorStates = [0, 0, 0]
+indicatorLabels = []
 
+# create subplots for the info panel
+indicators = lightsPanel.subplots(nIndicators, 1)
+
+# adjust spacing so that info boxes don't overlap and fill out whole panel
 lightsPanel.subplots_adjust(left=0.04, right=0.98, bottom=0.05, top=0.97, wspace=0.15, hspace=0.1)
 
-# create indicators
-heatingBlanketIndicator = indicatorClass.indicatorLight('Heating\nBlanket')
-mainValveIndicator      = indicatorClass.indicatorLight('Main\nValve')
-ignitionRelayIndicator  = indicatorClass.indicatorLight('Ignition\nRelay')
+# remove graph background and set title and square aspect ratio of the subplots
+# add indicator artists
+for i in range(nIndicators):
+    indicators[i].set_aspect('equal', 'box')
+    indicators[i].axis('off')
+    indicatorLabels.append(indicators[i].text(0.5, 0.48, indicatorObjects[i].title, fontsize=indicatorObjects[i].fontSize, ha='center', va='center'))
+    for j in range(len(indicatorObjects[i].objects)):
+            indicators[i].add_artist(indicatorObjects[i].objects[j])
 
-# create indicator list for easy access
-indicators = [heatingBlanketIndicator, mainValveIndicator, ignitionRelayIndicator]
-indicatorStates = [1, 1, 0]
-nIndicators = len(indicators)
-for i in range(3):
-    indicators[i].setState(indicatorStates[i])
-
-# adjust appearance of info panel subplots
-for i in range(3):
-    # set the aspect ratio to be a square
-    indicatorObjects[i].set_aspect('equal', 'box')
+### DEBUG ### ----------------------------------------------------------------------------------------------------------------------------------
+indicatorObjects[0].setState(1)
     
-    # remove graph background
-    indicatorObjects[i].axis('off')
-
-# add indicators to the info panel
-for i in range(3):
-    # add indicator objects
-    for j in range(len(indicators[i].objects)):
-        indicatorObjects[i].add_artist(indicators[i].objects[j])
-    # set indicator text
-    indicatorObjects[i].text(0.5, 0.48, indicators[i].title, fontsize=indicators[i].fontSize, ha='center', va='center')
 
 # --------------------- #
 # --- DATA DISPLAYS --- #
 # --------------------- #
 
+# create display objects and value list
+displayObjects = [dc.displayBox('Bottle Pressure'),
+            dc.displayBox('Bottle Temperature'),
+            dc.displayBox('Load Cell Force')]
+nDisplays = len(displayObjects) 
+displayValues = [''] * nDisplays
+displayObjects[0].setValue('text')
 # create subplots for the info panel
-displayObjects = displayPanel.subplots(4, 1)
+displays = displayPanel.subplots(nDisplays, 1)
 
+# adjust subplot geometry
 #displayObjects.subplots_adjust(left=0.04, right=0.98, bottom=0.05, top=0.97, wspace=0.15, hspace=0.1)
 
-bottlePressureDisplay    = dataDisplayClass.dataDisplay('Bottle Pressure')
-bottleTemperatureDisplay = dataDisplayClass.dataDisplay('Bottle Temperature')
-loadCellForceDisplay     = dataDisplayClass.dataDisplay('Load Cell Force')
+# remove graph background and set aspect ratio of the displays
+for i in range(nDisplays):
+    displays[i].set_aspect(aspect=0.4)
+    displays[i].axis('off')
 
-dataDisplays = [bottlePressureDisplay, bottleTemperatureDisplay, loadCellForceDisplay]
-dataDisplayValues = [0, 0, 0]
-nDataDisplays = len(dataDisplays)
-
-for i in range(nDataDisplays):
-    # set the aspect ratio to be a rectangle
-    displayObjects[i].set_aspect(aspect=0.4)
-    
-    # remove graph background
-    displayObjects[i].axis('off')
-
-for i in range(nDataDisplays):
-    # add data display objects
-    for j in range(len(dataDisplays[i].objects)):
-        displayObjects[i].add_artist(dataDisplays[i].objects[j])
-
-    # set data display title
-    displayObjects[i].set_title(dataDisplays[i].title, fontsize=dataDisplays[i].fontSize)
-
-    # set data display value
-    displayObjects[i].text(0.5, 0.48, dataDisplays[i].value, fontsize=dataDisplays[i].fontSize, ha='center', va='center')
-
-
+# add display artists and format display axes
+for i in range(nDisplays):
+    for j in range(len(displayObjects[i].objects)):
+        displays[i].add_artist(displayObjects[i].objects[j])
+    displays[i].set_title(displayObjects[i].title, fontsize=displayObjects[i].fontSize)
+    displayValues[i] = displays[i].text(0.5, 0.48, displayObjects[i].value, fontsize=displayObjects[i].fontSize, ha='center', va='center')
 
 # =========================== #
 # === INTERFACE ANIMATION === #
@@ -189,32 +191,34 @@ for i in range(nDataDisplays):
 # --- ADD ARTISTS TO THE GRAPHS --- #
 # --------------------------------- #
 
-lines = []
-for i in range(4):
-    for j in range(2):
-        lines.append(graphs[i][j].plot([],[])[0])
+artists = dataLines + avgLines # nData*2 elements
+for i in range(nIndicators):
+    artists += indicatorObjects[i].objects # nIndicator*4 elements
+    artists.append(indicatorLabels[i])
+for i in range(nDisplays):
+    artists += displayObjects[i].objects # nDisplays*2 elements
+    artists.append(displayValues[i])
 
-artists = []
-for i in range(nData):
-    artists.append(lines[i])
-
-x_ticks = []
-x_data = []
-y_data = []
-for i in range(8):
-    y_data.append([])
-for j in range(25):
-    x_ticks.append('')
-    x_data.append(j)
-    for i in range(8):
-        y_data[i].append(0)
+# initialize lists for holding the data
+x_data = [[0] * nDataPoints] * nData
+y_data = [[0] * nDataPoints] * nData
+averages = [0] * nData
 
 for i in range(nData):
-        artists[i].set_xdata(x_data)
+    for j in range(nDataPoints):
+        x_data[i][j] = j
 
-print(os.path.isfile('dummyData.csv'))
+# initialize line data
+for i in range(nData):
+    artists[i].set_data(x_data[i], y_data[i])
+    artists[nData + i].set_ydata([nDataPoints])
+
+# TO BE REMOVED =====================
+indicatorStates = [1,0,0]
+### =================================
 
 lastFilePosition = 0
+
 def update(frame):
     global lastFilePosition
     global indicatorStates
@@ -228,8 +232,6 @@ def update(frame):
         csvReader = csv.reader(dataFile)
         for row in csvReader:
             for i in range(8):
-                x_ticks.pop(0)
-                x_ticks.append(row[0])
                 y_data[i].pop(0)
                 y_data[i].append(float(row[i+1]))
         lastFilePosition = dataFile.tell()
@@ -237,35 +239,35 @@ def update(frame):
     # ---------------------------- #
     # --- UPDATE DATA IN PLOTS --- #
     # ---------------------------- #
+
+    # update the data points and average calculations
     for i in range(nData):
+        averages[i] = rollingAverage(y_data[i])
         artists[i].set_ydata(y_data[i])
-        
-    for i in range(4):
-        for j in range(2):
-            graphs[i][j].set_xticklabels(x_ticks)
+        artists[nData + i].set_ydata([averages[i]])
 
     # ----------------------------------------- #
     # --- DUMMY UPDATE THE INDICATOR LIGHTS --- #
     # ----------------------------------------- #
 
-    # dummy check to update
+    # dummy cycle indicator list around
     if frame % 10 == 0:
-        # cycle indicator list around
         item = indicatorStates[0]
         indicatorStates.pop(0)
         indicatorStates.append(item)
 
     # update the indicator state
-    for i in range(3):
-        indicators[i].setState(indicatorStates[i])
-
-    # Build the return argument of the function, the list of artists to keep track of for the animation 
-    returnList = artists + indicators[0].objects + indicators[1].objects + indicators[2].objects
-    for i in range(4):
-        for j in range(2):
-            returnList.append(graphs[i][j].xaxis)
+    for i in range(nIndicators):
+        indicatorObjects[i].setState(indicatorStates[i])
     
-    return  returnList
+    # ----------------------------- #
+    # --- UPDATE DISPLAY VALUES --- #
+    # ----------------------------- #
+    
+    for i in range(nDisplays):
+         artists[2*nData + 5*nIndicators+ 2*(i+1) + i].set_text('%.2f' %(averages[i]))
+
+    return  artists
 
 # toggle fullscreen
 plt.get_current_fig_manager().full_screen_toggle()
