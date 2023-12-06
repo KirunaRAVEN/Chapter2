@@ -16,6 +16,7 @@
         +-- data.csv
 
     CHANGELOG: 
+        - 06/12/23: Improve handling of graph labelling
         - 15/11/23: Added escape key press handling, header comment
         - 08/11/23: Successful implementation of animation with dummy data
 
@@ -37,13 +38,16 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import numpy as np
-import tkinter
 import csv
+import os
+
+
 
 # internal (functions)
 # from update import update 
 import indicatorClass
 import dataDisplayClass
+from dataDefinitions import data
 
 
 
@@ -52,37 +56,13 @@ import dataDisplayClass
 # === VARIABLES === #
 # ================= #
 
-dataQuantities = ['Chamber Pressure',
-                  'Bottle Pressure',
-                  'Line Pressure',
-                  'Bottle Temperature',
-                  'Nozzle Temperature',
-                  'Load Cell Force',
-                  'Ambient Temperature',
-                  'Plume Temperature']
-dataLabels = ['Pressure',
-              'Pressure',
-              'Pressure',
-              'Temperature',
-              'Temperature',
-              'Force',
-              'Temperature',
-              'Temperature']
-dataUnits = []
+nData = len(data)
 
-nData = len(dataQuantities)
 
-csvDataCount = 18
-csvData = []
 
 # ======================= #
 # === INTERFACE SETUP === #
 # ======================= #
-
-# --- find out screen height and width --- #
-root = tkinter.Tk() # create window
-screenWidth, screenHeight = root.winfo_screenmmwidth(), root.winfo_screenmmheight() # fetch dimensions
-root.destroy() # destroy window
 
 # remove toolbar
 plt.rcParams['toolbar'] = 'None'
@@ -91,8 +71,8 @@ plt.rcParams['toolbar'] = 'None'
 mpl.use("qtagg")
 
 # create figure interface and separate panels for graphs, displays and indicators
-interface = plt.figure(figsize=(screenWidth, screenHeight), facecolor='silver')
-dataPanel, infoPanel = interface.subfigures(1, 2, wspace=0.7, width_ratios=[3,1]) 
+interface = plt.figure(facecolor='silver') 
+dataPanel, infoPanel = interface.subfigures(1, 2, width_ratios=[3,1]) 
 indicatorPanel, streamPanel = infoPanel.subfigures(2, 1, height_ratios=[3,2])
 displayPanel, lightsPanel = indicatorPanel.subfigures(1,2)
 
@@ -110,18 +90,22 @@ streamPanel.set_facecolor('red')
 graphs = dataPanel.subplots(4, 2)
 
 # adjust spacing so that graphs don't overlap and fill out whole panel
-dataPanel.subplots_adjust(left=0.04, right=0.98, bottom=0.05, top=0.97, wspace=0.15, hspace=0.4)
+dataPanel.subplots_adjust(left=0.05, right=0.99, bottom=0.03, top=0.97, wspace=0.15, hspace=0.4)
 
 # fontsize definitions for axis labeling
-axesFontSize = 8
+labelFontSize = 9
 
 # add titles and axis labels to the graphs
 for i in range(4):
     for j in range(2):
-        graphs[i,j].set_title(dataQuantities[i+j*4])
-        graphs[i,j].set_xlabel('time', fontsize=axesFontSize)
-        graphs[i,j].set_ylabel('yLabel', fontsize=axesFontSize)
-        graphs[i,j].tick_params(labelsize=axesFontSize)
+        xLabel = '%s [%s]' % (data[i+j*4]['xLabel'], data[i+j*4]['xUnit'])
+        yLabel = '%s [%s]' % (data[i+j*4]['yLabel'], data[i+j*4]['yUnit'])
+        graphs[i,j].set_xlabel(xLabel, fontsize=labelFontSize)
+        graphs[i,j].set_ylabel(yLabel, fontsize=labelFontSize)
+        graphs[i,j].set_ylim(data[i+j*4]['yLowerBound'], data[i+j*4]['yUpperBound'])
+        graphs[i,j].set_title(data[i+j*4]['title'])
+        graphs[i,j].tick_params(labelsize=labelFontSize)
+        graphs[i,j].grid(linestyle='--')
 
 # ------------------ #
 # --- INFO PANEL --- #
@@ -214,11 +198,6 @@ artists = []
 for i in range(nData):
     artists.append(lines[i])
 
-for i in range(4):
-    for j in range(2):
-        graphs[i][j].set_ylim(0,1)
-        graphs[i][j].set_xlim(0,25)
-
 x_ticks = []
 x_data = []
 y_data = []
@@ -232,6 +211,8 @@ for j in range(25):
 
 for i in range(nData):
         artists[i].set_xdata(x_data)
+
+print(os.path.isfile('dummyData.csv'))
 
 lastFilePosition = 0
 def update(frame):
