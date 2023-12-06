@@ -391,7 +391,7 @@ def update(frame):
     # Use last value from the list
     h_state = int(data[13][-1])  # CSV column 13
     v_state = int(data[16][-1])  # CSV column 16
-    ign_state = int(data[14][-1]) # CSV column 14
+    ign_state = int(data[17][-1]) # CSV column 14
     
     heatingIndicator.set_state(h_state)
     valveIndicator.set_state(v_state)
