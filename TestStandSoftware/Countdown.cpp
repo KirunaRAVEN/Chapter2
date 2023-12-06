@@ -143,17 +143,19 @@ void countdownLoop(){
               else {
                 if (ignitionValveStateFlag == false){
                   if (values.dumpValveButton == true){
-                    msg = "Warning: Cannot begin sequence with dump valve open. \n";
+                    msg = "Warning:\\nCannot begin sequence\\nwith dump valve open.";
+                    //The "ignitionValveStateFlag" could probably be set here***
                     sendMessageToSerial(msg);
                   }
                   if (values.feedingButton == false){
-                    msg = "Warning: Cannot begin sequence with feeding valve closed. \n";
+                    msg = "Warning:\\nCannot begin sequence\\nwith feeding valve closed.";
+                    //***and here
                     sendMessageToSerial(msg);
                   }
                 }
                 // This statement is required because otherwise the flag would happen as a result of
                 // the ignitionSafeTime not being reached (which is guaranteed to happen initially)
-                if (values.dumpValveButton == true) || (values.feedingButton == false){
+                if ((values.dumpValveButton == true) || (values.feedingButton == false)){
                   ignitionValveStateFlag = true;
                 }
               }

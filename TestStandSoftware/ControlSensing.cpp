@@ -6,10 +6,10 @@
  *                passed to the Arduino Shield.
  */
 
- #include <Arduino.h>
- #include <stdint.h>
+#include <Arduino.h>
+#include <stdint.h>
 
- #include "ControlSensing.h"
+#include "ControlSensing.h"
 
 void initControlSensing(){
   pinMode(DUMP_VALVE_BUTTON_PIN, INPUT);

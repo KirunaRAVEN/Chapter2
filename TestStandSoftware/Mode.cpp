@@ -75,7 +75,7 @@ void setTestModeIndicator(bool state){
 }
 
 
-//Init function at the bottom due to the need to call function defined before in this file.
+//Init function at the bottom due to the need to call functions defined before in this file.
 void initMode(){
   currentMode = startMode;
   currentSubstate = startSubstate;

@@ -130,7 +130,7 @@ const int16_t testAnalogCount = 1;
 
 //Structure for storing the timings of buzzer message patterns
 struct buzzerTiming_t{
-  /*
+  /* NOT CURRENTLY USED
    * First index is number of cylces (0=indefinite)
    * Rest are timing in milliseconds of beign ON and OFF repeating.
    */
