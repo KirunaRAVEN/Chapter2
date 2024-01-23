@@ -111,14 +111,14 @@ at_Ind = dataIndices[6]
 ir_Ind = dataIndices[7]
 
 # Set up the data list
-csvDataCount = 22
+csvDataCount = 23
 data = []
 for i in range(csvDataCount):
     # Set the initial values
     data.append([0] * data_points)
     
 #How much the plots are smoothed, 0 to <1, higher has more smoothing
-smoothingFactor = 0.5
+smoothingFactor = 0.0
 
 # Global time variable to track loop length
 loopTime = 0
@@ -354,10 +354,10 @@ def update(frame):
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if row[21] != " ":
+            if row[22] != " ":
                 #print(messageList)
                 messageListUpdated = True
-                splitRow = row[21].split("\\n")
+                splitRow = row[22].split("\\n")
                 for newRow in splitRow:
                     messageList += [newRow]
                 messageList = messageList[-maxMessageCount:]
@@ -389,9 +389,9 @@ def update(frame):
     
     # Get states from csv after updating the list
     # Use last value from the list
-    h_state = int(data[13][-1])  # CSV column 13
-    v_state = int(data[16][-1])  # CSV column 16
-    ign_state = int(data[17][-1]) # CSV column 14
+    h_state = int(data[14][-1])  # CSV column 13
+    v_state = int(data[17][-1])  # CSV column 16
+    ign_state = int(data[18][-1]) # CSV column 14
     
     heatingIndicator.set_state(h_state)
     valveIndicator.set_state(v_state)
@@ -406,7 +406,7 @@ def update(frame):
     
     # No smoothing for mode/substate strings or time
     # To get string use modes[data[19][-1]] & substates[data[20][-1]]
-    sw_value = modes[int(data[19][-1])] + "\n\n" + substates[int(data[20][-1])] + "\n\n" + msToTime(int(data[2][-1]))  #CSV columns 19 & 20 & 2 respectively
+    sw_value = modes[int(data[20][-1])] + "\n\n" + substates[int(data[21][-1])] + "\n\n" + msToTime(int(data[2][-1]))  #CSV columns 20 & 21 & 2 respectively
     
     if messageListUpdated:
         mi_value = ""

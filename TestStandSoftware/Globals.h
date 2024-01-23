@@ -48,6 +48,7 @@ typedef enum {
   PRESSURE_INPUT_PIN2 = A2,
   LOADCELL_INPUT_PIN = A3,
   TMP36_INPUT_PIN = A4,
+  PRESSURE_INPUT_PIN3 = A5,
   INFRARED_INPUT_PIN = A6,
   IGN_GND_RELAY_TEST_MEASURE_PIN = A15
 }pin_names_analog_t;
@@ -104,7 +105,6 @@ const int16_t verificationEndCount = 10;
 //Which ADC readings counts as a passes for the ignition ground relay tests
 const int16_t ignitionGroundOpenPassLimit = 190; // 190 / 1024 * 5V ~= 1V -> Open Relay
 const int16_t ignitionGroundClosedPassLimit = 5; // 5 / 1024 * 5V ~= 0V -> Closed Relay
-
 
 //Structure for storing the states of the test pins
 struct testInput_t {
@@ -198,6 +198,9 @@ const int16_t valveCount = 3;
 //How many 5V output pressure sensors does the system have
 const int16_t pressureCount5V = 3;
 
+//How many 20mA output pressure sensors does the system have
+const int16_t pressureCount20mA = 1;
+
 //What resistance is used with the current output pressure sensors. (Ohm)
 const int16_t pressureResistance = 250;
 
@@ -211,15 +214,16 @@ const int16_t infraCount = 1;
 const int16_t loadCellCount = 1;
 
 //How many total measurements per loop. Equal to the total count of sensors.
-const int16_t sensorCount = pressureCount5V  + tempCount + infraCount;
+const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + infraCount;
 
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //Feeding line
-  float pressure1;      //Oxidizer line
-  float pressure2;      //Combustion chamber
-  float loadCell;      //Back of the engine
+  float pressure0;      //Feeding line --- TO CHANGE
+  float pressure1;      //Oxidizer line --- TO CHANGE
+  float pressure2;      //Combustion chamber --- TO CHANGE
+  float pressure3;      // --- TO CHANGE
+  float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
   float temperature2;   //Nozzle temperature
@@ -229,9 +233,8 @@ struct values_t {
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
   bool heatingBlanketButton;        //Is heating button pressed
   bool ignitionButton;              //Is ignition button pressed
-  bool feedingButton;               //Is feeding valve button pressed (normally closed)
-  bool mainValveButton;             //Is the main oxidizer valve button pressed (normally closed)
-
+  bool feedingButton;               //Is feeding valve button pressed (normally closed) --- TO CHANGE
+  bool mainValveButton;             //Is the main oxidizer valve button pressed (normally closed) --- TO CHANGE
 };
 
 //Structure for holding the internal state of the software and control system.
@@ -275,9 +278,10 @@ const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"
 typedef enum{
-  FEEDING_PRESSURE = 0,
+  FEEDING_PRESSURE_N2 = 0,
   LINE_PRESSURE = 1,
-  CHAMBER_PRESSURE = 2
+  CHAMBER_PRESSURE = 2,
+  FEEDING_PRESSURE_N2O = 3
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
@@ -310,6 +314,23 @@ const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 +
 //Arrays of 5V pressure sensors calibration data
 const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2};
 const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2};
+
+//Current (20mA) pressure sensor minimum and maximum values
+const int16_t minPressureCurrent = 4;     //(mA)
+const int16_t maxPressureCurrent = 20;    //(mA)
+const float maxPressure20mA = 172.3689; //(bar)
+
+//Calibration data for the 20mA output pressure sensors
+//How many measurements are performed each time the 20mA sensor is used
+const int16_t pressureAverageCount20mA = 1;
+//Data is incomplete, based only on zero point offset
+const float pressureZero20mA = 0.5;         //Bar --- TO CHANGE. Not sure why 0.5 See: https://www.farnell.com/datasheets/3626069.pdf
+const float pressureSpan20mA = 172.3689;    //Bar
+//Slope of the calibrated data
+const float pressureLine_K20mA = maxPressure20mA / pressureSpan20mA;
+//Zero offset of the calibrated data
+const float pressureLine_B20mA = maxPressure20mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
+
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;

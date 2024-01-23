@@ -1,8 +1,8 @@
 5: Chamber Pressure, Time,Pressure,Bar,172,0,40
 3: Bottle Pressure,Time,Pressure,Bar,100,0,65
 4: Line Pressure,Time,Pressure,Bar,172,0,65
-7: Bottle Temperature,Time,Temperature,degC,125,-40,25
-9: Nozzle Temperature,Time,Temperature,degC,600,0,*
-6: Load Cell,Time,Force,N,1112,0,*
-10: Ambient Temperature,Time,Temperature,degC,50,0,*
-11: Plume Temperature,Time,Temperature,degC,1030,-50,*
+8: Bottle Temperature,Time,Temperature,degC,125,-40,25
+10: Nozzle Temperature,Time,Temperature,degC,600,0,*
+7: Load Cell,Time,Force,N,1112,0,*
+11: Ambient Temperature,Time,Temperature,degC,50,0,*
+12: Plume Temperature,Time,Temperature,degC,1030,-50,*
