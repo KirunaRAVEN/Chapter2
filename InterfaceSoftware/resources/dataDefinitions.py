@@ -61,7 +61,7 @@ loadCell= {
     'yUnit': 'N', 
     'yLowerBound': 0,
     'yUpperBound': 1112,
-    'warningValue': None
+    'warningValue': 750
 }
 
 ambientTemperature = {
@@ -86,11 +86,15 @@ plumeTemperature = {
     'warningValue': None
 }
 
-data = [chamberPressure, 
-        bottlePressure,
-        linePressure,
-        bottleTemperature,
-        nozzleTemperature,
-        loadCell,
-        ambientTemperature,
-        plumeTemperature]
+graphData = [chamberPressure, 
+             bottlePressure,
+             linePressure,
+             bottleTemperature,
+             nozzleTemperature,
+             loadCell,
+             ambientTemperature,
+             plumeTemperature]
+
+displayData = [bottlePressure,
+               bottleTemperature,
+               loadCell]
