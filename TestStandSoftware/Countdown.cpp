@@ -116,8 +116,8 @@ void countdownLoop(){
         // In WAIT mode, the operator should have the ability to open and close any controllable valve
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.mainValveButton);
-        setValve(pin_names_t::FEEDING_VALVE_PIN, values.feedingButton);
+        setValve(pin_names_t::MAIN_VALVE_PIN, values.oxidizerValveButton);
+        setValve(pin_names_t::FEEDING_VALVE_PIN, values.n2FeedingButton);
         break;
 
       case SEQUENCE:
@@ -135,7 +135,7 @@ void countdownLoop(){
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
-              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.feedingButton == true){
+              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == true){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
@@ -147,15 +147,16 @@ void countdownLoop(){
                     //The "ignitionValveStateFlag" could probably be set here***
                     sendMessageToSerial(msg);
                   }
-                  if (values.feedingButton == false){
-                    msg = "Warning:\\nCannot begin sequence\\nwith feeding valve closed.";
-                    //***and here
-                    sendMessageToSerial(msg);
-                  }
+                  // ---- Ignored due to feeding valve now being the main oxidizer valve ----
+                  //if (values.n2FeedingButton == false){
+                  //  msg = "Warning:\\nCannot begin sequence\\nwith feeding valve closed.";
+                  //  //***and here
+                  //  sendMessageToSerial(msg);
+                  //}
                 }
                 // This statement is required because otherwise the flag would happen as a result of
                 // the ignitionSafeTime not being reached (which is guaranteed to happen initially)
-                if ((values.dumpValveButton == true) || (values.feedingButton == false)){
+                if ((values.dumpValveButton == true) || (values.n2FeedingButton == false)){
                   ignitionValveStateFlag = true;
                 }
               }

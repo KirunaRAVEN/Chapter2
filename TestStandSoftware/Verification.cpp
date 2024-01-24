@@ -43,7 +43,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case OFF_STATE_BUTTON:
-        if (!buttonValues.mainValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
+        if (!buttonValues.oxidizerValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
           msg = "No button presses detected\\n";
           sendMessageToSerial(msg);
           testStateChangeTime = millis();
@@ -54,7 +54,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
-          else if (buttonValues.mainValveButton == true){
+          else if (buttonValues.oxidizerValveButton == true){
             msg = "Please release the main valve button.\\n";
             sendMessageToSerial(msg);
           }
@@ -158,7 +158,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
       
       case VALVE_ON_BUTTON:
-        if (buttonValues.mainValveButton){
+        if (buttonValues.oxidizerValveButton){
           msg = "Manual vent button press detected\\n";
           sendMessageToSerial(msg);
 
@@ -190,7 +190,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         break;
 
       case VALVE_RELEASE:
-        if (!buttonValues.mainValveButton){
+        if (!buttonValues.oxidizerValveButton){
           setValve(pin_names_t::MAIN_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;

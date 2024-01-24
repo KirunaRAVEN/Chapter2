@@ -24,7 +24,7 @@ void initControlSensing(void);
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readVentingButton(void);
+bool readDumpValveButton(void);
 
 
 /* Function:      Read the input pin detecting if ignition is requested.
@@ -47,13 +47,13 @@ bool readHeatingButton(void);
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readFeedingValveButton(void);
+bool readN2FeedingValveButton(void);
 
 /* Function:      Read the input pin of Remote for the valve of the main valve.
  *
  * IN:            Nothing
  * OUT:           Boolean describing whether the button has been pressed
  */
-bool readMainValveButton(void);
+bool readOxidizerValveButton(void);
 
 #endif

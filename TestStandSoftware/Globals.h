@@ -219,10 +219,10 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //Feeding line --- TO CHANGE
-  float pressure1;      //Oxidizer line --- TO CHANGE
-  float pressure2;      //Combustion chamber --- TO CHANGE
-  float pressure3;      // --- TO CHANGE
+  float pressure0;      //N2 Feeding line pressure --- ORDER TO CHANGE
+  float pressure1;      //Oxidizer line pressure --- ORDER TO CHANGE
+  float pressure2;      //Combustion chamber pressure --- ORDER TO CHANGE
+  float pressure3;      //N20 Feeding pressure --- ORDER TO CHANGE
   float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
@@ -233,8 +233,8 @@ struct values_t {
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
   bool heatingBlanketButton;        //Is heating button pressed
   bool ignitionButton;              //Is ignition button pressed
-  bool feedingButton;               //Is feeding valve button pressed (normally closed) --- TO CHANGE
-  bool mainValveButton;             //Is the main oxidizer valve button pressed (normally closed) --- TO CHANGE
+  bool n2FeedingButton;             //Is N2 feeding valve button pressed (normally closed)
+  bool oxidizerValveButton;         //Is the oxidizer valve button pressed (normally closed)
 };
 
 //Structure for holding the internal state of the software and control system.

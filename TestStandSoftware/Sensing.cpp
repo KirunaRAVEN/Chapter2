@@ -38,10 +38,10 @@ void senseLoop(){
   //bool valveState;
   //bool ignitionState;
   while (true){
-    values.pressure0 = readPressure5V(FEEDING_PRESSURE_N2);     //Feeding pressure --- TO CHANGE
-    values.pressure1 = readPressure20mA(LINE_PRESSURE);           //Oxidizer line pressure --- TO CHANGE
-    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);        //Chamber pressure --- TO CHANGE
-    values.pressure3 = readPressure20mA(FEEDING_PRESSURE_N2O);  // --- TO CHANGE
+    values.pressure0 = readPressure5V(FEEDING_PRESSURE_N2);     //N2 Feeding pressure --- ORDER TO CHANGE
+    values.pressure1 = readPressure5V(LINE_PRESSURE);           //Line pressure --- ORDER TO CHANGE
+    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);        //Chamber pressure --- ORDER TO CHANGE
+    values.pressure3 = readPressure20mA(FEEDING_PRESSURE_N2O);  //N2O Feeding Pressure --- ORDER TO CHANGE
 
     values.loadCell = readLoad();  //Load cell for thrust
 
@@ -53,11 +53,11 @@ void senseLoop(){
     values.IR = readIR();   //Plume temperature
     
     //Read control signals
-    values.dumpValveButton = readVentingButton();         //Purging button status (inverted afterwards due to normally open valve)
-    values.heatingBlanketButton = readHeatingButton();    //Heating button status
-    values.ignitionButton = readIgnitionButton();         //Ignition button status
-    values.feedingButton = readFeedingValveButton();      //Feeding valve status
-    values.mainValveButton = readMainValveButton();       //Main oxidizer valve status
+    values.dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
+    values.heatingBlanketButton = readHeatingButton();        //Heating button status
+    values.ignitionButton = readIgnitionButton();             //Ignition button status
+    values.n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding valve status
+    values.oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer valve status
 
     //Save timestamp
     values.timestamp = millis();            //Arduino time in ms
