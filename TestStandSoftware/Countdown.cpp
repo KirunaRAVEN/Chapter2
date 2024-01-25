@@ -141,7 +141,7 @@ void countdownLoop(){
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
-              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == true){
+              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
@@ -150,20 +150,14 @@ void countdownLoop(){
                 if (ignitionValveStateFlag == false){
                   if (values.dumpValveButton == true){
                     msg = "Warning:\\nCannot begin sequence\\nwith dump valve open.";
-                    //The "ignitionValveStateFlag" could probably be set here***
+                    ignitionValveStateFlag = true;
                     sendMessageToSerial(msg);
                   }
-                  // ---- Ignored due to feeding valve now being the main oxidizer valve ----
-                  //if (values.n2FeedingButton == false){
-                  //  msg = "Warning:\\nCannot begin sequence\\nwith feeding valve closed.";
-                  //  //***and here
-                  //  sendMessageToSerial(msg);
-                  //}
-                }
-                // This statement is required because otherwise the flag would happen as a result of
-                // the ignitionSafeTime not being reached (which is guaranteed to happen initially)
-                if ((values.dumpValveButton == true) || (values.n2FeedingButton == false)){
-                  ignitionValveStateFlag = true;
+                  if (values.n2FeedingButton == true){
+                    msg = "Warning:\\nCannot begin sequence\\nwith N2 feeding valve open.";
+                    ignitionValveStateFlag = true;
+                    sendMessageToSerial(msg);
+                  }
                 }
               }
             }
