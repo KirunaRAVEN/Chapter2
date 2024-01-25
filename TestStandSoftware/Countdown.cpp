@@ -85,17 +85,23 @@ void countdownLoop(){
     // A check is done for SAFE mode to avoid conflicts, as SAFE mode has the
     // dump valve hard-coded to open regardless of button input.
     if (currentMode != SAFE){
-        setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
     }
 
-    
+    //Should we have the ability to control the valves in all modes?
+    if ((currentMode != SEQUENCE) && (currentMode != SAFE)){
+      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+      setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
+      setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
+    }
+
     //MODE switch case
     switch(currentMode){
       case INIT:
         //Shouldn't ever be here. WAIT/TEST is entered before starting FreeRTOS tasks.
         break;
 
-      case TEST:
+      case TEST:  
         //Continue with verification and check if was completed succesfully
         verificationDone = runVerificationStep(values, testInput);
         if (verificationDone == true){
@@ -116,8 +122,8 @@ void countdownLoop(){
         // In WAIT mode, the operator should have the ability to open and close any controllable valve
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-        setValve(pin_names_t::MAIN_VALVE_PIN, values.oxidizerValveButton);
-        setValve(pin_names_t::FEEDING_VALVE_PIN, values.n2FeedingButton);
+        setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
+        setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
         break;
 
       case SEQUENCE:
@@ -166,7 +172,7 @@ void countdownLoop(){
           case IGNIT_ON:
               if (millis() - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
-                setValve(pin_names_t::MAIN_VALVE_PIN, true);
+                setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
               }
             break;
 
@@ -180,7 +186,7 @@ void countdownLoop(){
           case IGNIT_OFF:
               if (millis() - countdownStartTime > valveOffTime){
                 setNewSubstate(VALVE_OFF);
-                setValve(pin_names_t::MAIN_VALVE_PIN, false);
+                setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
               }
             break;
 
@@ -205,11 +211,15 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        setValve(pin_names_t::DUMP_VALVE_PIN, false); // FALSE because it is normally open
-        setValve(pin_names_t::FEEDING_VALVE_PIN, false); // FALSE because it is normally closed
+        //Ability to control the system in the safe mode as well.
+        setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
+        setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
+
+        //setValve(pin_names_t::DUMP_VALVE_PIN, false); // FALSE because it is normally open
+        //setValve(pin_names_t::N2FEEDING_VALVE_PIN, false); // FALSE because it is normally closed
         // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
 
-        // TODO: Do we also want the MAIN_VALVE_PIN open here as well?
+        // TODO: Do we also want the OXIDIZER_VALVE_PIN open here as well?
         break;
 
         

@@ -51,7 +51,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
           setIgnition(false);
-          setValve(pin_names_t::MAIN_VALVE_PIN, false);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
           else if (buttonValues.oxidizerValveButton == true){
@@ -162,7 +162,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           msg = "Manual vent button press detected\\n";
           sendMessageToSerial(msg);
 
-          setValve(pin_names_t::MAIN_VALVE_PIN, true);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
 
           testStateChangeTime = millis();
           verificationState = VALVE_ON_TEST;
@@ -191,7 +191,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case VALVE_RELEASE:
         if (!buttonValues.oxidizerValveButton){
-          setValve(pin_names_t::MAIN_VALVE_PIN, false);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;
 

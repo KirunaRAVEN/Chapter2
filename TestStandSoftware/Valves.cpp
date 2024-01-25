@@ -18,21 +18,21 @@
 // Arduino Pin 3 -> ConnectorPin 2 -> dumpValve -> code value 1
 // Arduino Pin 4 -> ConnectorPin 3 -> feedingValve -> code value 2
 
-static const uint16_t valvePins[valveCount] = {MAIN_VALVE_PIN, DUMP_VALVE_PIN, FEEDING_VALVE_PIN};
+static const uint16_t valvePins[valveCount] = {OXIDIZER_VALVE_PIN, DUMP_VALVE_PIN, N2FEEDING_VALVE_PIN};
 static SemaphoreHandle_t valveSemaphore;
 
 void initValves(){
   //Set up pressure sensor
   //If this comment was me, I don't know what it means. -E.M.
 
-  pinMode(pin_names_t::MAIN_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::MAIN_VALVE_PIN, LOW);
+  pinMode(pin_names_t::OXIDIZER_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::OXIDIZER_VALVE_PIN, LOW);
   
   pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::DUMP_VALVE_PIN, HIGH); // because normally open
   
-  pinMode(pin_names_t::FEEDING_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::FEEDING_VALVE_PIN, LOW);
+  pinMode(pin_names_t::N2FEEDING_VALVE_PIN, OUTPUT);
+  digitalWrite(pin_names_t::N2FEEDING_VALVE_PIN, LOW);
   
   valveSemaphore = xSemaphoreCreateMutex();
   

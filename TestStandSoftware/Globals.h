@@ -17,9 +17,9 @@
 
 //Pin Enumerators - Add Pins for different functionallities here
 typedef enum {
-  MAIN_VALVE_PIN = 2,
+  OXIDIZER_VALVE_PIN = 2,
   DUMP_VALVE_PIN = 3,
-  FEEDING_VALVE_PIN = 4,
+  N2FEEDING_VALVE_PIN = 4,
   TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
   FORCED_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,
