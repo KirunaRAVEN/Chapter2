@@ -224,10 +224,13 @@ void countdownLoop(){
         break;
     }
 
-    //Using measurement here  instead
-    //getValve(0, &valveState);
-    //statusValues.valveActive = valveState;
-    statusValues.valveActive = testInput.MAIN_VALVE_IN;
+    //Get oxidizer valve status from internal state.
+    getValve(0, &valveState);
+    statusValues.valveActive = valveState;
+    
+    //Reveted back to using the internal state.
+    //For some reason using measurement here does not return correct values during sequence.
+    //statusValues.valveActive = testInput.MAIN_VALVE_IN;
 
     getIgnition(&ignitionState);
     statusValues.ignitionEngagedActive = ignitionState;
