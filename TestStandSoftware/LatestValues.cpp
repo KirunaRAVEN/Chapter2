@@ -37,7 +37,7 @@ void initLatestValues(){
   latestValueMutex = xSemaphoreCreateMutex();
 }
 
-setLatest(values_t values){
+void setLatest(values_t values){
   if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     latestValues = values;
     xSemaphoreGive(latestValueMutex);
