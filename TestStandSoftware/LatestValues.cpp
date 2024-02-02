@@ -28,7 +28,7 @@ void initLatestValues(){
   latestValues.IR = 0;             //Plume Temperature
   latestValues.timestamp = 0;      //When was this set of values collected
 
-  latestValues.dumpValveButton = false;       //Dump Valve button status (inverted afterwards due to normally open valve)
+  latestValues.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   latestValues.heatingBlanketButton = false;  //Heating button status
   latestValues.ignitionButton = false;        //Ignition button status
   latestValues.n2FeedingButton = false;       //N2 Feeding valve status

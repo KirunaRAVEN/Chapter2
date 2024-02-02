@@ -29,7 +29,7 @@ void initValves(){
   digitalWrite(pin_names_t::OXIDIZER_VALVE_PIN, LOW);
   
   pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::DUMP_VALVE_PIN, HIGH); // because normally open
+  digitalWrite(pin_names_t::DUMP_VALVE_PIN, LOW); // Even though normally open, nominal state is dump valve open
   
   pinMode(pin_names_t::N2FEEDING_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::N2FEEDING_VALVE_PIN, LOW);
