@@ -225,7 +225,7 @@ void countdownLoop(){
     }
 
     //Get oxidizer valve status from internal state.
-    getValve(0, &valveState);
+    getValve(OXIDIZER_VALVE_PIN, &valveState);
     statusValues.valveActive = valveState;
     
     //Reveted back to using the internal state.
