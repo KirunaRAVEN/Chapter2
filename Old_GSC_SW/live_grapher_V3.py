@@ -118,7 +118,7 @@ for i in range(csvDataCount):
     data.append([0] * data_points)
     
 #How much the plots are smoothed, 0 to <1, higher has more smoothing
-smoothingFactor = 0.0
+smoothingFactor = 0.5
 
 # Global time variable to track loop length
 loopTime = 0
