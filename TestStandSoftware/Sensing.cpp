@@ -38,10 +38,10 @@ void senseLoop(){
   //bool valveState;
   //bool ignitionState;
   while (true){
-    values.pressure0 = readPressure5V(FEEDING_PRESSURE_N2);     //N2 Feeding pressure --- ORDER TO CHANGE
-    values.pressure1 = readPressure5V(LINE_PRESSURE);           //Line pressure --- ORDER TO CHANGE
-    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);        //Chamber pressure --- ORDER TO CHANGE
-    values.pressure3 = readPressure20mA(FEEDING_PRESSURE_N2O);  //N2O Feeding Pressure --- ORDER TO CHANGE
+    values.pressure0 = readPressure5V(FEEDING_PRESSURE_N2);           //N2 Feeding pressure --- ORDER TO CHANGE
+    values.pressure1 = readPressure5V(LINE_PRESSURE);                 //Line pressure --- ORDER TO CHANGE
+    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);              //Chamber pressure --- ORDER TO CHANGE
+    values.pressure3 = readPressure20mA(FEEDING_PRESSURE_OXIDIZER);   //Oxidizer Feeding Pressure --- ORDER TO CHANGE
 
     values.loadCell = readLoad();  //Load cell for thrust
 
@@ -56,8 +56,8 @@ void senseLoop(){
     values.dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
     values.heatingBlanketButton = readHeatingButton();        //Heating button status
     values.ignitionButton = readIgnitionButton();             //Ignition button status
-    values.n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding valve status
-    values.oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer valve status
+    values.n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
+    values.oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
 
     //Save timestamp
     values.timestamp = millis();            //Arduino time in ms

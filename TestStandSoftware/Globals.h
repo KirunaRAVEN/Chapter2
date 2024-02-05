@@ -222,7 +222,7 @@ struct values_t {
   float pressure0;      //N2 Feeding line pressure --- ORDER TO CHANGE
   float pressure1;      //Oxidizer line pressure --- ORDER TO CHANGE
   float pressure2;      //Combustion chamber pressure --- ORDER TO CHANGE
-  float pressure3;      //N2O Feeding pressure --- ORDER TO CHANGE
+  float pressure3;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
   float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
@@ -281,7 +281,7 @@ typedef enum{
   FEEDING_PRESSURE_N2 = 0,
   LINE_PRESSURE = 1,
   CHAMBER_PRESSURE = 2,
-  FEEDING_PRESSURE_N2O = 3
+  FEEDING_PRESSURE_OXIDIZER = 3
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;

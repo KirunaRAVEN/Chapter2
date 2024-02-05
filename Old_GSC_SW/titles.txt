@@ -1,8 +1,8 @@
 5: Chamber Pressure, Time,Pressure,Bar,172,0,40
 3: N2 Feeding Pressure,Time,Pressure,Bar,100,0,65
 4: Line Pressure,Time,Pressure,Bar,172,0,65
-8: N2O Bottle Temperature,Time,Temperature,degC,125,-40,25
-6: N2O Feeding Pressure, Time, Pressure, Bar, 100, 0, 65
+8: Oxidizer Bottle Temperature,Time,Temperature,degC,125,-40,25
+6: Oxidizer Feeding Pressure, Time, Pressure, Bar, 100, 0, 65
 7: Load Cell,Time,Force,N,1112,0,*
 10: Nozzle Temperature,Time,Temperature,degC,600,0,*
 12: Plume Temperature,Time,Temperature,degC,1030,-50,*
