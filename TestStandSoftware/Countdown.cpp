@@ -141,7 +141,7 @@ void countdownLoop(){
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
             else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
-              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false){
+              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
