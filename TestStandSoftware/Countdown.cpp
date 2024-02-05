@@ -158,6 +158,11 @@ void countdownLoop(){
                     ignitionValveStateFlag = true;
                     sendMessageToSerial(msg);
                   }
+                  if (values.oxidizerValveButton == true){
+                    msg = "Warning:\\nCannot begin sequence\\nwith Oxidizer valve open.";
+                    ignitionValveStateFlag = true;
+                    sendMessageToSerial(msg);
+                  }
                 }
               }
             }
