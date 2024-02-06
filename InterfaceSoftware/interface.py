@@ -102,7 +102,7 @@ dataPanel.subplots_adjust(left=0.05, right=0.99, bottom=0.03, top=0.97, wspace=0
 labelFontSize = 9
 tickFontSize  = 7
 nDataPoints   = 625 # the covered time span is then about nDataPoints * updateRate = 10000 ms = 10s
-linewidth = 1.0
+linewidth     = 1.0
 
 # add titles and axis labels to the graphs
 # set limits and tick parameters
@@ -181,7 +181,7 @@ displays = displayPanel.subplots(nDisplays, 1)
 displayObjects = []
 displayValues  = [0] * nDisplays
 for i in range(nDisplays):
-    displayObjects.append(displayElements.valueBox(displayData[i]['title']))
+    displayObjects.append(displayElements.valueBox(displayData[i]['title'], displayData[i]['yUnit']))
 
 # remove graph background and set aspect ratio of the displays
 # add display artists and format display axes
@@ -352,7 +352,7 @@ def update(frame):
 
 
 # toggle fullscreen
-plt.get_current_fig_manager().full_screen_toggle()
+#plt.get_current_fig_manager().full_screen_toggle()
 
 # animation settings
 isUsingBlit = True
@@ -363,6 +363,10 @@ updateRate = 16 # milli seconds: seems to be faster than data rate
 def escape(esc):
     if esc.key == 'escape':
         plt.close()
+        
+def fullscreen(f):
+    if f.key == 'f':
+        plt.get_current_fig_manager().full_screen_toggle()
 
 # link the key press event to the interface
 interface.canvas.mpl_connect('key_press_event', escape)
