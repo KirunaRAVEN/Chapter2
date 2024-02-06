@@ -41,7 +41,7 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(values.pressure2);     //Chamber pressure --- ORDER TO CHANGE. Dataline index 5
     Serial.print(",");
-    Serial.print(values.pressure3);     //N2O Feeding pressure --- ORDER TO CHANGE. Dataline index 6
+    Serial.print(values.pressure3);     //Oxidizer Feeding pressure --- ORDER TO CHANGE. Dataline index 6
     Serial.print(",");
     Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
     Serial.print(",");

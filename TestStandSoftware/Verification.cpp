@@ -51,11 +51,11 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
           setIgnition(false);
-          setValve(pin_names_t::MAIN_VALVE_PIN, false);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
           else if (buttonValues.oxidizerValveButton == true){
-            msg = "Please release the main valve button.\\n";
+            msg = "Please release the oxidizer valve button.\\n";
             sendMessageToSerial(msg);
           }
           else if (buttonValues.ignitionButton == true){
@@ -99,7 +99,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           msg = heatingPassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Main Valve OFF-state:\\n";
+          msg = "Oxidizer Valve OFF-state:\\n";
           sendMessageToSerial(msg);
           msg = valvePassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
@@ -149,9 +149,9 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (!buttonValues.heatingBlanketButton){    
           verificationState = VALVE_ON_BUTTON;
 
-          msg = "Testing manual valve ON-state...\\n";
+          msg = "Testing Oxidizer Valve ON-state...\\n";
           sendMessageToSerial(msg);
-          msg = "Press the Manual Vent button!\\n";
+          msg = "Press the Oxidizer Valve button!\\n";
           sendMessageToSerial(msg);
 
         }
@@ -159,10 +159,10 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       
       case VALVE_ON_BUTTON:
         if (buttonValues.oxidizerValveButton){
-          msg = "Manual vent button press detected\\n";
+          msg = "Oxidizer Valve button press detected\\n";
           sendMessageToSerial(msg);
 
-          setValve(pin_names_t::MAIN_VALVE_PIN, true);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
 
           testStateChangeTime = millis();
           verificationState = VALVE_ON_TEST;
@@ -177,12 +177,12 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           allPassed = allPassed && valvePassed;
 
 
-          msg = "Main valve ON-state:\\n";
+          msg = "Oxidizer Valve ON-state:\\n";
           sendMessageToSerial(msg);
           msg = valvePassed ? "Passed\\n" : "Failed\\n";
           sendMessageToSerial(msg);
 
-          msg = "Release the Manual Vent button\\n";
+          msg = "Release the Oxidizer Valve button\\n";
           sendMessageToSerial(msg);
 
           verificationState = VALVE_RELEASE;
@@ -191,7 +191,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
       case VALVE_RELEASE:
         if (!buttonValues.oxidizerValveButton){
-          setValve(pin_names_t::MAIN_VALVE_PIN, false);
+          setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
 
           verificationState = IGN_ON_BUTTON;
 

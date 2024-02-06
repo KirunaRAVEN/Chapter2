@@ -19,7 +19,7 @@ void initLatestValues(){
   latestValues.pressure0 = 0;      //N2 Feeding pressure --- ORDER TO CHANGE
   latestValues.pressure1 = 0;      //Oxidizer line pressure --- ORDER TO CHANGE
   latestValues.pressure2 = 0;      //Combustion chamber pressure --- ORDER TO CHANGE
-  latestValues.pressure3 = 0;      //N2O Feeding pressure --- ORDER TO CHANGE
+  latestValues.pressure3 = 0;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
   latestValues.loadCell = 0;       //Back of the engine
   latestValues.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   latestValues.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
@@ -28,7 +28,7 @@ void initLatestValues(){
   latestValues.IR = 0;             //Plume Temperature
   latestValues.timestamp = 0;      //When was this set of values collected
 
-  latestValues.dumpValveButton = false;       //Dump Valve button status (inverted afterwards due to normally open valve)
+  latestValues.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   latestValues.heatingBlanketButton = false;  //Heating button status
   latestValues.ignitionButton = false;        //Ignition button status
   latestValues.n2FeedingButton = false;       //N2 Feeding valve status
@@ -37,7 +37,7 @@ void initLatestValues(){
   latestValueMutex = xSemaphoreCreateMutex();
 }
 
-setLatest(values_t values){
+void setLatest(values_t values){
   if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     latestValues = values;
     xSemaphoreGive(latestValueMutex);

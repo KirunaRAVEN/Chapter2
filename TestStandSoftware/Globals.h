@@ -17,9 +17,9 @@
 
 //Pin Enumerators - Add Pins for different functionallities here
 typedef enum {
-  MAIN_VALVE_PIN = 2,
+  OXIDIZER_VALVE_PIN = 2,
   DUMP_VALVE_PIN = 3,
-  FEEDING_VALVE_PIN = 4,
+  N2FEEDING_VALVE_PIN = 4,
   TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
   FORCED_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,
@@ -222,7 +222,7 @@ struct values_t {
   float pressure0;      //N2 Feeding line pressure --- ORDER TO CHANGE
   float pressure1;      //Oxidizer line pressure --- ORDER TO CHANGE
   float pressure2;      //Combustion chamber pressure --- ORDER TO CHANGE
-  float pressure3;      //N20 Feeding pressure --- ORDER TO CHANGE
+  float pressure3;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
   float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
@@ -281,7 +281,7 @@ typedef enum{
   FEEDING_PRESSURE_N2 = 0,
   LINE_PRESSURE = 1,
   CHAMBER_PRESSURE = 2,
-  FEEDING_PRESSURE_N2O = 3
+  FEEDING_PRESSURE_OXIDIZER = 3
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
