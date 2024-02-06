@@ -6,7 +6,8 @@ chamberPressure= {
     'yUnit': 'Bar', 
     'yLowerBound': 0,
     'yUpperBound': 172,
-    'warningValue': 40
+    'warningValue': 40,
+    'csvIndex' : 1
 }
 
 bottlePressure = {
@@ -17,7 +18,8 @@ bottlePressure = {
     'yUnit': 'Bar', 
     'yLowerBound': 0,
     'yUpperBound': 100,
-    'warningValue': 65
+    'warningValue': 65,
+    'csvIndex' : 2
 }
 
 linePressure = {
@@ -28,7 +30,8 @@ linePressure = {
     'yUnit': 'Bar', 
     'yLowerBound': 0,
     'yUpperBound': 172,
-    'warningValue': 65
+    'warningValue': 65,
+    'csvIndex' : 3
 }
 
 bottleTemperature = {
@@ -39,7 +42,8 @@ bottleTemperature = {
     'yUnit': '°C', 
     'yLowerBound': -40,
     'yUpperBound': 125,
-    'warningValue': 25
+    'warningValue': 25,
+    'csvIndex' : 4
 }
 
 nozzleTemperature = {
@@ -50,7 +54,8 @@ nozzleTemperature = {
     'yUnit': '°C', 
     'yLowerBound': 0,
     'yUpperBound': 600,
-    'warningValue': None
+    'warningValue': 0,
+    'csvIndex' : 5
 }
 
 loadCell= {
@@ -61,7 +66,8 @@ loadCell= {
     'yUnit': 'N', 
     'yLowerBound': 0,
     'yUpperBound': 1112,
-    'warningValue': 750
+    'warningValue': 750,
+    'csvIndex' : 6
 }
 
 ambientTemperature = {
@@ -72,7 +78,8 @@ ambientTemperature = {
     'yUnit': '°C', 
     'yLowerBound': 0,
     'yUpperBound': 50,
-    'warningValue': None
+    'warningValue': 0,
+    'csvIndex' : 7
 }
 
 plumeTemperature = {
@@ -83,7 +90,8 @@ plumeTemperature = {
     'yUnit': '°C', 
     'yLowerBound': -50,
     'yUpperBound': 1030,
-    'warningValue': None
+    'warningValue': 0,
+    'csvIndex' : 8
 }
 
 graphData = [chamberPressure, 
