@@ -102,7 +102,7 @@ dataPanel.subplots_adjust(left=0.05, right=0.99, bottom=0.03, top=0.97, wspace=0
 labelFontSize = 9
 tickFontSize  = 7
 nDataPoints   = 625 # the covered time span is then about nDataPoints * updateRate = 10000 ms = 10s
-linewidth     = 1.0
+linewidth     = 0.75
 
 # add titles and axis labels to the graphs
 # set limits and tick parameters
@@ -117,15 +117,14 @@ for i in range(4):
         graphs[i,j].set_title(graphData[i+j*4]['title'])
         graphs[i,j].tick_params(axis='y', labelsize=tickFontSize)
         graphs[i,j].tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False) 
+        graphs[i,j].axhline(graphData[i+j*4]['warningValue'], color='red', linestyle='--', linewidth=linewidth)
         graphs[i,j].grid() #linestyle='--')
 
 # initialize line artists
 dataLines = []
-avgLines  = []
 for i in range(4):
     for j in range(2):
         dataLines.append(graphs[i][j].plot([], [], linewidth=linewidth)[0])
-        avgLines.append(graphs[i][j].axhline(color='red', linestyle='--', linewidth=linewidth))
 
 # initialize lists for holding the line data
 x_data   = [[0] * nDataPoints] * nGraphs
@@ -137,7 +136,6 @@ for i in range(nGraphs):
     for j in range(nDataPoints):
         x_data[i][j] = j
     dataLines[i].set_data(x_data[i], y_data[i])
-    avgLines[i].set_ydata([nDataPoints])
 
 
 
@@ -235,7 +233,7 @@ for i in range(len(logObject.objects)):
 # --- CREATE LIST OF ARTISTS --- #
 # ------------------------------ #
 
-graphArtists = dataLines + avgLines # nGraphs*2 elements
+graphArtists = dataLines # nGraphs*2 elements
 
 indicatorArtists = []
 for i in range(nIndicators):
@@ -310,8 +308,6 @@ def update(frame):
     for i in range(nGraphs):
         averages[i] = rollingAverage(y_data[i])
         artists[i].set_ydata(y_data[i])
-        artists[nGraphs + i].set_ydata([averages[i]])
-
 
 
     # ----------------------------------------- #
