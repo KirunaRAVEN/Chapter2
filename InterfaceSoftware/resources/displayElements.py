@@ -24,19 +24,20 @@ class indicatorLight:
 
 # rename this value display
 class valueBox:
-    def __init__(self, title, titleFontSize=14, value=0, valueFontSize=24):
+    def __init__(self, title, unit, titleFontSize=14, value=0, valueFontSize=24):
         self.titleFontSize  = titleFontSize
         self.valueFontSize = valueFontSize
         self.title   = title
+        self.unit    = unit
         self.value   = value
         self.display = Text(1.25, 0.5, self.value, horizontalalignment='center', verticalalignment='center', fontsize=self.valueFontSize, weight='bold')
-        self.outline = plt.Rectangle((0.25, 0), 2.0, 1.0, color='black')
-        self.inner = plt.Rectangle((0.30, 0.05), 1.9, 0.9, color='white')
+        self.outline = plt.Rectangle((0, 0), 2.5, 1.0, color='black')
+        self.inner = plt.Rectangle((0.05, 0.025), 2.4, 0.95, color='white')
         self.objects = [self.outline, self.inner, self.display] 
 
     def setValue(self, value):
         self.value = value
-        self.display.set_text('%.2f' %self.value)
+        self.display.set_text('%.2f %s' %(self.value, self.unit))
 
 class textBox:
     def __init__(self, title, titleFontSize=14, text='TEXT', textFontSize=24):
@@ -46,7 +47,7 @@ class textBox:
         self.text = text
         self.display = Text(1.25, 0.5, self.text, horizontalalignment='center', verticalalignment='center', fontsize=self.textFontSize, weight='bold')
         self.outline = plt.Rectangle((0, 0), 2.5, 1.0, color='black')
-        self.inner = plt.Rectangle((0.05, 0.05), 2.4, 0.9, color='white')
+        self.inner = plt.Rectangle((0.025, 0.025), 2.45, 0.95, color='white')
         self.objects = [self.outline, self.inner, self.display]
     def setText(self, text):
         self.text = text
@@ -57,5 +58,5 @@ class logBox:
         self.log = ['\n'] * self.maxLines   
         self.display = Text(0.5, 0.5, self.log, horizontalalignment='center', verticalalignment='center')
         self.outline = plt.Rectangle((0, 0), 1.0, 1.6, color='black')
-        self.inner = plt.Rectangle((0.025, 0.025), 0.95, 1.55, color='white')
+        self.inner = plt.Rectangle((0.0125, 0.0125), 0.975, 1.575, color='white')
         self.objects = [self.outline, self.inner, self.display]
