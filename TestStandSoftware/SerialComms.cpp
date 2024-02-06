@@ -27,6 +27,54 @@ void initSerial(){
   messageMutex = xSemaphoreCreateMutex();
 
   Serial.print(" r\n");
+
+  Serial.print("Dataline marker");            //Dataline index 1
+  Serial.print(",");
+  Serial.print("Arduino time");               //Arduino time in ms. Dataline index 2
+  Serial.print(",");
+  Serial.print("N2 Feeding Pressure");        //N2 Feeding pressure . Dataline index 3
+  Serial.print(",");
+  Serial.print("Line Pressure";               //Line pressure . Dataline index 4 
+  Serial.print(",");
+  Serial.print("Chamber Pressure");           //Chamber pressure . Dataline index 5
+  Serial.print(",");
+  Serial.print("Oxidizer Feeding Pressure");  //Oxidizer Feeding pressure . Dataline index 6
+  Serial.print(",");
+  Serial.print("Load Cell");                  //Load cell for thrust. Dataline index 7
+  Serial.print(",");
+  Serial.print("Bottle Temperature");         //Bottle/Heating blanket temperature. Dataline index 8
+  Serial.print(",");
+  Serial.print("NC");                         //Not connected. Dataline index 9
+  Serial.print(",");
+  Serial.print("Nozzle Temperature");         //Nozzle temperature. Dataline index 10
+  Serial.print(",");
+  Serial.print("Ambient Temperature");        //Ambient temperature. Dataline index 11
+  Serial.print(",");
+  Serial.print("Plume Temperature");          //Plume temperature. Dataline index 12
+  Serial.print(",");
+
+  Serial.print("Dump Button");        //Dump valve button status. Dataline index 13
+  Serial.print(",");
+  Serial.print("Heating Button");     //Heating button status. Dataline index 14
+  Serial.print(",");
+  Serial.print("Ignition Button");    //Ignition button status. Dataline index 15
+  Serial.print(",");
+  Serial.print("N2 Feeding Button");  //N2 Feeding button status. Dataline index 16
+  Serial.print(",");
+  Serial.print("Oxidizer Button");    //Oxidizer valve button status. Dataline index 17
+  Serial.print(",");
+
+  Serial.print("Ignition Relay");     //Ignition SW state. Dataline index 18
+  Serial.print(",");
+  Serial.print("Oxidizer Valve");     //Valve SW state. Dataline index 19
+  Serial.print(",");
+  Serial.print("SW Mode");            //Current SW mode. Dataline index 20
+  Serial.print(",");
+  Serial.print("SW Substate");        //Current SW substate. Dataline index 21
+  Serial.print(",");
+  Serial.print("Message");            //Message field. Dataline index 22
+  Serial.print("\n");
+
 }
 
 void writeValues(values_t values, statusValues_t statusValues){
@@ -35,13 +83,13 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(values.timestamp);     //Arduino time in ms. Dataline index 2
     Serial.print(",");
-    Serial.print(values.pressure0);     //N2 Feeding pressure --- ORDER TO CHANGE. Dataline index 3
+    Serial.print(values.pressure0);     //N2 Feeding pressure . Dataline index 3
     Serial.print(",");
-    Serial.print(values.pressure1);     //Line pressure --- ORDER TO CHANGE. Dataline index 4 
+    Serial.print(values.pressure1);     //Line pressure . Dataline index 4 
     Serial.print(",");
-    Serial.print(values.pressure2);     //Chamber pressure --- ORDER TO CHANGE. Dataline index 5
+    Serial.print(values.pressure2);     //Chamber pressure . Dataline index 5
     Serial.print(",");
-    Serial.print(values.pressure3);     //Oxidizer Feeding pressure --- ORDER TO CHANGE. Dataline index 6
+    Serial.print(values.pressure3);     //Oxidizer Feeding pressure . Dataline index 6
     Serial.print(",");
     Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
     Serial.print(",");

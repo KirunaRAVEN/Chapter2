@@ -219,10 +219,10 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //N2 Feeding line pressure --- ORDER TO CHANGE
-  float pressure1;      //Oxidizer line pressure --- ORDER TO CHANGE
-  float pressure2;      //Combustion chamber pressure --- ORDER TO CHANGE
-  float pressure3;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
+  float pressure0;      //N2 Feeding line pressure 
+  float pressure1;      //Oxidizer line pressure 
+  float pressure2;      //Combustion chamber pressure 
+  float pressure3;      //Oxidizer Feeding pressure 
   float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
@@ -278,10 +278,10 @@ const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"
 typedef enum{
-  FEEDING_PRESSURE_N2 = 0,
+  FEEDING_PRESSURE_OXIDIZER = 0,
   LINE_PRESSURE = 1,
   CHAMBER_PRESSURE = 2,
-  FEEDING_PRESSURE_OXIDIZER = 3
+  FEEDING_PRESSURE_N2 = 3
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;

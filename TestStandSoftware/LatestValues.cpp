@@ -16,10 +16,10 @@ static values_t latestValues;
 static SemaphoreHandle_t latestValueMutex;
 
 void initLatestValues(){
-  latestValues.pressure0 = 0;      //N2 Feeding pressure --- ORDER TO CHANGE
-  latestValues.pressure1 = 0;      //Oxidizer line pressure --- ORDER TO CHANGE
-  latestValues.pressure2 = 0;      //Combustion chamber pressure --- ORDER TO CHANGE
-  latestValues.pressure3 = 0;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
+  latestValues.pressure0 = 0;      //N2 Feeding pressure 
+  latestValues.pressure1 = 0;      //Oxidizer line pressure 
+  latestValues.pressure2 = 0;      //Combustion chamber pressure 
+  latestValues.pressure3 = 0;      //Oxidizer Feeding pressure 
   latestValues.loadCell = 0;       //Back of the engine
   latestValues.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   latestValues.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
