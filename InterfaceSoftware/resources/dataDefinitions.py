@@ -1,4 +1,4 @@
-chamberPressure= {
+chamberPressure = {
     'title': 'Chamber Pressure',
     'xLabel': 'Time',
     'yLabel': 'Pressure', 
@@ -7,11 +7,11 @@ chamberPressure= {
     'yLowerBound': 0,
     'yUpperBound': 172,
     'warningValue': 40,
-    'csvIndex' : 1
+    'csvIndex' : 5
 }
 
-bottlePressure = {
-    'title': 'Bottle Pressure',
+N2O_BottlePressure = {
+    'title': 'N$_2$O Bottle Pressure',
     'xLabel': 'Time',
     'yLabel': 'Pressure', 
     'xUnit': 's', 
@@ -19,7 +19,7 @@ bottlePressure = {
     'yLowerBound': 0,
     'yUpperBound': 100,
     'warningValue': 65,
-    'csvIndex' : 2
+    'csvIndex' : 6
 }
 
 linePressure = {
@@ -31,10 +31,10 @@ linePressure = {
     'yLowerBound': 0,
     'yUpperBound': 172,
     'warningValue': 65,
-    'csvIndex' : 3
+    'csvIndex' : 4
 }
 
-bottleTemperature = {
+heatingBlanketTemperature = {
     'title': 'Bottle Temperature',
     'xLabel': 'Time',
     'yLabel': 'Temperature', 
@@ -43,7 +43,7 @@ bottleTemperature = {
     'yLowerBound': -40,
     'yUpperBound': 125,
     'warningValue': 25,
-    'csvIndex' : 4
+    'csvIndex' : 8
 }
 
 nozzleTemperature = {
@@ -55,7 +55,7 @@ nozzleTemperature = {
     'yLowerBound': 0,
     'yUpperBound': 600,
     'warningValue': 0,
-    'csvIndex' : 5
+    'csvIndex' : 10
 }
 
 loadCell= {
@@ -67,7 +67,7 @@ loadCell= {
     'yLowerBound': 0,
     'yUpperBound': 1112,
     'warningValue': 750,
-    'csvIndex' : 6
+    'csvIndex' : 7
 }
 
 ambientTemperature = {
@@ -79,7 +79,7 @@ ambientTemperature = {
     'yLowerBound': 0,
     'yUpperBound': 50,
     'warningValue': 0,
-    'csvIndex' : 7
+    'csvIndex' : 11
 }
 
 plumeTemperature = {
@@ -91,18 +91,18 @@ plumeTemperature = {
     'yLowerBound': -50,
     'yUpperBound': 1030,
     'warningValue': 0,
-    'csvIndex' : 8
+    'csvIndex' : 12
 }
 
 graphData = [chamberPressure, 
-             bottlePressure,
+             N2O_BottlePressure,
              linePressure,
-             bottleTemperature,
+             heatingBlanketTemperature,
              nozzleTemperature,
              loadCell,
              ambientTemperature,
              plumeTemperature]
 
-displayData = [bottlePressure,
-               bottleTemperature,
+displayData = [N2O_BottlePressure,
+               heatingBlanketTemperature,
                loadCell]
