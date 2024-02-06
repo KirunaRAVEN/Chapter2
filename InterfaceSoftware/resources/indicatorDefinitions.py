@@ -1,16 +1,16 @@
 ignitionRelayIndicator = {
     'title': 'Ignition Relay',
-    'csvIndex' : 9
+    'csvIndex' : 15
 }
 
 mainValveIndicator = {
     'title': 'Main Valve',
-    'csvIndex' : 10
+    'csvIndex' : 17
 }
 
 heatingBlanketIndicator = {
     'title': 'Heating Blanket',
-    'csvIndex' : 11
+    'csvIndex' : 14
 }
 
 indicatorData = [ignitionRelayIndicator, mainValveIndicator, heatingBlanketIndicator]
