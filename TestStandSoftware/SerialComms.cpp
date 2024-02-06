@@ -34,7 +34,7 @@ void initSerial(){
   Serial.print(",");
   Serial.print("N2 Feeding Pressure");        //N2 Feeding pressure . Dataline index 3
   Serial.print(",");
-  Serial.print("Line Pressure";               //Line pressure . Dataline index 4 
+  Serial.print("Line Pressure");               //Line pressure . Dataline index 4 
   Serial.print(",");
   Serial.print("Chamber Pressure");           //Chamber pressure . Dataline index 5
   Serial.print(",");
