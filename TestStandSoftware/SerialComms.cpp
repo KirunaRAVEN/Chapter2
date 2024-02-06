@@ -27,7 +27,7 @@ void initSerial(){
   messageMutex = xSemaphoreCreateMutex();
 
   Serial.print(" r\n");
-
+  /*
   Serial.print("Dataline marker");            //Dataline index 1
   Serial.print(",");
   Serial.print("Arduino time");               //Arduino time in ms. Dataline index 2
@@ -74,7 +74,7 @@ void initSerial(){
   Serial.print(",");
   Serial.print("Message");            //Message field. Dataline index 22
   Serial.print("\n");
-
+  */
 }
 
 void writeValues(values_t values, statusValues_t statusValues){
