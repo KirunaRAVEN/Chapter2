@@ -101,14 +101,14 @@ dataIndices = [col_num for i, col_num in enumerate(column_info.keys())]
 warningLimits = [column_info[key]['warn'] for key in dataIndices]
 warningMargin = 0.8
 
-cp_Ind = dataIndices[0]
-bp_Ind = dataIndices[1]
-lp_Ind = dataIndices[2]
-bt_Ind = dataIndices[3]
-nt_Ind = dataIndices[4]
-lc_Ind = dataIndices[5]
-at_Ind = dataIndices[6]
-ir_Ind = dataIndices[7]
+chamberPressure_Ind = dataIndices[0]
+nitrogenPressure_Ind = dataIndices[1]
+linePressure_Ind = dataIndices[2]
+bottleTemperature_Ind = dataIndices[3]
+bottlePressure_Ind = dataIndices[4]
+loadCell_Ind = dataIndices[5]
+nozzleTemperature_Ind = dataIndices[6]
+plumeTemperature_Ind = dataIndices[7]
 
 # Set up the data list
 csvDataCount = 23
@@ -197,9 +197,9 @@ class infoBox:
 
 
 # Create named info boxes
-bottlePressureInfo = infoBox("Bottle pressure:", " Bar", (0, ncols-2), bp_Ind)
-bottleTempInfo = infoBox("Bottle temperature:", " °C", (1, ncols-2), bt_Ind)
-loadCellInfo = infoBox("Load cell:", " N", (2, ncols-2), lc_Ind)
+bottlePressureInfo = infoBox("Bottle pressure:", " Bar", (0, ncols-2), bottlePressure_Ind)
+bottleTempInfo = infoBox("Bottle temperature:", " °C", (1, ncols-2), bottleTemperature_Ind)
+loadCellInfo = infoBox("Load cell:", " N", (2, ncols-2), loadCell_Ind)
 swInfo = infoBox("Software mode:\n\n\nSoftware substate:\n\n\nArduino time", "", (3, ncols-2), None, fontSize = 20)
 
 maxMessageCount = 19
@@ -400,9 +400,9 @@ def update(frame):
     # Get values from csv after updating the list
     # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
     # Smooths the data making it easier to read    
-    bp_value = "{:4.1f}".format(sum(data[bp_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
-    bt_value = "{:4.1f}".format(sum(data[bt_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
-    lc_value = "{:4.1f}".format(sum(data[lc_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
+    bp_value = "{:4.1f}".format(sum(data[bottlePressure_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
+    bt_value = "{:4.1f}".format(sum(data[bottleTemperature_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
+    lc_value = "{:4.1f}".format(sum(data[loadCell_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
     
     # No smoothing for mode/substate strings or time
     # To get string use modes[data[19][-1]] & substates[data[20][-1]]
