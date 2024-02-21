@@ -39,9 +39,9 @@ void senseLoop(){
   //bool ignitionState;
   while (true){
     values.pressure0 = readPressure20mA(FEEDING_PRESSURE_N2);           //N2 Feeding pressure 
-    values.pressure1 = readPressure5V(LINE_PRESSURE);                 //Line pressure 
-    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);              //Chamber pressure 
-    values.pressure3 = readPressure5V(FEEDING_PRESSURE_OXIDIZER);   //Oxidizer Feeding Pressure 
+    values.pressure1 = readPressure5V(LINE_PRESSURE);                   //Line pressure 
+    values.pressure2 = readPressure5V(CHAMBER_PRESSURE);                //Chamber pressure 
+    values.pressure3 = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
 
     values.loadCell = readLoad();  //Load cell for thrust
 
