@@ -102,10 +102,10 @@ warningLimits = [column_info[key]['warn'] for key in dataIndices]
 warningMargin = 0.8
 
 chamberPressure_Ind = dataIndices[0]
-nitrogenPressure_Ind = dataIndices[1]
+bottlePressure_Ind = dataIndices[1]
 linePressure_Ind = dataIndices[2]
 bottleTemperature_Ind = dataIndices[3]
-bottlePressure_Ind = dataIndices[4]
+nitrogenPressure_Ind = dataIndices[4]
 loadCell_Ind = dataIndices[5]
 nozzleTemperature_Ind = dataIndices[6]
 plumeTemperature_Ind = dataIndices[7]
