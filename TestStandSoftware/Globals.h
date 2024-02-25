@@ -169,7 +169,7 @@ const int16_t taskMemoryBytes = 512;
 //Consider changing this to use math to make readin it
 
 //How long of a burn do we want (ms)
-const int16_t burnTime = 7*1000;
+const int16_t burnTime = 3*1000;
 
 //How long the igniter burns (ms) Measured from igniter test video
 const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
