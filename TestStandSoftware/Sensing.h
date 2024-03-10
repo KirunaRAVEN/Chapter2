@@ -1,6 +1,7 @@
 /* Filename:      Sensing.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
+ * Version:       V1.3 (10.03.2024)
  *
  * Purpose:       Header file for the <<cyclic>> Sensing object. 
  *                Contains function definitions.

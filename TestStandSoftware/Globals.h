@@ -1,6 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
+ * Version:       V1.3 (10.03.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -196,7 +197,7 @@ const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
 const int16_t valveCount = 3; 
 
 //How many 5V output pressure sensors does the system have
-const int16_t pressureCount5V = 3;
+const int16_t pressureCount5V = 4;
 
 //How many 20mA output pressure sensors does the system have
 const int16_t pressureCount20mA = 1;
@@ -311,9 +312,18 @@ const float pressureLine_K2 = maxPressure5V / pressureSpan2;  //Slope of the cal
 //Zero offset of the calibrated data
 const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 + pressureZero2);
 
+//Pressure sensor calibration data for pressure sensor 3 (Serial No: 1086288) CHAMBER
+const float pressureZero3 = -0.001;                           //Voltage
+const float pressureSpan3 = 5.002;                            //Voltage
+const float pressureLinearity3 = 0.03856;                     //in precentage. Not used for calibration
+const float pressureLine_K3 = maxPressure5V / pressureSpan3;  //Slope of the calibrated data
+//Zero offset of the calibrated data
+const float pressureLine_B3 = maxPressure5V - pressureLine_K3 * (pressureSpan3 + pressureZero3);
+
+
 //Arrays of 5V pressure sensors calibration data
-const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2};
-const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2};
+const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2, pressureLine_K3};
+const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3};
 
 //Current (20mA) pressure sensor minimum and maximum values
 const int16_t minPressureCurrent = 4;     //(mA)
