@@ -55,8 +55,8 @@ class textBox:
 class logBox:
     def __init__(self):
         self.maxLines = 15
-        self.log = ['\n'] * self.maxLines   
-        self.display = Text(0.5, 0.5, self.log, horizontalalignment='center', verticalalignment='center')
+        self.log = "Some very long text which\n will definitely not fit in this box but needs to be checked" # ['\n'] * self.maxLines   
+        self.display = Text(0.025, 1.575, self.log, wrap=True, horizontalalignment='left', verticalalignment='top')
         self.outline = plt.Rectangle((0, 0), 1.0, 1.6, color='black')
         self.inner = plt.Rectangle((0.0125, 0.0125), 0.975, 1.575, color='white')
         self.objects = [self.outline, self.inner, self.display]
