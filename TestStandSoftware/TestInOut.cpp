@@ -1,15 +1,15 @@
 /* Filename:      TestInOut.cpp
  * Author:        Eemeli Mykrä
  * Date:          17.04.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Responsible for setting up and reading the pins used to start
  *                the software in test mode and test the various actuators.
  */
  
 #include <Arduino.h>
-#include <Arduino_FreeRTOS.h>
-#include <semphr.h>
+//#include <Arduino_FreeRTOS.h>
+//#include <semphr.h>
 #include <stdint.h>
 #include "TestInOut.h"
 #include "Globals.h"
@@ -40,8 +40,8 @@ TEST INPUT SCHEMATIC:
 //static const int16_t testOutputPins[testOutputCount] = {IGN_GND_RELAY_TEST_DRIVE_PIN};
 //static const int16_t testAnalogPins[testAnalogCount] = {IGN_GND_RELAY_TEST_MEASURE_PIN};
 
-static SemaphoreHandle_t testPinInMutex;
-static SemaphoreHandle_t testPinOutMutex;
+//static SemaphoreHandle_t testPinInMutex;
+//static SemaphoreHandle_t testPinOutMutex;
 
 void initTestInOut(){
   pinMode(AUTO_TEST_START_PIN, INPUT_PULLUP);
@@ -53,12 +53,12 @@ void initTestInOut(){
 
   pinMode(IGN_GND_RELAY_TEST_DRIVE_PIN, OUTPUT);
   
-  testPinInMutex = xSemaphoreCreateMutex();
-  testPinOutMutex = xSemaphoreCreateMutex();
+  //testPinInMutex = xSemaphoreCreateMutex();
+  //testPinOutMutex = xSemaphoreCreateMutex();
 }
 
 void readTestInput(testInput_t* testInput){
-  if (xSemaphoreTake(testPinInMutex, 10) == pdTRUE){
+  //f (xSemaphoreTake(testPinInMutex, 10) == pdTRUE){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
     testInput->startTest = !digitalRead(AUTO_TEST_START_PIN);   //Inverted input
     testInput->forced = !digitalRead(FORCED_SEQUENECE_PIN);     //Inverted input
@@ -71,15 +71,15 @@ void readTestInput(testInput_t* testInput){
     testInput->MAIN_VALVE_IN = digitalRead(MAIN_VALVE_TEST_PIN);
     testInput->IGN_SW_IN = digitalRead(IGN_SW_RELAY_TEST_PIN);
   
-    xSemaphoreGive(testPinInMutex);
-  }
+  //  xSemaphoreGive(testPinInMutex);
+  //}
 }
 
 //Allowing any pin to be changed by this instead of pins in a list is slightly sus
 //Either keep this and trust the process, go back to a list of pins for this or include a check.
 void activateOutputPin(uint16_t pinNumber, bool pinState){
-  if (xSemaphoreTake(testPinOutMutex, 10) == pdTRUE){
+  //if (xSemaphoreTake(testPinOutMutex, 10) == pdTRUE){
     digitalWrite(pinNumber, pinState);
-    xSemaphoreGive(testPinOutMutex);
-  }
+  //  xSemaphoreGive(testPinOutMutex);
+  //}
 }

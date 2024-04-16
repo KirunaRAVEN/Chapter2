@@ -1,7 +1,7 @@
 /* Filename:      LatestValues.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Header file for the LatestValues <<protected>> object. 
  *                Contains function definitions.

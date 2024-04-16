@@ -1,7 +1,7 @@
 /* Filename:      FaultDetection.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Checks each set of measured data against set thresholds.
  *                If the limit is passed consecutively, SAFE mode is triggered. 
@@ -65,8 +65,6 @@ void checkData(values_t values){
   if (values.pressure0 > feedingPressureWarning){
       activateWarning = true;
   }
-
-
 
   //Affecting the modes
   if ((fetchedMode != SAFE) && (activateSafe == true)){

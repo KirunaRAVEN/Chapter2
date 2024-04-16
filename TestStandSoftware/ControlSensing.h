@@ -1,7 +1,7 @@
 /* Filename:      ControlSensing.h
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Header file for the ControlSensing <<device>> object. 
  *                Contains function definitions.

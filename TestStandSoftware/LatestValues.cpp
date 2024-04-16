@@ -1,20 +1,20 @@
 /* Filename:      LatestValues.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Stores the latest set of sensors measurements in a protected
  *                object. These values are then fetched by the countdown object.
  */
 
-#include <Arduino_FreeRTOS.h>
-#include <semphr.h>
+//#include <Arduino_FreeRTOS.h>
+//#include <semphr.h>
 
 #include "Globals.h"
 
 static values_t latestValues;
 
-static SemaphoreHandle_t latestValueMutex;
+//static SemaphoreHandle_t latestValueMutex;
 
 void initLatestValues(){
   latestValues.pressure0 = 0;      //N2 Feeding pressure 
@@ -35,19 +35,19 @@ void initLatestValues(){
   latestValues.n2FeedingButton = false;       //N2 Feeding valve status
   latestValues.oxidizerValveButton = false;   //Main oxidizer valve status
 
-  latestValueMutex = xSemaphoreCreateMutex();
+  //latestValueMutex = xSemaphoreCreateMutex();
 }
 
 void setLatest(values_t values){
-  if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
+  //if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     latestValues = values;
-    xSemaphoreGive(latestValueMutex);
-  }
+    //xSemaphoreGive(latestValueMutex);
+  //}
 }
 
 void getLatest(values_t* values){
-  if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
+  //if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     *values = latestValues;
-    xSemaphoreGive(latestValueMutex);
-  }
+    //xSemaphoreGive(latestValueMutex);
+  //}
 }

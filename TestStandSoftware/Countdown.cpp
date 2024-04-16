@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -9,7 +9,7 @@
  *                Contains the FreeRTOS task called countdownLoop.
  */
 
-#include <Arduino_FreeRTOS.h>
+//#include <Arduino_FreeRTOS.h>
 #include <Arduino.h>
 
 #include "Countdown.h"
@@ -24,6 +24,7 @@ void(* resetFunc) (void) = 0;
 
 void initCountdown(){
     
+    /*
     xTaskCreate(
     countdownLoop        //Name of the task function
     ,  "CountdownLoop"   // A name just for humans
@@ -31,10 +32,11 @@ void initCountdown(){
     ,  NULL              // Ppinter to passed variable
     ,  CRITICAL_PRIORITY // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,  NULL);            // Handle to the created task
+    */
 }
 
 void countdownLoop(){
-  TickType_t lastCountdownWakeTime = xTaskGetTickCount();
+  //TickType_t lastCountdownWakeTime = xTaskGetTickCount();
   values_t values;
   mode_t currentMode;
   substate_t currentSubstate;
@@ -57,6 +59,9 @@ void countdownLoop(){
   uint32_t countdownStartTime = 0;
   uint32_t ignitionPressTime = 0;
   while (true){
+
+    //activateMeasurement();
+
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
 
@@ -79,8 +84,11 @@ void countdownLoop(){
       setNewForcedIndicator(false);
     }
 
-    //Fetch latest measurements
+    //Perform and fetch latest measurements
     forwardGetLatestValues(&values);
+
+    //Check latest values for anomalies
+    sendToCheck(values);
 
     // The dump valve is within the main loop as it must always be accessible.
     // A check is done for SAFE mode to avoid conflicts, as SAFE mode has the
@@ -247,6 +255,8 @@ void countdownLoop(){
     sendValuesToSerial(values, statusValues);
     //}
 
-    xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
+    //Testing with no delay
+
+    //xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
   }
 }

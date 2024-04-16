@@ -1,7 +1,7 @@
 /* Filename:      Temperature.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.3 (10.03.2024)
+ * Version:       V1.31 (10.03.2024)
  *
  * Purpose:       Respnsible for reading the temperature sensors found on the 
  *                test bench.
