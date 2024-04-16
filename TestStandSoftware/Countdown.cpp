@@ -91,11 +91,10 @@ void countdownLoop(){
     sendToCheck(values);
 
     // The dump valve is within the main loop as it must always be accessible.
-    // A check is done for SAFE mode to avoid conflicts, as SAFE mode has the
-    // dump valve hard-coded to open regardless of button input.
-    if (currentMode != SAFE){
-      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-    }
+    // As of V1.31 the dump is always operable
+    //if (currentMode != SAFE){
+    setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+    //}
 
     //Should we have the ability to control the valves in all modes?
     if ((currentMode != SEQUENCE) && (currentMode != SAFE)){
