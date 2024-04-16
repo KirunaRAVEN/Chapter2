@@ -397,13 +397,13 @@ const uint32_t serialBaud = 115200;
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 5; //N successive passes lead to threshold trigger
 
-const int16_t feedingPressureThreshold = 65;    //Needs confirmation
+const int16_t feedingPressureThreshold = 70;    //Needs confirmation
 const int16_t chamberPressureThreshold = 25;    //Needs confirmation
 const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //nst int16_t More Thresholds to be added
 
 //Warning thresholds
-const int16_t feedingPressureWarning = 60;
+const int16_t feedingPressureWarning = 65;
 
 //Other stuff to come. Add any constants here instead of in each separate file.
 

@@ -40,7 +40,7 @@ void checkData(values_t values){
   getWarning(&fetchedWarning);
   
   //REDLINE TRIGGERS
-  if (values.pressure0 > feedingPressureThreshold){
+  if (values.pressure3 > feedingPressureThreshold){
     feedingPassCount++;
     if (feedingPassCount > successivePasses){
       activateSafe = true;
