@@ -60,7 +60,7 @@ void senseLoop(values_t* values){
     values->IR = readIR();   //Plume temperature
     
     //Read control signals
-    values->dumpValveButton = readDucampValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
+    values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
     values->heatingBlanketButton = readHeatingButton();        //Heating button status
     values->ignitionButton = readIgnitionButton();             //Ignition button status
     values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
