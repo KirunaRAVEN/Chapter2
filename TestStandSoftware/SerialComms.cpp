@@ -28,6 +28,8 @@ void initSerial(){
   //messageMutex = xSemaphoreCreateMutex();
 
   Serial.print(" r\n");
+  
+  //Print the headers for the CSV-file
   /*
   Serial.print("Dataline marker");            //Dataline index 1
   Serial.print(",");
