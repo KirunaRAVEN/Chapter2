@@ -286,39 +286,50 @@ typedef enum{
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
-const int16_t maxPressure5V = 100;
+const int16_t maxPressure5V_100Bar = 100;
+const int16_t maxPressure5V_25Bar = 25;
 
-//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) FEEDING
+//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) OXIDIZER FEEDING
 const float pressureZero0 = -0.003;                           //Voltage
 const float pressureSpan0 = 5.003;                            //Voltage
 const float pressureLinearity0 = 0.12493;                     //in precentage. Not used for calibration
-const float pressureLine_K0 = maxPressure5V / pressureSpan0;  //Slope of the calibrated data
+const float pressureLine_K0 = maxPressure5V_100Bar / pressureSpan0;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B0 = maxPressure5V - pressureLine_K0 * (pressureSpan0 + pressureZero0);
+const float maunalPressureOffset0 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B0 = maxPressure5V_100Bar - pressureLine_K0 * (pressureSpan0 + pressureZero0) - maunalPressureOffset0;
 
 //Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) LINE
 const float pressureZero1 = 0.01;                             //Voltage
 const float pressureSpan1 = 4.997;                            //Voltage
 const float pressureLinearity1 = 0.10154;                     //in percent. Not used for calibration
-const float pressureLine_K1 = maxPressure5V / pressureSpan1;  //Slope of the calibrated data
+const float pressureLine_K1 = maxPressure5V_100Bar / pressureSpan1;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B1 = maxPressure5V - pressureLine_K1 * (pressureSpan1 + pressureZero1);
+const float maunalPressureOffset1 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B1 = maxPressure5V_100Bar - pressureLine_K1 * (pressureSpan1 + pressureZero1) - maunalPressureOffset1;
 
-//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) CHAMBER
-const float pressureZero2 = 0.001;                            //Voltage
-const float pressureSpan2 = 5.002;                            //Voltage
-const float pressureLinearity2 = 0.11859;                     //in precentage. Not used for calibration
-const float pressureLine_K2 = maxPressure5V / pressureSpan2;  //Slope of the calibrated data
+//
+//BROKE ---- CHANGE VALUES
+//
+//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1040112) CHAMBER
+const float pressureZero2 = 0.000;                            //Voltage
+const float pressureSpan2 = 4.996;                            //Voltage
+const float pressureLinearity2 = 0.03146;                     //in precentage. Not used for calibration
+const float pressureLine_K2 = maxPressure5V_25Bar / pressureSpan2;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 + pressureZero2);
+const float maunalPressureOffset2 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B2 = maxPressure5V_25Bar - pressureLine_K2 * (pressureSpan2 + pressureZero2) - maunalPressureOffset2;
 
-//Pressure sensor calibration data for pressure sensor 3 (Serial No: 1086288) CHAMBER
+//
+//BROKE ---- CHANGE VALUES
+//
+//Pressure sensor calibration data for pressure sensor 3 (Serial No: 1086288) NITROGEN FEEDING
 const float pressureZero3 = -0.001;                           //Voltage
 const float pressureSpan3 = 5.002;                            //Voltage
 const float pressureLinearity3 = 0.03856;                     //in precentage. Not used for calibration
-const float pressureLine_K3 = maxPressure5V / pressureSpan3;  //Slope of the calibrated data
+const float pressureLine_K3 = maxPressure5V_100Bar / pressureSpan3;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B3 = maxPressure5V - pressureLine_K3 * (pressureSpan3 + pressureZero3);
+const float maunalPressureOffset3 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B3 = maxPressure5V_100Bar - pressureLine_K3 * (pressureSpan3 + pressureZero3) - maunalPressureOffset3;
 
 
 //Arrays of 5V pressure sensors calibration data
