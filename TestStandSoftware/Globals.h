@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.31 (10.03.2024)
+ * Version:       V1.4 (10.03.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 

@@ -1,7 +1,7 @@
 /* Filename:      LoadCell.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.31 (10.03.2024)
+ * Version:       V1.4 (10.03.2024)
  *
  * Purpose:       Responsible for reading the load cell used to measure the 
  *                thrust of the engine.
