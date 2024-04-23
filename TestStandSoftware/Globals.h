@@ -366,7 +366,7 @@ const int16_t minLoad = 0;
 const int16_t maxLoad = 250 * 4.44822;  //Conversion to Newtons
 
 //Load cell calibration data.
-const float loadCellZeroPointVoltage = 0.432; //Placeholder value
+const float loadCellZeroPointVoltage = 0.5; //Placeholder value
 const float loadCellSpan = 4.0; //Placeholder value
 
 const float loadCellLine_K = maxLoad / loadCellSpan; //Slope of the calibrated data

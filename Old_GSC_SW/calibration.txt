@@ -1,0 +1,10 @@
+4, N2 Feeding,
+5, Line,
+6, Chamber,
+7, Oxidizer Feeding,
+8, Load cell,
+9, Bottle, 1.04, 1.8
+10, NC, 1, 0
+11, Nozzle, 1, 26.8
+12, Ambient, 1, 18.5
+13, Plume, 1.055, 2.4
