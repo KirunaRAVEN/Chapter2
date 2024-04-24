@@ -1,7 +1,7 @@
 /* Filename:      Verification.cpp
  * Author:        Eemeli Mykrä
  * Date:          07.06.2023
- * Version:       V1.4 (19.04.2024)
+ * Version:       V1.41 (24.04.2024)
  *
  * Purpose:       Responsible for running the sequence through a verification sequence.
  *                Prompts the control box operator to press buttons at relevant times.

@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.4 (19.04.2024)
+ * Version:       V1.41 (24.04.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -357,9 +357,15 @@ const float pressureLine_B20mA = maxPressure20mA - pressureLine_K20mA * (pressur
 const int16_t minIR = -50;
 const int16_t maxIR = 1030;
 
+//How many measurements are taken per value to reduce noise on the IR sensor
+const int16_t IrAverageCount = 4;
+
 //TMP36 ranges
 const int16_t minTMP36 = -40;
 const int16_t maxTMP36 = 125;
+
+//How many measurements are taken per value to reduce noise on the TMP36
+const int16_t TMP36AverageCount = 4;
 
 //Load cell minimum and maximum values
 const int16_t minLoad = 0;
@@ -373,7 +379,7 @@ const float loadCellLine_K = maxLoad / loadCellSpan; //Slope of the calibrated d
 //Zero offset of the calibrated data
 const float loadCellLine_B = maxLoad - loadCellLine_K * (loadCellSpan + loadCellZeroPointVoltage);
 
-//How many measurements are taken per value to reduce noise
+//How many measurements are taken per value to reduce noise on the load cell
 const int16_t loadCellAverageCount = 4;
 
 //Which thermocouple corresponds to which "location"

@@ -1,7 +1,7 @@
 /* Filename:      TestAutomation.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.4 (19.04.2024)
+ * Version:       V1.41 (24.04.2024)
  *
  * Purpose:       Header file for the TestAutomation <<active>> object. 
  *                Contains function definitions.
