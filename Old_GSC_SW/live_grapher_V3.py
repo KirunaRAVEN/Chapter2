@@ -377,7 +377,7 @@ def update(frame):
                             data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
                         except:
                             continue
-                    else:
+                    elif i < 23:
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
