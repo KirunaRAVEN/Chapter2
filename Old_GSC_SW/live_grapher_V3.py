@@ -34,7 +34,6 @@ calibration_info = {}
 with open('calibration.txt') as f:
     for line in f:
         col_num, info_str = line.split(':')
-        print(line)
         title, slope, offset = info_str.strip().split(',')
          
         calibration_info[int(col_num.strip())] = {'title': title, 'slope': float(slope), 'offset': float(offset)}
@@ -363,26 +362,35 @@ def update(frame):
                     try: 
                         val = float(column)
                         if i in calibratedIndices:
-                            val = calibration_info[i]["slope"] * val + calibration_info[i]["offset"]
+                            val = float(calibration_info[i]["slope"]) * val + float(calibration_info[i]["offset"])
 
                     except: val = column
+
+                    # On reset, skip the line
+                    # if val == " r":
+                    #     print("reset detected")
+                    #     continue
+
                     #Only smooth sensor data, not time or binary values
                     if 3 <= i <= 11:
-                        data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
+                        try:
+                            data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
+                        except:
+                            continue
                     else:
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if row[22] != " ":
+            if len(row) == 23 and row[22] != " ":
                 #print(messageList)
                 messageListUpdated = True
                 splitRow = row[22].split("\\n")
                 for newRow in splitRow:
                     messageList += [newRow]
                 messageList = messageList[-maxMessageCount:]
-                                
+    
         last_pos = csv_file.tell()  
-        
+    
     for i in range(csvDataCount):
         data[i] = data[i][-data_points:]
                 

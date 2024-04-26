@@ -27,7 +27,7 @@ void initSerial(){
   //serialMutex = xSemaphoreCreateMutex();
   //messageMutex = xSemaphoreCreateMutex();
 
-  Serial.print(" r\n");
+  Serial.print("\n r\n");
   
   //Print the headers for the CSV-file
   /*
