@@ -3,7 +3,7 @@
 5: Chamber, 0.9924, -0.4273
 6: UNCALIBRATED - Oxidizer Feeding, 1, 0
 7: Load cell, 0.9931, 44.03
-8: UNCALIBRATED - Bottle, 1, 0
+8: Bottle, 1.04, 1.8
 9: UNCALIBRATED - NC, 1, 0
 10: Nozzle, 1.005, 30.68
 11: Ambient, 0.9743, 28.42
