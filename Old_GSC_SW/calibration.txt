@@ -1,10 +1,10 @@
-4, N2 Feeding,
-5, Line,
-6, Chamber,
-7, Oxidizer Feeding,
-8, Load cell,
-9, Bottle, 1.04, 1.8
-10, NC, 1, 0
-11, Nozzle, 1, 26.8
-12, Ambient, 1, 18.5
-13, Plume, 1.055, 2.4
+4: UNCALIBRATED - N2 Feeding, 1, 0
+5: UNCALIBRATED - Line, 1, 0
+6: Chamber, 0.9924, -0.4273
+7: UNCALIBRATED - Oxidizer Feeding, 1, 0
+8: Load cell, 0.9931, 44.03
+9: UNCALIBRATED - Bottle, 1, 0
+10: UNCALIBRATED - NC, 1, 0
+11: Nozzle, 1.005, 30.68
+12: Ambient, 0.9743, 28.42
+13: Plume, 0.9749, 4.84

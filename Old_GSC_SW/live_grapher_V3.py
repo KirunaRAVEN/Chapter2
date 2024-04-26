@@ -29,6 +29,17 @@ with open('titles.txt') as f:
         
         column_info[int(col_num.strip())] = {'title': title, 'xlabel': xlabel, 'ylabel': ylabel, 'unit': unit, 'ymax': int(ymax), 'ymin': int(ymin), 'warn': warn}
 
+# load calibration information from text file
+calibration_info = {}
+with open('calibration.txt') as f:
+    for line in f:
+        col_num, info_str = line.split(':')
+        print(line)
+        title, slope, offset = info_str.strip().split(',')
+         
+        calibration_info[int(col_num.strip())] = {'title': title, 'slope': float(slope), 'offset': float(offset)}
+
+
 # Set suitable nrows and ncols
 entries = len(column_info)
 max_vert = 4
@@ -96,10 +107,14 @@ plotTime = 10
 data_points = math.ceil(plotTime * 1000 / msPerPoint)
 # How many ticks in axis
 tickCount = 6
+
 # Corresponding csv positions
 dataIndices = [col_num for i, col_num in enumerate(column_info.keys())]
 warningLimits = [column_info[key]['warn'] for key in dataIndices]
 warningMargin = 0.8
+
+# Create a list of calibrated indices
+calibratedIndices = [col_num for i, col_num in enumerate(calibration_info.keys())]
 
 chamberPressure_Ind = dataIndices[0]
 bottlePressure_Ind = dataIndices[1]
@@ -345,7 +360,11 @@ def update(frame):
                 #row = [row[0]] + row[2:]
                 #Continue noramlly
                 for i, column in enumerate(row):
-                    try: val = float(column)
+                    try: 
+                        val = float(column)
+                        if i in calibratedIndices:
+                            val = calibration_info[i]["slope"] * val + calibration_info[i]["offset"]
+
                     except: val = column
                     #Only smooth sensor data, not time or binary values
                     if 3 <= i <= 11:
