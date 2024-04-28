@@ -24,13 +24,16 @@ def scrape_temperature():
 def save_to_file(temperature):
     if temperature is not None:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        with open("temperature_log.txt", "a") as file:
+        with open(startDate + "_temperature_log.txt", "a") as file:
             file.write(f"{timestamp} - Temperature: {temperature} °C\n")
             print(f"Temperature: {temperature} °C - Saved at {timestamp}")
     else:
         print("No temperature data to save.")
 
 # Main loop to scrape temperature every 60 seconds
+
+startDate = datetime.now().strftime("%Y-%m-%d")
+
 while True:
     temperature = scrape_temperature()
     save_to_file(temperature)

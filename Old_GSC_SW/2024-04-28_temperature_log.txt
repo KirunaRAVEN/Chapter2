@@ -1,0 +1,24 @@
+2024-04-28 10:13:04 - Temperature: 1.1 °C
+2024-04-28 10:13:34 - Temperature: 1.1 °C
+2024-04-28 10:14:04 - Temperature: 1.1 °C
+2024-04-28 10:14:25 - Temperature: 1.1 °C
+2024-04-28 10:15:25 - Temperature: 1.3 °C
+2024-04-28 10:16:25 - Temperature: 1.3 °C
+2024-04-28 10:17:25 - Temperature: 1.4 °C
+2024-04-28 10:18:25 - Temperature: 1.4 °C
+2024-04-28 10:19:26 - Temperature: 1.4 °C
+2024-04-28 10:20:26 - Temperature: 1.4 °C
+2024-04-28 10:21:26 - Temperature: 1.5 °C
+2024-04-28 10:22:26 - Temperature: 1.5 °C
+2024-04-28 10:23:26 - Temperature: 1.6 °C
+2024-04-28 10:24:26 - Temperature: 1.6 °C
+2024-04-28 10:25:27 - Temperature: 1.8 °C
+2024-04-28 10:26:27 - Temperature: 1.8 °C
+2024-04-28 10:27:27 - Temperature: 1.7 °C
+2024-04-28 10:28:27 - Temperature: 1.7 °C
+2024-04-28 10:29:27 - Temperature: 1.8 °C
+2024-04-28 10:30:27 - Temperature: 1.8 °C
+2024-04-28 10:30:53 - Temperature: 1.8 °C2024-04-28 10:31:53 - Temperature: 1.5 °C
+2024-04-28 10:32:54 - Temperature: 1.5 °C
+2024-04-28 10:33:54 - Temperature: 1.7 °C
+2024-04-28 10:34:54 - Temperature: 1.7 °C
