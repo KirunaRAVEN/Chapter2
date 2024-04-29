@@ -38,6 +38,27 @@ void initCountdown(){
 void countdownLoop(){
   //TickType_t lastCountdownWakeTime = xTaskGetTickCount();
   values_t values;
+
+  //Initialize the values after startup
+  values.pressure0 = 0;      //N2 Feeding pressure 
+  values.pressure1 = 0;      //Oxidizer line pressure 
+  values.pressure2 = 0;      //Combustion chamber pressure 
+  values.pressure3 = 0;      //Oxidizer Feeding pressure 
+  values.loadCell = 0;       //Back of the engine
+  values.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  values.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  values.temperature2 = 0;   //Nozzle temperature
+  values.temperature3 = 0;   //Ambient temperature
+  values.IR = 0;             //Plume Temperature
+  values.timestamp = 0;      //When was this set of values collected
+
+  values.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
+  values.heatingBlanketButton = false;  //Heating button status
+  values.ignitionButton = false;        //Ignition button status
+  values.n2FeedingButton = false;       //N2 Feeding valve status
+  values.oxidizerValveButton = false;   //Main oxidizer valve status
+
+
   mode_t currentMode;
   substate_t currentSubstate;
   testInput_t testInput;
