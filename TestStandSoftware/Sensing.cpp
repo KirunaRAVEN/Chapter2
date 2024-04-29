@@ -53,7 +53,7 @@ void senseLoop(values_t* values){
     values->loadCell = readLoad();  //Load cell for thrust
 
     values->temperature0 = readTMP36();                  //Bottle/Heating blanket temperature
-    //values->temperature1 = readTemp(NOT_CONNECTED_1);    //Not connected
+    values->temperature1 = 0;//readTemp(NOT_CONNECTED_1);    //Not connected
     values->temperature2 = readTemp(NOZZLE_TC);          //Nozzle temperature
     values->temperature3 = readTemp(AMBIENT_TC);         //Ambient temperature
 
