@@ -200,7 +200,7 @@ const int16_t valveCount = 3;
 const int16_t pressureCount5V = 4;
 
 //How many 20mA output pressure sensors does the system have
-const int16_t pressureCount20mA = 1;
+const int16_t pressureCount20mA = 0;
 
 //What resistance is used with the current output pressure sensors. (Ohm)
 const int16_t pressureResistance = 250;
@@ -221,14 +221,14 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
   float pressure0;      //N2 Feeding line pressure 
-  float pressure1;      //Oxidizer line pressure 
+  float pressure1;      //Line pressure 
   float pressure2;      //Combustion chamber pressure 
   float pressure3;      //Oxidizer Feeding pressure 
   float loadCell;       //Back of the engine
   float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
   float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
   float temperature2;   //Nozzle temperature
-  float temperature3;   //Ambient temperature
+  float temperature3;   //Ambient temperature 
   float IR;             //Plume Temperature
   
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
