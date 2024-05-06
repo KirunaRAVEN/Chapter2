@@ -72,7 +72,8 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  //In forced sequence the system dismisses the feeding pressure limit for firing.
+  //In forced sequence the system reverts back to initial state for repeated testing.
+  //Uses the old forced sequence functionality, hence the variable naming.
   bool forcedSequence = false;
 
   bool verificationDone = true;
@@ -255,9 +256,10 @@ void countdownLoop(){
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-
-        setNewSubstate(ALL_OFF);
-        setNewMode(WAIT);
+        if (forcedSequence == true){
+          setNewSubstate(ALL_OFF);
+          setNewMode(WAIT);
+        }
         break;
     }
 
