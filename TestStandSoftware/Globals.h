@@ -170,12 +170,12 @@ const int16_t taskMemoryBytes = 512;
 //Consider changing this to use math to make readin it
 
 //How long of a burn do we want (ms)
-const int16_t burnTime = 7*1000;
+const int16_t burnTime = 2*1000;
 
 //How long the igniter burns (ms) Measured from igniter test video
 const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
 
-//How long from ignition signal to igniter igniting (ms) Measured from igniter test videoS
+//How long from ignition signal to igniter igniting (ms) Measured from igniter test videos
 const int16_t igniterDelay = 50;
 
 //How long does the ignition need to be pressed to start the ignition (ms)
@@ -263,7 +263,7 @@ const int16_t maxADC = pow(2, resolutionADC) - 1;
 const float refADC = 5.00;
 
 //Measured ADC reference voltage
-const float measuredADC = 4.98;
+const float measuredADC = 5.00;
 
 //ADC calibration multiplier
 const float calibrationADC = measuredADC / refADC;
