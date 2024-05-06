@@ -1,7 +1,7 @@
 /* Filename:      Valves.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.42-OX (06.05.2024)
+ * Version:       V1.43 (06.05.2024)
  *
  * Purpose:       Header file for the Valves <<device>> object. 
  *                Contains function definitions.
