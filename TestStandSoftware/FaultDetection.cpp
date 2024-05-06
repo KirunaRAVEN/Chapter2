@@ -1,7 +1,7 @@
 /* Filename:      FaultDetection.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.41 (24.04.2024)
+ * Version:       V1.42-OX (06.05.2024)
  *
  * Purpose:       Checks each set of measured data against set thresholds.
  *                If the limit is passed consecutively, SAFE mode is triggered. 

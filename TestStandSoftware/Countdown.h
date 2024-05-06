@@ -1,7 +1,7 @@
 /* Filename:      Countdown.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.41 (24.04.2024)
+ * Version:       V1.42-OX (06.05.2024)
  *
  * Purpose:       Header file for the Countdown <<cyclic>> object. 
  *                Contains function definitions.

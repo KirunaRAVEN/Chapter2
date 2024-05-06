@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.41 (24.04.2024)
+ * Version:       V1.42-OX (06.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -255,6 +255,9 @@ void countdownLoop(){
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+
+        setNewSubstate(ALL_OFF);
+        setNewMode(WAIT);
         break;
     }
 

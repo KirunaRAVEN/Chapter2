@@ -32,7 +32,7 @@ def save_to_file(temperature):
 
 # Main loop to scrape temperature every 60 seconds
 
-startDate = datetime.now().strftime("%Y-%m-%d")
+startDate = datetime.now().strftime("%Y_%m_%d")
 
 while True:
     temperature = scrape_temperature()
