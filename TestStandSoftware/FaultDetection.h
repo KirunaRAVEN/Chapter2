@@ -1,7 +1,7 @@
 /* Filename:      FaultDetection.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.43 (06.05.2024)
+ * Version:       V1.44 (06.05.2024)
  *
  * Purpose:       Header file for the FaultDetection <<passive>> object. 
  *                Contains function definitions.

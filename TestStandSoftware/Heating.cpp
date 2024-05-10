@@ -1,7 +1,7 @@
 /* Filename:      Heating.cpp
  * Author:        Eemeli Mykrä
  * Date:          18.04.2023
- * Version:       V1.43 (06.05.2024)
+ * Version:       V1.44 (06.05.2024)
  *
  * Purpose:       Allows the software to control the heating blanket based on
  *                Oxidizer bottle pressure and temperature
