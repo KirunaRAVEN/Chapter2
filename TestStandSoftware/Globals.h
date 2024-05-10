@@ -167,22 +167,24 @@ const int16_t taskMemoryBytes = 512;
 
 //Ignition 
 
-//Consider changing this to use math to make readin it
+//How long does the ignition need to be pressed to start the ignition (ms)
+const int16_t ignitionSafeTime = 1 * 1000;
 
 //How long of a burn do we want (ms)
 const int16_t burnTime = 2*1000;
 
 //How long the igniter burns (ms) Measured from igniter test video
+//Not used anymore since valve opening time is now decided based experiments
 const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
 
 //How long from ignition signal to igniter igniting (ms) Measured from igniter test videos
+//Not used anymore since valve opening time is now decided based experiments
 const int16_t igniterDelay = 50;
 
-//How long does the ignition need to be pressed to start the ignition (ms)
-const int16_t ignitionSafeTime = 1 * 1000;
-
 //How long from sequence start until opening valves (ms)
-const int16_t valveOnTime = igniterDelay + igniterBurnLength / 2;
+// The value of 150 ms was decided on 2024.05.10 based on experimental results
+// They consists of valve opening delays and igniter temperature curves
+const int16_t valveOnTime = 150;
 
 //How long from sequence start to turning ignition off (ms)
 const int16_t ignitionOffTime = igniterBurnLength;
