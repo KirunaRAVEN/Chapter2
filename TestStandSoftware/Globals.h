@@ -171,10 +171,11 @@ const int16_t taskMemoryBytes = 512;
 const int16_t ignitionSafeTime = 1 * 1000;
 
 //How long of a burn do we want (ms)
-const int16_t burnTime = 2*1000;
+const int16_t burnTime = 7*1000;
 
 //How long the igniter burns (ms) Measured from igniter test video
-//Not used anymore since valve opening time is now decided based experiments
+//Not used anymore since valve opening time is now decided based experiments,
+//But still used to turn off the ignition signal
 const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
 
 //How long from ignition signal to igniter igniting (ms) Measured from igniter test videos
