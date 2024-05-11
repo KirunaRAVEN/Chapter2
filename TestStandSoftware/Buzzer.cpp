@@ -1,7 +1,7 @@
 /* Filename:      Buzzer.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Controls a buzzer that is used to indicate a restart of the 
  *                system as well as act as a warning if any of the sensor values 

@@ -1,7 +1,7 @@
 /* Filename:      Pressure.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the Pressure <<device>> object. 
  *                Contains function definitions.
@@ -34,6 +34,6 @@ float readPressure5V(uint16_t sensorNumber);
  * IN:            Sensor number to be read.
  * OUT:           Float with the pressure measurements
  */
-float readPressure20mA(uint16_t sensorNumber);
+float readcombustionPressure0mA(uint16_t sensorNumber);
 
 #endif

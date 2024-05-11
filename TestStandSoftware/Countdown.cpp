@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -40,15 +40,15 @@ void countdownLoop(){
   values_t values;
 
   //Initialize the values after startup
-  values.pressure0 = 0;      //N2 Feeding pressure 
-  values.pressure1 = 0;      //Oxidizer line pressure 
-  values.pressure2 = 0;      //Combustion chamber pressure 
-  values.pressure3 = 0;      //Oxidizer Feeding pressure 
+  values.N2FeedingPressure = 0;      //N2 Feeding pressure 
+  values.linePressure = 0;      //Oxidizer line pressure 
+  values.combustionPressure = 0;      //Combustion chamber pressure 
+  values.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
   values.loadCell = 0;       //Back of the engine
-  values.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  values.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  values.temperature2 = 0;   //Nozzle temperature
-  values.temperature3 = 0;   //Ambient temperature
+  values.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  values.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  values.nozzleTemperature = 0;   //Nozzle temperature
+  values.pipingTemperature = 0;   //Piping temperature
   values.IR = 0;             //Plume Temperature
   values.timestamp = 0;      //When was this set of values collected
 
@@ -170,7 +170,7 @@ void countdownLoop(){
             
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
-            else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
+            else if ((values.N2FeedingPressure > minimumFiringPressure) || forcedSequence == true){
               if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);

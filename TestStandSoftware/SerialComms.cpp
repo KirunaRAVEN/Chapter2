@@ -1,7 +1,7 @@
 /* Filename:      SerialComms.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Responsible for sending the latest sensor measurements over
  *                the Arduino Serial interface to a Rock 4C+ microcomputer.
@@ -51,7 +51,7 @@ void initSerial(){
   Serial.print(",");
   Serial.print("Nozzle Temperature");         //Nozzle temperature. Dataline index 10
   Serial.print(",");
-  Serial.print("Ambient Temperature");        //Ambient temperature. Dataline index 11
+  Serial.print("Piping temperature");        //Piping temperature. Dataline index 11
   Serial.print(",");
   Serial.print("Plume Temperature");          //Plume temperature. Dataline index 12
   Serial.print(",");
@@ -86,23 +86,23 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(values.timestamp);     //Arduino time in ms. Dataline index 2
     Serial.print(",");
-    Serial.print(values.pressure0);     //N2 Feeding pressure . Dataline index 3
+    Serial.print(values.N2FeedingPressure);     //N2 Feeding pressure . Dataline index 3
     Serial.print(",");
-    Serial.print(values.pressure1);     //Line pressure . Dataline index 4 
+    Serial.print(values.linePressure);     //Line pressure . Dataline index 4 
     Serial.print(",");
-    Serial.print(values.pressure2);     //Chamber pressure . Dataline index 5
+    Serial.print(values.combustionPressure);     //Chamber pressure . Dataline index 5
     Serial.print(",");
-    Serial.print(values.pressure3);     //Oxidizer Feeding pressure . Dataline index 6
+    Serial.print(values.N2OFeedingPressure);     //Oxidizer Feeding pressure . Dataline index 6
     Serial.print(",");
     Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
     Serial.print(",");
-    Serial.print(values.temperature0);  //Bottle/Heating blanket temperature. Dataline index 8
+    Serial.print(values.bottleTemperature);  //Bottle/Heating blanket temperature. Dataline index 8
     Serial.print(",");
-    Serial.print(values.temperature1);  //Not connected. Dataline index 9
+    Serial.print(values.notConnectedTemperature);  //Not connected. Dataline index 9
     Serial.print(",");
-    Serial.print(values.temperature2);  //Nozzle temperature. Dataline index 10
+    Serial.print(values.nozzleTemperature);  //Nozzle temperature. Dataline index 10
     Serial.print(",");
-    Serial.print(values.temperature3);  //Ambient temperature. Dataline index 11
+    Serial.print(values.pipingTemperature);  //Piping temperature. Dataline index 11
     Serial.print(",");
     Serial.print(values.IR);            //Plume temperature. Dataline index 12
     Serial.print(",");

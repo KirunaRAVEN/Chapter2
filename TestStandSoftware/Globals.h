@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -171,7 +171,7 @@ const int16_t taskMemoryBytes = 512;
 const int16_t ignitionSafeTime = 1 * 1000;
 
 //How long of a burn do we want (ms)
-const int16_t burnTime = 7*1000;
+const int16_t burnTime = 5*1000;
 
 //How long the igniter burns (ms) Measured from igniter test video
 //Not used anymore since valve opening time is now decided based experiments,
@@ -223,15 +223,15 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //N2 Feeding line pressure 
-  float pressure1;      //Line pressure 
-  float pressure2;      //Combustion chamber pressure 
-  float pressure3;      //Oxidizer Feeding pressure 
+  float N2FeedingPressure;      //N2 Feeding line pressure 
+  float linePressure;      //Line pressure 
+  float combustionPressure;      //Combustion chamber pressure 
+  float N2OFeedingPressure;      //Oxidizer Feeding pressure 
   float loadCell;       //Back of the engine
-  float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  float temperature2;   //Nozzle temperature
-  float temperature3;   //Ambient temperature 
+  float bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  float notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  float nozzleTemperature;   //Nozzle temperature
+  float pipingTemperature;   //Piping temperature 
   float IR;             //Plume Temperature
   
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
@@ -345,7 +345,7 @@ const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureL
 //Current (20mA) pressure sensor minimum and maximum values
 const int16_t minPressureCurrent = 4;     //(mA)
 const int16_t maxPressureCurrent = 20;    //(mA)
-const float maxPressure20mA = 172.3689; //(bar)
+const float maxcombustionPressure0mA = 172.3689; //(bar)
 
 //Calibration data for the 20mA output pressure sensors
 //How many measurements are performed each time the 20mA sensor is used
@@ -354,9 +354,9 @@ const int16_t pressureAverageCount20mA = 1;
 const float pressureZero20mA = 0.5;         //Bar --- TO CHANGE. Not sure why 0.5 See: https://www.farnell.com/datasheets/3626069.pdf
 const float pressureSpan20mA = 172.3689;    //Bar
 //Slope of the calibrated data
-const float pressureLine_K20mA = maxPressure20mA / pressureSpan20mA;
+const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
-const float pressureLine_B20mA = maxPressure20mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
+const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 
 //IR sensor minimum and maximum values
@@ -405,7 +405,7 @@ typedef enum{
 const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
-//const int16_t closePressure0 = 2;
+//const int16_t closeN2FeedingPressure = 2;
 
 //At what temperature are the heating blankets turned off
 //Software has no ability to control the heating blanket in the current design.
@@ -418,15 +418,15 @@ const int16_t buzzerOnTime = 1 * 500;
 const uint32_t serialBaud = 115200;
 
 //Fault thresholds for initiating an emergency stop
-const int16_t successivePasses = 5; //N successive passes lead to threshold trigger
+const int16_t successivePasses = 12; //N successive passes lead to threshold trigger
 
-const int16_t feedingPressureThreshold = 70;    //Needs confirmation
-const int16_t chamberPressureThreshold = 25;    //Needs confirmation
+const int16_t N2OFeedingPressureThreshold = 70;    //Needs confirmation
+const int16_t chamberPressureThreshold = 20;    //Needs confirmation
 const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //nst int16_t More Thresholds to be added
 
 //Warning thresholds
-const int16_t feedingPressureWarning = 65;
+const int16_t N2OFeedingPressureWarning = 65;
 
 //Other stuff to come. Add any constants here instead of in each separate file.
 

@@ -1,7 +1,7 @@
 /* Filename:      LatestValues.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Stores the latest set of sensors measurements in a protected
  *                object. These values are then fetched by the countdown object.
@@ -17,15 +17,15 @@ static values_t latestValues;
 //static SemaphoreHandle_t latestValueMutex;
 
 void initLatestValues(){
-  latestValues.pressure0 = 0;      //N2 Feeding pressure 
-  latestValues.pressure1 = 0;      //Oxidizer line pressure 
-  latestValues.pressure2 = 0;      //Combustion chamber pressure 
-  latestValues.pressure3 = 0;      //Oxidizer Feeding pressure 
+  latestValues.N2FeedingPressure = 0;      //N2 Feeding pressure 
+  latestValues.linePressure = 0;      //Oxidizer line pressure 
+  latestValues.combustionPressure = 0;      //Combustion chamber pressure 
+  latestValues.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
   latestValues.loadCell = 0;       //Back of the engine
-  latestValues.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  latestValues.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  latestValues.temperature2 = 0;   //Nozzle temperature
-  latestValues.temperature3 = 0;   //Ambient temperature
+  latestValues.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  latestValues.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  latestValues.nozzleTemperature = 0;   //Nozzle temperature
+  latestValues.pipingTemperature = 0;   //Piping temperature
   latestValues.IR = 0;             //Plume Temperature
   latestValues.timestamp = 0;      //When was this set of values collected
 

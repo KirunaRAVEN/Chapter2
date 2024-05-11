@@ -1,7 +1,7 @@
 /* Filename:      Sensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.44 (06.05.2024)
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       This object handles the measurements of the different sensors,
  *                storing them to the LatestValues object and checking them for
@@ -45,17 +45,17 @@ void senseLoop(values_t* values){
   //bool valveState;
   //bool ignitionState;
   //while (true){
-    values->pressure0 = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
-    values->pressure1 = readPressure5V(LINE_PRESSURE);                   //Line pressure 
-    values->pressure2 = readPressure5V(CHAMBER_PRESSURE);                //Chamber pressure 
-    values->pressure3 = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
+    values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
+    values->linePressure = readPressure5V(LINE_PRESSURE);                   //Line pressure 
+    values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);                //Chamber pressure 
+    values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
 
     values->loadCell = readLoad();  //Load cell for thrust
 
-    values->temperature0 = readTMP36();                     //Bottle/Heating blanket temperature
-    values->temperature1 = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
-    values->temperature2 = readTemp(NOZZLE_TC);             //Nozzle temperature
-    values->temperature3 = readTemp(AMBIENT_TC);            //Ambient temperature
+    values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
+    values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
+    values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
+    values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
 
     values->IR = readIR();   //Plume temperature
     
@@ -74,7 +74,7 @@ void senseLoop(values_t* values){
 
     //setLatest(values);
 
-    //Serial.println(values.pressure0);
+    //Serial.println(values.N2FeedingPressure);
 
     //Testing with no delay
     //xTaskDelayUntil(&lastSensingWakeTime, samplingTickDelay);

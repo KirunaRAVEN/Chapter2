@@ -71,7 +71,7 @@ loadCell= {
 }
 
 ambientTemperature = {
-    'title': 'Ambient Temperature',
+    'title': 'Piping temperature',
     'xLabel': 'Time',
     'yLabel': 'Temperature', 
     'xUnit': 's', 

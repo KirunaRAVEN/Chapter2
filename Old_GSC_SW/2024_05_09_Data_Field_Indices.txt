@@ -9,7 +9,7 @@ Load cell for thrust. 			Dataline index 7
 Bottle/Heating blanket temperature. 	Dataline index 8
 Not connected. 				Dataline index 9
 Nozzle temperature. 			Dataline index 10
-Ambient temperature. 			Dataline index 11
+Piping temperature. 			Dataline index 11
 Plume temperature.			Dataline index 12
 Dump valve button status.		Dataline index 13
 Heating button status. 			Dataline index 14
