@@ -9,7 +9,7 @@ import csv
 import time
 
 # Trying out different backends
-mpl.use("qtagg")
+mpl.use("TkAgg")
 
 # Hide the figure toolbar
 plt.rcParams['toolbar'] = 'None'
@@ -99,11 +99,12 @@ useBlitting = True
 
 # How long average is used for the info boxes
 infoBoxAverageCount = 10
-msPerPoint = 16.0
+msPerPoint = 8.0
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
-plotTime = 10
-data_points = math.ceil(plotTime * 1000 / msPerPoint)
+plotTime = 5
+plotScale = 1
+data_points = math.ceil(plotTime * 1000 / (msPerPoint * plotScale))
 # How many ticks in axis
 tickCount = 6
 
@@ -350,6 +351,8 @@ def update(frame):
         csv_reader = csv.reader(csv_file)
         csv_file.seek(last_pos)
         for row in csv_reader:
+        	#for i in range(plotScale):
+        	#    csv_reader.next()
             #print(row)
             #If it is a data line
             #Rock timestamp = index 0
