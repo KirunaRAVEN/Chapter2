@@ -11,7 +11,11 @@
 
 #include "Temperature.h"
 #include "Globals.h"
-#include "Adafruit_MAX31855.h"
+
+/*
+  NOTICE: Uses a modified version of the Adafruit library to gain access to the raw spiread32() function
+*/
+#include "Adafruit_MAX31855_RAVEN.h"
 
 //This pin number list was kept due to the higher number of thermocouples, and the fact that reading TCs is done with differently
 static const uint16_t tempChipSelectPins[tempCount] = {THERMOCOUPLE_CS_PIN0, THERMOCOUPLE_CS_PIN1, THERMOCOUPLE_CS_PIN2, THERMOCOUPLE_CS_PIN3};
@@ -43,7 +47,7 @@ int readTemp(uint16_t sensorNum){
   //Serial.print("\n");
   
   //float temperature = thermocouples[sensorNum].readCelsius();
-  temperature = thermocouples[sensorNum].spiread32();
+  int32_t temperature = thermocouples[sensorNum].spiread32();
   /*
   if (isnan(temperature)){
     Serial.print("Thermocouple fault(s) detected!\n");

@@ -74,11 +74,12 @@ typedef enum {
   VALVE_ON,
   IGNIT_OFF,
   VALVE_OFF,
+  PURGING,
   FINISHED
 } substate_t;
 
 //Used mainly for debugging and for user information
-const char substateStrings[6][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "FINISHED"};
+const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"};
 
 //Enumeration for the different states of the automated testing sequence
 typedef enum {
@@ -193,8 +194,11 @@ const int16_t ignitionOffTime = igniterBurnLength;
 //How long from sequence start until closing valves (ms)
 const int16_t valveOffTime = valveOnTime + burnTime;
 
-//How long from sequence start until calling the test finished (ms)
-const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
+//How long from sequence start until the start of purging (ms)
+const int16_t oxidiserEmptyTime = valveOffTime + 500;  //Placeholder value
+
+//How long from sequence start until the end of purging (ms)
+const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value
 
 //How many valves the system has
 const int16_t valveCount = 3; 
