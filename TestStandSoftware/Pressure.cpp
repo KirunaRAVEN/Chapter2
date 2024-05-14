@@ -19,6 +19,10 @@ void initPressure(){
   //Nothing to initialize currently
 }
 
+int readPressure5V(uint16_t sensorNum){
+
+  return analogRead(pressurePins[sensorNum]);
+
   /* Measurement to value explanation:
    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
    * refADV = expected ADC voltage of 5.00V
@@ -28,16 +32,15 @@ void initPressure(){
    * pressureCalibration_B[sensorNum] = mapping from voltage to bar for this sensor. Includes calibration values
    * Bars = K * Voltage + B
    */
-int readPressure5V(uint16_t sensorNum){
-  return analogRead(pressurePins[sensorNum]);
+  
   /*
   float pressureVoltage = analogRead(pressurePins[sensorNum]);
   pressureVoltage = calibrationADC * refADC * (pressureVoltage / maxADC);
   return pressureCalibration_K[sensorNum] * pressureVoltage + pressureCalibration_B[sensorNum];
   */
-
 }
 
+float readcombustionPressure0mA(uint16_t sensorNum){
 
   /* Measurement to value explanation:
    * Multiple readings may be taken and averaged out
@@ -53,7 +56,6 @@ int readPressure5V(uint16_t sensorNum){
    * Reading is calibrated linearly with: Bars = K * pressureReading + B
    */
 
-float readcombustionPressure0mA(uint16_t sensorNum){
   int32_t sum = 0;
   for(uint16_t i = 0; i < pressureAverageCount20mA; i++){
     sum += analogRead(pressurePins[sensorNum]);
