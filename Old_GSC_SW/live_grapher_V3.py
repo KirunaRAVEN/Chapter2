@@ -9,7 +9,7 @@ import csv
 import time
 
 # Trying out different backends
-mpl.use("qtagg")
+mpl.use("TkAgg")
 
 # Hide the figure toolbar
 plt.rcParams['toolbar'] = 'None'
@@ -99,11 +99,12 @@ useBlitting = True
 
 # How long average is used for the info boxes
 infoBoxAverageCount = 10
-msPerPoint = 16.0
+msPerPoint = 8.0
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
-plotTime = 10
-data_points = math.ceil(plotTime * 1000 / msPerPoint)
+plotTime = 5
+plotScale = 1
+data_points = math.ceil(plotTime * 1000 / (msPerPoint * plotScale))
 # How many ticks in axis
 tickCount = 6
 
@@ -125,7 +126,7 @@ nozzleTemperature_Ind = dataIndices[6]
 plumeTemperature_Ind = dataIndices[7]
 
 # Set up the data list
-csvDataCount = 23
+csvDataCount = 21
 data = []
 for i in range(csvDataCount):
     # Set the initial values
@@ -350,11 +351,13 @@ def update(frame):
         csv_reader = csv.reader(csv_file)
         csv_file.seek(last_pos)
         for row in csv_reader:
+        	#for i in range(plotScale):
+        	#    csv_reader.next()
             #print(row)
             #If it is a data line
             #Rock timestamp = index 0
             #Data indicator = index 1
-            if len(row) > 1 and row[1] == "d":
+            if len(row) > 1:
                 #Remove the "d"
                 #row = [row[0]] + row[2:]
                 #Continue noramlly
@@ -372,23 +375,26 @@ def update(frame):
                     #     continue
 
                     #Only smooth sensor data, not time or binary values
-                    if 3 <= i <= 11:
+                    if 1 <= i <= 9:
                         try:
                             data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
                         except:
                             continue
-                    elif i < 23:
+                    elif i < csvDataCount:
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if len(row) == 23 and row[22] != " ":
+            if len(row) == csvDataCount and row[-1] != 0:
                 #print(messageList)
+
+                messageList += "Message" + str(row[-1])
+                """
                 messageListUpdated = True
-                splitRow = row[22].split("\\n")
+                splitRow = row[-1].split("\\n")
                 for newRow in splitRow:
                     messageList += [newRow]
                 messageList = messageList[-maxMessageCount:]
-    
+                """
         last_pos = csv_file.tell()  
     
     for i in range(csvDataCount):
@@ -416,9 +422,9 @@ def update(frame):
     
     # Get states from csv after updating the list
     # Use last value from the list
-    h_state = int(data[14][-1])  # CSV column 14
-    v_state = int(data[19][-1])  # CSV column 19
-    ign_state = int(data[18][-1]) # CSV column 18
+    h_state = int(data[12][-1])  # CSV column 12
+    v_state = int(data[17][-1])  # CSV column 17
+    ign_state = int(data[16][-1]) # CSV column 16
     
     heatingIndicator.set_state(h_state)
     valveIndicator.set_state(v_state)
@@ -432,8 +438,8 @@ def update(frame):
     lc_value = "{:4.1f}".format(sum(data[loadCell_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
     
     # No smoothing for mode/substate strings or time
-    # To get string use modes[data[19][-1]] & substates[data[20][-1]]
-    sw_value = modes[int(data[20][-1])] + "\n\n" + substates[int(data[21][-1])] + "\n\n" + msToTime(int(data[2][-1]))  #CSV columns 20 & 21 & 2 respectively
+    # To get string use modes[data[18][-1]] & substates[data[19][-1]]
+    sw_value = modes[int(data[18][-1])] + "\n\n" + substates[int(data[19][-1])] + "\n\n" + msToTime(int(data[2][-1]))  #CSV columns 20 & 21 & 2 respectively
     
     if messageListUpdated:
         mi_value = ""
