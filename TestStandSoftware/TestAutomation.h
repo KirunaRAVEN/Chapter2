@@ -1,6 +1,7 @@
 /* Filename:      TestAutomation.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the TestAutomation <<active>> object. 
  *                Contains function definitions.
@@ -141,6 +142,26 @@ void setNewForcedIndicator(bool newState);
  * OUT:           Nothing
  */
 void callBuzzerUpdate(void);
+
+
+
+/* Function:      Intermediate interface for calling the senseLoop function
+ *                in the sensors --> sensing object. Uses the callSenseLoop() interface.
+ *
+ * IN:            Nothing
+ * OUT:           Nothing
+ */
+//void activateMeasurement(void);
+
+/* Function:      Intermediate interface for sending measurements to the 
+ *                FaultDetection object to be checked for limit violations.
+ *                Uses the checkData() interface.
+ *
+ * IN:            values_t structure containing the newest measurements
+ * OUT:           Nothing
+ */
+void sendToCheck(values_t values);
+
 
 
 #endif

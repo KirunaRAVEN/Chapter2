@@ -1,6 +1,7 @@
 /* Filename:      Buzzer.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Controls a buzzer that is used to indicate a restart of the 
  *                system as well as act as a warning if any of the sensor values 
@@ -8,8 +9,8 @@
  */
 
 #include <Arduino.h>
-#include <Arduino_FreeRTOS.h>
-#include <semphr.h>
+//#include <Arduino_FreeRTOS.h>
+//#include <semphr.h>
 #include <stdint.h>
 
 #include "Globals.h"
@@ -21,7 +22,7 @@
  * version should have more Mosfets and relays for improved controllability.
  */
 
-static SemaphoreHandle_t buzzerSemaphore;
+//static SemaphoreHandle_t buzzerSemaphore;
 static uint32_t buzzerStartTime;
 
 //Current version does not support buzzer patterns
@@ -43,15 +44,15 @@ void initBuzzer(){
   timedSequence = true;
   buzzerStartTime = millis();
 
-  buzzerSemaphore = xSemaphoreCreateMutex();
+  //buzzerSemaphore = xSemaphoreCreateMutex();
 }
 
 
 void setBuzzer(bool state){
-  if (xSemaphoreTake(buzzerSemaphore, 10) == pdTRUE){
+  //if (xSemaphoreTake(buzzerSemaphore, 10) == pdTRUE){
     digitalWrite(BUZZER_CONTROL_PIN, state);
-    xSemaphoreGive(buzzerSemaphore);
-  }
+  //  xSemaphoreGive(buzzerSemaphore);
+  //}
 }
 
 void updateBuzzer(){

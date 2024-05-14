@@ -19,6 +19,10 @@ file.flush()
 
 while True:
     data = ser.readline()
+    
+    #Remove null characters
+    data = data.replace(b'\x00', '')
+
     #print(data)
     # split on comma and newline
     data_list = re.split(b' |\n', data) # space-separated
@@ -27,6 +31,7 @@ while True:
     #    continue
     # convert to float
     #print(data_list[0])
+
     dataLine = False
     try:
         if data_list[0].decode() == "d":

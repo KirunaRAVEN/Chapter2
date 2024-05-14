@@ -1,6 +1,7 @@
 /* Filename:      Temperature.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Respnsible for reading the temperature sensors found on the 
  *                test bench.
@@ -41,6 +42,7 @@ float readTemp(uint16_t sensorNum){
   //Serial.print(thermocouples[sensorNum].readInternal());
   //Serial.print("\n");
   float temperature = thermocouples[sensorNum].readCelsius();;
+  
   /*
   if (isnan(temperature)){
     Serial.print("Thermocouple fault(s) detected!\n");
@@ -53,10 +55,11 @@ float readTemp(uint16_t sensorNum){
      //Serial.print(temperature);
      //Serial.print("\n");
    }
-  */
+    */
   
   return temperature;// * 0.25;
 }
+
 
 float readTMP36(){
   /* Measurement to value explanation:
@@ -65,8 +68,14 @@ float readTMP36(){
    * maxADC = 1023, since we are using 10-bit analog to digital converter
    * refADV = expected ADC voltage of 5.00V
    * (voltage - 0.5) * 100 = voltage to celsius conversion formula for TMP36 sensors
+   * Measurement is repeated TMP36AverageCount times each loop to reduce noise
    */
-  float sensorValue = analogRead(TMP36_INPUT_PIN);
-  float temperature = (calibrationADC * (sensorValue / maxADC) * refADC - 0.5) * 100;
+
+  float sensorValueSum = 0; 
+  for (int i = 0; i < TMP36AverageCount; i++){
+    sensorValueSum += analogRead(TMP36_INPUT_PIN);
+  }
+
+  float temperature = (calibrationADC * (sensorValueSum / (TMP36AverageCount * maxADC)) * refADC - 0.5) * 100;
   return temperature;
 }

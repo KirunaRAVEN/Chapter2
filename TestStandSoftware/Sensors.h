@@ -1,6 +1,7 @@
 /* Filename:      Sensors.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the Sensors <<active>> object. 
  *                Contains function definitions.
@@ -20,16 +21,6 @@
 void initSensors(void);
 
 
-/* Function:      Intermediate interface for sending measurements to the 
- *                FaultDetection object to be checked for limit violations.
- *                Uses the checkData() interface.
- *
- * IN:            values_t structure containing the newest measurements
- * OUT:           Nothing
- */
-void sendToCheck(values_t values);
-
-
 /* Function:      Intermediate interface for getting the latest measurements
  *                from the proteced LatestValues object. 
  *                Uses the getLatest() interface.
@@ -38,6 +29,15 @@ void sendToCheck(values_t values);
  * OUT:           Nothing
  */
 void getValuesFromSensors(values_t* values);
+
+
+/* Function:      Intermediate interface for calling the senseLoop function
+ *                in the sensing object. Uses the senseLoop() interface.
+ *
+ * IN:            Nothing
+ * OUT:           Nothing
+ */
+void callSenseLoop(void);
 
 
 #endif

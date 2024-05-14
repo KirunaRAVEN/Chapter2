@@ -1,13 +1,14 @@
 /* Filename:      Verification.cpp
  * Author:        Eemeli Mykrä
  * Date:          07.06.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Responsible for running the sequence through a verification sequence.
  *                Prompts the control box operator to press buttons at relevant times.
  */
 
 #include <Arduino.h>
-#include <Arduino_FreeRTOS.h>
+//#include <Arduino_FreeRTOS.h>
 #include <stdint.h>
 #include "Globals.h"
 #include "Verification.h"

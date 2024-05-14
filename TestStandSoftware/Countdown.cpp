@@ -1,6 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -8,7 +9,7 @@
  *                Contains the FreeRTOS task called countdownLoop.
  */
 
-#include <Arduino_FreeRTOS.h>
+//#include <Arduino_FreeRTOS.h>
 #include <Arduino.h>
 
 #include "Countdown.h"
@@ -23,6 +24,7 @@ void(* resetFunc) (void) = 0;
 
 void initCountdown(){
     
+    /*
     xTaskCreate(
     countdownLoop        //Name of the task function
     ,  "CountdownLoop"   // A name just for humans
@@ -30,11 +32,33 @@ void initCountdown(){
     ,  NULL              // Ppinter to passed variable
     ,  CRITICAL_PRIORITY // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
     ,  NULL);            // Handle to the created task
+    */
 }
 
 void countdownLoop(){
-  TickType_t lastCountdownWakeTime = xTaskGetTickCount();
+  //TickType_t lastCountdownWakeTime = xTaskGetTickCount();
   values_t values;
+
+  //Initialize the values after startup
+  values.N2FeedingPressure = 0;      //N2 Feeding pressure 
+  values.linePressure = 0;      //Oxidizer line pressure 
+  values.combustionPressure = 0;      //Combustion chamber pressure 
+  values.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
+  values.loadCell = 0;       //Back of the engine
+  values.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  values.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  values.nozzleTemperature = 0;   //Nozzle temperature
+  values.pipingTemperature = 0;   //Piping temperature
+  values.IR = 0;             //Plume Temperature
+  values.timestamp = 0;      //When was this set of values collected
+
+  values.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
+  values.heatingBlanketButton = false;  //Heating button status
+  values.ignitionButton = false;        //Ignition button status
+  values.n2FeedingButton = false;       //N2 Feeding valve status
+  values.oxidizerValveButton = false;   //Main oxidizer valve status
+
+
   mode_t currentMode;
   substate_t currentSubstate;
   testInput_t testInput;
@@ -48,7 +72,8 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  //In forced sequence the system dismisses the feeding pressure limit for firing.
+  //In forced sequence the system reverts back to initial state for repeated testing.
+  //Uses the old forced sequence functionality, hence the variable naming.
   bool forcedSequence = false;
 
   bool verificationDone = true;
@@ -56,6 +81,9 @@ void countdownLoop(){
   uint32_t countdownStartTime = 0;
   uint32_t ignitionPressTime = 0;
   while (true){
+
+    //activateMeasurement();
+
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
 
@@ -78,15 +106,17 @@ void countdownLoop(){
       setNewForcedIndicator(false);
     }
 
-    //Fetch latest measurements
+    //Perform and fetch latest measurements
     forwardGetLatestValues(&values);
 
+    //Check latest values for anomalies
+    sendToCheck(values);
+
     // The dump valve is within the main loop as it must always be accessible.
-    // A check is done for SAFE mode to avoid conflicts, as SAFE mode has the
-    // dump valve hard-coded to open regardless of button input.
-    if (currentMode != SAFE){
-      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-    }
+    // As of V1.31 the dump is always operable
+    //if (currentMode != SAFE){
+    setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+    //}
 
     //Should we have the ability to control the valves in all modes?
     if ((currentMode != SEQUENCE) && (currentMode != SAFE)){
@@ -140,7 +170,7 @@ void countdownLoop(){
             
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
-            else if ((values.pressure0 > minimumFiringPressure) || forcedSequence == true){
+            else if ((values.N2FeedingPressure > minimumFiringPressure) || forcedSequence == true){
               if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
                 countdownStartTime = millis();
                 setNewSubstate(IGNIT_ON);
@@ -226,6 +256,10 @@ void countdownLoop(){
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+        if (forcedSequence == true){
+          setNewSubstate(ALL_OFF);
+          setNewMode(WAIT);
+        }
         break;
     }
 
@@ -246,6 +280,8 @@ void countdownLoop(){
     sendValuesToSerial(values, statusValues);
     //}
 
-    xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
+    //Testing with no delay
+
+    //xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
   }
 }

@@ -1,30 +1,31 @@
 /* Filename:      LatestValues.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Stores the latest set of sensors measurements in a protected
  *                object. These values are then fetched by the countdown object.
  */
 
-#include <Arduino_FreeRTOS.h>
-#include <semphr.h>
+//#include <Arduino_FreeRTOS.h>
+//#include <semphr.h>
 
 #include "Globals.h"
 
 static values_t latestValues;
 
-static SemaphoreHandle_t latestValueMutex;
+//static SemaphoreHandle_t latestValueMutex;
 
 void initLatestValues(){
-  latestValues.pressure0 = 0;      //N2 Feeding pressure --- ORDER TO CHANGE
-  latestValues.pressure1 = 0;      //Oxidizer line pressure --- ORDER TO CHANGE
-  latestValues.pressure2 = 0;      //Combustion chamber pressure --- ORDER TO CHANGE
-  latestValues.pressure3 = 0;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
+  latestValues.N2FeedingPressure = 0;      //N2 Feeding pressure 
+  latestValues.linePressure = 0;      //Oxidizer line pressure 
+  latestValues.combustionPressure = 0;      //Combustion chamber pressure 
+  latestValues.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
   latestValues.loadCell = 0;       //Back of the engine
-  latestValues.temperature0 = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  latestValues.temperature1 = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  latestValues.temperature2 = 0;   //Nozzle temperature
-  latestValues.temperature3 = 0;   //Ambient temperature
+  latestValues.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  latestValues.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  latestValues.nozzleTemperature = 0;   //Nozzle temperature
+  latestValues.pipingTemperature = 0;   //Piping temperature
   latestValues.IR = 0;             //Plume Temperature
   latestValues.timestamp = 0;      //When was this set of values collected
 
@@ -34,19 +35,19 @@ void initLatestValues(){
   latestValues.n2FeedingButton = false;       //N2 Feeding valve status
   latestValues.oxidizerValveButton = false;   //Main oxidizer valve status
 
-  latestValueMutex = xSemaphoreCreateMutex();
+  //latestValueMutex = xSemaphoreCreateMutex();
 }
 
 void setLatest(values_t values){
-  if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
+  //if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     latestValues = values;
-    xSemaphoreGive(latestValueMutex);
-  }
+    //xSemaphoreGive(latestValueMutex);
+  //}
 }
 
 void getLatest(values_t* values){
-  if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
+  //if (xSemaphoreTake(latestValueMutex, 10) == pdTRUE){
     *values = latestValues;
-    xSemaphoreGive(latestValueMutex);
-  }
+    //xSemaphoreGive(latestValueMutex);
+  //}
 }

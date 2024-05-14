@@ -1,6 +1,7 @@
 /* Filename:      Pressure.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Responsible for the device interface of reading the 
  *                pressure sensors used to measure the various pressures.
@@ -41,14 +42,14 @@ float readPressure5V(uint16_t sensorNum){
    * refADV = expected ADC voltage of 5.00V
    * pressureVoltage = measured voltage on the pin, within 0...1023
    * maxADC = 1023, since we are using 10-bit analog to digital converter
-   * maxPressure20mA = Maximum pressure the sensor measures
+   * maxcombustionPressure0mA = Maximum pressure the sensor measures
    * pressureResistance = How many ohms does the sensor output current go through
    * minPressureCurrent = Minimum output current from the sensor
    * maxPressureCurrent = Maximum output current from the sensor
    * Reading is calibrated linearly with: Bars = K * pressureReading + B
    */
 
-float readPressure20mA(uint16_t sensorNum){
+float readcombustionPressure0mA(uint16_t sensorNum){
   int32_t sum = 0;
   for(uint16_t i = 0; i < pressureAverageCount20mA; i++){
     sum += analogRead(pressurePins[sensorNum]);
@@ -56,7 +57,7 @@ float readPressure20mA(uint16_t sensorNum){
   float pressureVoltage = sum/(float) pressureAverageCount20mA;  //Change to float to get a floating point number output
   //return pressureVoltage;
   pressureVoltage = calibrationADC * 1000 * refADC * (pressureVoltage / maxADC); //Conversion to mV with 1000 multiplier
-  float pressureReading = maxPressure20mA * (pressureVoltage / pressureResistance - minPressureCurrent) / (maxPressureCurrent - minPressureCurrent);
+  float pressureReading = maxcombustionPressure0mA * (pressureVoltage / pressureResistance - minPressureCurrent) / (maxPressureCurrent - minPressureCurrent);
 
   return pressureReading * pressureLine_K20mA + pressureLine_B20mA;
 }

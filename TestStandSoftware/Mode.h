@@ -1,6 +1,7 @@
 /* Filename:      Mode.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the Mode <<protected>> object. 
  *                Contains function definitions.

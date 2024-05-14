@@ -271,7 +271,7 @@ def update(frame):
     # Bottle Temperature : 7
     # Nozzle Temperature : 9
     # Load Cell Force : 6
-    # Ambient Temperature : 10
+    # Piping temperature : 10
     # Plume Temperature : 11
 
     # indicator flag indices 

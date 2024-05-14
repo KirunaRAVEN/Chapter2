@@ -1,6 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -103,8 +104,8 @@ const int16_t actuatorTestSettleTime = 250;
 const int16_t verificationEndCount = 10;
 
 //Which ADC readings counts as a passes for the ignition ground relay tests
-const int16_t ignitionGroundOpenPassLimit = 190; // 190 / 1024 * 5V ~= 1V -> Open Relay
-const int16_t ignitionGroundClosedPassLimit = 5; // 5 / 1024 * 5V ~= 0V -> Closed Relay
+const int16_t ignitionGroundOpenPassLimit = 150; // 150 / 1024 * 5V ~= 0.75V -> Open Relay
+const int16_t ignitionGroundClosedPassLimit = 10; // 10 / 1024 * 5V ~= 0V -> Closed Relay
 
 //Structure for storing the states of the test pins
 struct testInput_t {
@@ -166,22 +167,25 @@ const int16_t taskMemoryBytes = 512;
 
 //Ignition 
 
-//Consider changing this to use math to make readin it
-
-//How long of a burn do we want (ms)
-const int16_t burnTime = 7*1000;
-
-//How long the igniter burns (ms) Measured from igniter test video
-const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
-
-//How long from ignition signal to igniter igniting (ms) Measured from igniter test videoS
-const int16_t igniterDelay = 50;
-
 //How long does the ignition need to be pressed to start the ignition (ms)
 const int16_t ignitionSafeTime = 1 * 1000;
 
+//How long of a burn do we want (ms)
+const int16_t burnTime = 5*1000;
+
+//How long the igniter burns (ms) Measured from igniter test video
+//Not used anymore since valve opening time is now decided based experiments,
+//But still used to turn off the ignition signal
+const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
+
+//How long from ignition signal to igniter igniting (ms) Measured from igniter test videos
+//Not used anymore since valve opening time is now decided based experiments
+const int16_t igniterDelay = 50;
+
 //How long from sequence start until opening valves (ms)
-const int16_t valveOnTime = igniterDelay + igniterBurnLength / 2;
+// The value of 150 ms was decided on 2024.05.10 based on experimental results
+// They consists of valve opening delays and igniter temperature curves
+const int16_t valveOnTime = 150;
 
 //How long from sequence start to turning ignition off (ms)
 const int16_t ignitionOffTime = igniterBurnLength;
@@ -196,10 +200,10 @@ const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
 const int16_t valveCount = 3; 
 
 //How many 5V output pressure sensors does the system have
-const int16_t pressureCount5V = 3;
+const int16_t pressureCount5V = 4;
 
 //How many 20mA output pressure sensors does the system have
-const int16_t pressureCount20mA = 1;
+const int16_t pressureCount20mA = 0;
 
 //What resistance is used with the current output pressure sensors. (Ohm)
 const int16_t pressureResistance = 250;
@@ -219,15 +223,15 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float pressure0;      //N2 Feeding line pressure --- ORDER TO CHANGE
-  float pressure1;      //Oxidizer line pressure --- ORDER TO CHANGE
-  float pressure2;      //Combustion chamber pressure --- ORDER TO CHANGE
-  float pressure3;      //Oxidizer Feeding pressure --- ORDER TO CHANGE
+  float N2FeedingPressure;      //N2 Feeding line pressure 
+  float linePressure;      //Line pressure 
+  float combustionPressure;      //Combustion chamber pressure 
+  float N2OFeedingPressure;      //Oxidizer Feeding pressure 
   float loadCell;       //Back of the engine
-  float temperature0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  float temperature1;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  float temperature2;   //Nozzle temperature
-  float temperature3;   //Ambient temperature
+  float bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  float notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  float nozzleTemperature;   //Nozzle temperature
+  float pipingTemperature;   //Piping temperature 
   float IR;             //Plume Temperature
   
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
@@ -262,7 +266,7 @@ const int16_t maxADC = pow(2, resolutionADC) - 1;
 const float refADC = 5.00;
 
 //Measured ADC reference voltage
-const float measuredADC = 4.98;
+const float measuredADC = 5.00;
 
 //ADC calibration multiplier
 const float calibrationADC = measuredADC / refADC;
@@ -278,47 +282,70 @@ const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"
 typedef enum{
-  FEEDING_PRESSURE_N2 = 0,
+  FEEDING_PRESSURE_OXIDIZER = 0,
   LINE_PRESSURE = 1,
   CHAMBER_PRESSURE = 2,
-  FEEDING_PRESSURE_OXIDIZER = 3
+  FEEDING_PRESSURE_N2 = 3
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
-const int16_t maxPressure5V = 100;
+const int16_t maxPressure5V_100Bar = 100;
+const int16_t maxPressure5V_25Bar = 25;
 
-//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) FEEDING
+//Pressure sensor calibration data for pressure sensor 0 (Serial No: 667662) OXIDIZER FEEDING
 const float pressureZero0 = -0.003;                           //Voltage
 const float pressureSpan0 = 5.003;                            //Voltage
 const float pressureLinearity0 = 0.12493;                     //in precentage. Not used for calibration
-const float pressureLine_K0 = maxPressure5V / pressureSpan0;  //Slope of the calibrated data
+const float pressureLine_K0 = maxPressure5V_100Bar / pressureSpan0;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B0 = maxPressure5V - pressureLine_K0 * (pressureSpan0 + pressureZero0);
+const float maunalPressureOffset0 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B0 = maxPressure5V_100Bar - pressureLine_K0 * (pressureSpan0 + pressureZero0) - maunalPressureOffset0;
 
 //Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) LINE
 const float pressureZero1 = 0.01;                             //Voltage
 const float pressureSpan1 = 4.997;                            //Voltage
 const float pressureLinearity1 = 0.10154;                     //in percent. Not used for calibration
-const float pressureLine_K1 = maxPressure5V / pressureSpan1;  //Slope of the calibrated data
+const float pressureLine_K1 = maxPressure5V_100Bar / pressureSpan1;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B1 = maxPressure5V - pressureLine_K1 * (pressureSpan1 + pressureZero1);
+const float maunalPressureOffset1 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B1 = maxPressure5V_100Bar - pressureLine_K1 * (pressureSpan1 + pressureZero1) - maunalPressureOffset1;
 
-//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1073012) CHAMBER
-const float pressureZero2 = 0.001;                            //Voltage
-const float pressureSpan2 = 5.002;                            //Voltage
-const float pressureLinearity2 = 0.11859;                     //in precentage. Not used for calibration
-const float pressureLine_K2 = maxPressure5V / pressureSpan2;  //Slope of the calibrated data
+//Pressure sensor calibration data for pressure sensor 2 (Serial No: 1040112) CHAMBER
+const float pressureZero2 = 0.000;                            //Voltage
+const float pressureSpan2 = 4.996;                            //Voltage
+const float pressureLinearity2 = 0.03146;                     //in precentage. Not used for calibration
+const float pressureLine_K2 = maxPressure5V_25Bar / pressureSpan2;  //Slope of the calibrated data
 //Zero offset of the calibrated data
-const float pressureLine_B2 = maxPressure5V - pressureLine_K2 * (pressureSpan2 + pressureZero2);
+const float maunalPressureOffset2 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B2 = maxPressure5V_25Bar - pressureLine_K2 * (pressureSpan2 + pressureZero2) - maunalPressureOffset2;
+
+//Pressure sensor calibration data for pressure sensor 3 (Serial No: 1086286) NITROGEN FEEDING
+const float pressureZero3 = -0.005;                           //Voltage
+const float pressureSpan3 = 5.007;                            //Voltage
+const float pressureLinearity3 = 0.03709;                     //in precentage. Not used for calibration
+const float pressureLine_K3 = maxPressure5V_100Bar / pressureSpan3;  //Slope of the calibrated data
+//Zero offset of the calibrated data
+const float maunalPressureOffset3 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B3 = maxPressure5V_100Bar - pressureLine_K3 * (pressureSpan3 + pressureZero3) - maunalPressureOffset3;
+
+//---NOT ATTACHED---
+//Pressure sensor calibration data for pressure sensor 4 (Serial No: 1086284) OXIDIZER FEEDING BACKUP
+const float pressureZero4 = -0.005;                           //Voltage
+const float pressureSpan4 = 5.035;                            //Voltage
+const float pressureLinearity4 = 0.14196;                     //in precentage. Not used for calibration
+const float pressureLine_K4 = maxPressure5V_100Bar / pressureSpan4;  //Slope of the calibrated data
+//Zero offset of the calibrated data
+const float maunalPressureOffset4 = 0;                        //How many bars of offset is seen in experimental data
+const float pressureLine_B4 = maxPressure5V_100Bar - pressureLine_K4 * (pressureSpan4 + pressureZero4) - maunalPressureOffset4;
 
 //Arrays of 5V pressure sensors calibration data
-const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2};
-const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2};
+const float pressureCalibration_K[pressureCount5V] = {pressureLine_K0, pressureLine_K1, pressureLine_K2, pressureLine_K3};
+const float pressureCalibration_B[pressureCount5V] = {pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3};
 
 //Current (20mA) pressure sensor minimum and maximum values
 const int16_t minPressureCurrent = 4;     //(mA)
 const int16_t maxPressureCurrent = 20;    //(mA)
-const float maxPressure20mA = 172.3689; //(bar)
+const float maxcombustionPressure0mA = 172.3689; //(bar)
 
 //Calibration data for the 20mA output pressure sensors
 //How many measurements are performed each time the 20mA sensor is used
@@ -327,32 +354,38 @@ const int16_t pressureAverageCount20mA = 1;
 const float pressureZero20mA = 0.5;         //Bar --- TO CHANGE. Not sure why 0.5 See: https://www.farnell.com/datasheets/3626069.pdf
 const float pressureSpan20mA = 172.3689;    //Bar
 //Slope of the calibrated data
-const float pressureLine_K20mA = maxPressure20mA / pressureSpan20mA;
+const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
-const float pressureLine_B20mA = maxPressure20mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
+const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
 const int16_t maxIR = 1030;
 
+//How many measurements are taken per value to reduce noise on the IR sensor
+const int16_t IrAverageCount = 4;
+
 //TMP36 ranges
 const int16_t minTMP36 = -40;
 const int16_t maxTMP36 = 125;
+
+//How many measurements are taken per value to reduce noise on the TMP36
+const int16_t TMP36AverageCount = 4;
 
 //Load cell minimum and maximum values
 const int16_t minLoad = 0;
 const int16_t maxLoad = 250 * 4.44822;  //Conversion to Newtons
 
 //Load cell calibration data.
-const float loadCellZeroPointVoltage = 0.432; //Placeholder value
+const float loadCellZeroPointVoltage = 0.5; //Placeholder value
 const float loadCellSpan = 4.0; //Placeholder value
 
 const float loadCellLine_K = maxLoad / loadCellSpan; //Slope of the calibrated data
 //Zero offset of the calibrated data
 const float loadCellLine_B = maxLoad - loadCellLine_K * (loadCellSpan + loadCellZeroPointVoltage);
 
-//How many measurements are taken per value to reduce noise
+//How many measurements are taken per value to reduce noise on the load cell
 const int16_t loadCellAverageCount = 4;
 
 //Which thermocouple corresponds to which "location"
@@ -372,7 +405,7 @@ typedef enum{
 const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
-//const int16_t closePressure0 = 2;
+//const int16_t closeN2FeedingPressure = 2;
 
 //At what temperature are the heating blankets turned off
 //Software has no ability to control the heating blanket in the current design.
@@ -385,15 +418,15 @@ const int16_t buzzerOnTime = 1 * 500;
 const uint32_t serialBaud = 115200;
 
 //Fault thresholds for initiating an emergency stop
-const int16_t successivePasses = 5; //N successive passes lead to threshold trigger
+const int16_t successivePasses = 12; //N successive passes lead to threshold trigger
 
-const int16_t feedingPressureThreshold = 65;    //Needs confirmation
-const int16_t chamberPressureThreshold = 25;    //Needs confirmation
+const int16_t N2OFeedingPressureThreshold = 70;    //Needs confirmation
+const int16_t chamberPressureThreshold = 20;    //Needs confirmation
 const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //nst int16_t More Thresholds to be added
 
 //Warning thresholds
-const int16_t feedingPressureWarning = 60;
+const int16_t N2OFeedingPressureWarning = 65;
 
 //Other stuff to come. Add any constants here instead of in each separate file.
 

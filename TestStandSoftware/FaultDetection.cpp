@@ -1,6 +1,7 @@
 /* Filename:      FaultDetection.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Checks each set of measured data against set thresholds.
  *                If the limit is passed consecutively, SAFE mode is triggered. 
@@ -15,7 +16,7 @@
 #include "Mode.h"
 #include "Buzzer.h"
 
-static int16_t feedingPassCount;
+static int16_t N2OFeedingPassCount;
 static int16_t chamberPassCount;
 static int16_t casingPassCount;
 static mode_t fetchedMode;
@@ -24,7 +25,7 @@ static bool activateSafe;
 static bool activateWarning;
 
 void initFaultDetect(){
-  feedingPassCount = 0;
+  N2OFeedingPassCount = 0;
   chamberPassCount = 0;
   casingPassCount = 0;
 }
@@ -39,33 +40,38 @@ void checkData(values_t values){
   getWarning(&fetchedWarning);
   
   //REDLINE TRIGGERS
-  if (values.pressure0 > feedingPressureThreshold){
-    feedingPassCount++;
-    if (feedingPassCount > successivePasses){
+  
+  //N2O feeding pressure SAFE mode entry disabled for first hot flow  in version V_1.45 on (10.05.2024)
+  /*
+  if (values.N2OFeedingPressure > N2OFeedingPressureThreshold){
+    N2OFeedingPassCount++;
+    if (N2OFeedingPassCount > successivePasses){
       activateSafe = true;
     }
-  }else{feedingPassCount = 0;}
+  }else{N2OFeedingPassCount = 0;}
+  */
 
-  if (values.pressure2 > chamberPressureThreshold){
+  if (values.combustionPressure > chamberPressureThreshold){
     chamberPassCount++;
     if (chamberPassCount > successivePasses){
       activateSafe = true;
     }
   }else{chamberPassCount = 0;}
 
-  if (values.temperature2 > casingTemperatureThreshold){
+  //Nozzle temperature SAFE mode entry disabled for first hot flow  in version V_1.45 on (10.05.2024)
+  /*
+  if (values.nozzleTemperature > casingTemperatureThreshold){
     casingPassCount++;
     if (casingPassCount > successivePasses){
       activateSafe = true;
     }
   }else{casingPassCount = 0;}
+  */
 
   //WARNING TRIGGERS
-  if (values.pressure0 > feedingPressureWarning){
+  if (values.N2OFeedingPressure > N2OFeedingPressureWarning){
       activateWarning = true;
   }
-
-
 
   //Affecting the modes
   if ((fetchedMode != SAFE) && (activateSafe == true)){

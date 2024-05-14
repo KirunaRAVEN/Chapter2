@@ -29,6 +29,16 @@ with open('titles.txt') as f:
         
         column_info[int(col_num.strip())] = {'title': title, 'xlabel': xlabel, 'ylabel': ylabel, 'unit': unit, 'ymax': int(ymax), 'ymin': int(ymin), 'warn': warn}
 
+# load calibration information from text file
+calibration_info = {}
+with open('calibration.txt') as f:
+    for line in f:
+        col_num, info_str = line.split(':')
+        title, slope, offset = info_str.strip().split(',')
+         
+        calibration_info[int(col_num.strip())] = {'title': title, 'slope': float(slope), 'offset': float(offset)}
+
+
 # Set suitable nrows and ncols
 entries = len(column_info)
 max_vert = 4
@@ -96,19 +106,23 @@ plotTime = 10
 data_points = math.ceil(plotTime * 1000 / msPerPoint)
 # How many ticks in axis
 tickCount = 6
+
 # Corresponding csv positions
 dataIndices = [col_num for i, col_num in enumerate(column_info.keys())]
 warningLimits = [column_info[key]['warn'] for key in dataIndices]
 warningMargin = 0.8
 
-cp_Ind = dataIndices[0]
-bp_Ind = dataIndices[1]
-lp_Ind = dataIndices[2]
-bt_Ind = dataIndices[3]
-nt_Ind = dataIndices[4]
-lc_Ind = dataIndices[5]
-at_Ind = dataIndices[6]
-ir_Ind = dataIndices[7]
+# Create a list of calibrated indices
+calibratedIndices = [col_num for i, col_num in enumerate(calibration_info.keys())]
+
+chamberPressure_Ind = dataIndices[0]
+bottlePressure_Ind = dataIndices[1]
+linePressure_Ind = dataIndices[2]
+bottleTemperature_Ind = dataIndices[3]
+nitrogenPressure_Ind = dataIndices[4]
+loadCell_Ind = dataIndices[5]
+nozzleTemperature_Ind = dataIndices[6]
+plumeTemperature_Ind = dataIndices[7]
 
 # Set up the data list
 csvDataCount = 23
@@ -197,9 +211,9 @@ class infoBox:
 
 
 # Create named info boxes
-bottlePressureInfo = infoBox("Bottle pressure:", " Bar", (0, ncols-2), bp_Ind)
-bottleTempInfo = infoBox("Bottle temperature:", " °C", (1, ncols-2), bt_Ind)
-loadCellInfo = infoBox("Load cell:", " N", (2, ncols-2), lc_Ind)
+bottlePressureInfo = infoBox("Bottle pressure:", " Bar", (0, ncols-2), bottlePressure_Ind)
+bottleTempInfo = infoBox("Bottle temperature:", " °C", (1, ncols-2), bottleTemperature_Ind)
+loadCellInfo = infoBox("Load cell:", " N", (2, ncols-2), loadCell_Ind)
 swInfo = infoBox("Software mode:\n\n\nSoftware substate:\n\n\nArduino time", "", (3, ncols-2), None, fontSize = 20)
 
 maxMessageCount = 19
@@ -345,25 +359,38 @@ def update(frame):
                 #row = [row[0]] + row[2:]
                 #Continue noramlly
                 for i, column in enumerate(row):
-                    try: val = float(column)
+                    try: 
+                        val = float(column)
+                        if i in calibratedIndices:
+                            val = float(calibration_info[i]["slope"]) * val + float(calibration_info[i]["offset"])
+
                     except: val = column
+
+                    # On reset, skip the line
+                    # if val == " r":
+                    #     print("reset detected")
+                    #     continue
+
                     #Only smooth sensor data, not time or binary values
                     if 3 <= i <= 11:
-                        data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
-                    else:
+                        try:
+                            data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
+                        except:
+                            continue
+                    elif i < 23:
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if row[22] != " ":
+            if len(row) == 23 and row[22] != " ":
                 #print(messageList)
                 messageListUpdated = True
                 splitRow = row[22].split("\\n")
                 for newRow in splitRow:
                     messageList += [newRow]
                 messageList = messageList[-maxMessageCount:]
-                                
+    
         last_pos = csv_file.tell()  
-        
+    
     for i in range(csvDataCount):
         data[i] = data[i][-data_points:]
                 
@@ -400,9 +427,9 @@ def update(frame):
     # Get values from csv after updating the list
     # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
     # Smooths the data making it easier to read    
-    bp_value = "{:4.1f}".format(sum(data[bp_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
-    bt_value = "{:4.1f}".format(sum(data[bt_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
-    lc_value = "{:4.1f}".format(sum(data[lc_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
+    bp_value = "{:4.1f}".format(sum(data[bottlePressure_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
+    bt_value = "{:4.1f}".format(sum(data[bottleTemperature_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
+    lc_value = "{:4.1f}".format(sum(data[loadCell_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
     
     # No smoothing for mode/substate strings or time
     # To get string use modes[data[19][-1]] & substates[data[20][-1]]

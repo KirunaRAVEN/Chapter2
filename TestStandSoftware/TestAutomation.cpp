@@ -1,6 +1,7 @@
 /* Filename:      TestAutomation.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
+ * Version:       V1.45 (11.05.2024)
  *
  * Purpose:       Parent object the decomposes into <<device>> objects
  *                responsible for handling the hardware side of the test.
@@ -17,6 +18,7 @@
 #include "TestAutomation.h"
 #include "TestInOut.h"
 #include "Buzzer.h"
+#include "FaultDetection.h"
 
 void initTestAutomation(){
   //Nothing to initialize currently
@@ -76,3 +78,15 @@ void setNewForcedIndicator(bool newState){
 void callBuzzerUpdate(){
   updateBuzzer();
 }
+
+
+void sendToCheck(values_t values){
+  checkData(values);
+}
+
+
+/*
+void activateMeasurement(){
+  callSenseLoop();
+}
+*/

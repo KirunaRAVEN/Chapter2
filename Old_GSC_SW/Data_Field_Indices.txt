@@ -1,0 +1,23 @@
+Rock 4C time. 				Dataline index 0
+Dataline marker. 			Dataline index 1
+Arduino time in ms. 			Dataline index 2
+N2 Feeding pressure. 			Dataline index 3
+Line pressure. 				Dataline index 4
+Chamber pressure. 			Dataline index 5
+Oxidizer Feeding pressure. 		Dataline index 6
+Load cell for thrust. 			Dataline index 7
+Bottle/Heating blanket temperature. 	Dataline index 8
+Not connected. 				Dataline index 9
+Nozzle temperature. 			Dataline index 10
+Piping temperature. 			Dataline index 11
+Plume temperature.			Dataline index 12
+Dump valve button status.		Dataline index 13
+Heating button status. 			Dataline index 14
+Ignition button status. 		Dataline index 15
+N2 Feeding button status. 		Dataline index 16
+Oxidizer valve button status. 		Dataline index 17
+Ignition SW state. 			Dataline index 18
+Valve SW state. 			Dataline index 19
+Current SW mode. 			Dataline index 20
+Current SW substate. 			Dataline index 21
+Message field. 				Dataline index 22
