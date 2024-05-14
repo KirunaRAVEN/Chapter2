@@ -37,7 +37,7 @@ void initTemp(){
   }
 } 
 
-float readTemp(uint16_t sensorNum){
+int readTemp(uint16_t sensorNum){
   //digitalWrite(tempChipSelectPins[sensorNum], LOW);
   //Serial.print(thermocouples[sensorNum].readInternal());
   //Serial.print("\n");
@@ -61,7 +61,10 @@ float readTemp(uint16_t sensorNum){
 }
 
 
-float readTMP36(){
+int readTMP36(){
+
+  return analogRead(TMP36_INPUT_PIN);
+
   /* Measurement to value explanation:
    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
    * sensorValue = measured voltage on the pin, within 0...1023
@@ -70,7 +73,7 @@ float readTMP36(){
    * (voltage - 0.5) * 100 = voltage to celsius conversion formula for TMP36 sensors
    * Measurement is repeated TMP36AverageCount times each loop to reduce noise
    */
-
+  /*
   float sensorValueSum = 0; 
   for (int i = 0; i < TMP36AverageCount; i++){
     sensorValueSum += analogRead(TMP36_INPUT_PIN);
@@ -78,4 +81,5 @@ float readTMP36(){
 
   float temperature = (calibrationADC * (sensorValueSum / (TMP36AverageCount * maxADC)) * refADC - 0.5) * 100;
   return temperature;
+  */
 }

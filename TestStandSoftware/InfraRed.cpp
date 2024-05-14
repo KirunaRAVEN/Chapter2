@@ -18,7 +18,10 @@ void initIR(){
   //Nothing to initialize currently
 }
 
-float readIR(){
+int readIR(){
+
+  return analogRead(INFRARED_INPUT_PIN);
+
   /* Measurement to value explanation:
    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
    * sensorValue = measured voltage on the pin, within 0...1023
@@ -28,7 +31,8 @@ float readIR(){
    * calibratedValue * (maxIR - minIR) + minIR = mapping to the actual temp value
    * Measurement is repeated IrAverageCount times each loop to reduce noise
    */
-
+  
+  /*
   float sensorValueSum = 0;
   for (int i = 0; i < IrAverageCount; i++){
     sensorValueSum += analogRead(INFRARED_INPUT_PIN);
@@ -36,4 +40,5 @@ float readIR(){
 
   float temperature = calibrationADC * (sensorValueSum / (IrAverageCount * maxADC)) * (maxIR - minIR) + minIR;
   return temperature;
+  */
 }

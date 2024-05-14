@@ -18,6 +18,8 @@
 static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
 static char* msg = datalineMessage;
 
+uint32_t lastTime = 0;
+uint32_t count = 0;
 
 void initSerial(){
 
@@ -33,7 +35,7 @@ void initSerial(){
   /*
   Serial.print("Dataline marker");            //Dataline index 1
   Serial.print(",");
-  Serial.print("Arduino time");               //Arduino time in ms. Dataline index 2
+  Serial.print("Arduino time");               //Arduino time in us. Dataline index 2
   Serial.print(",");
   Serial.print("N2 Feeding Pressure");        //N2 Feeding pressure . Dataline index 3
   Serial.print(",");
@@ -82,28 +84,63 @@ void initSerial(){
 
 void writeValues(values_t values, statusValues_t statusValues){
   //if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
-    Serial.print("d");                  //Dataline index 1
+
+  int msgIndex = 4;
+
+  long comb1 = values.N2FeedingPressure;
+  comb1 = comb1 << (10) | values.linePressure;
+  comb1 = comb1 << (10) | values.combustionPressure;
+
+  long comb2 = values.N2OFeedingPressure;
+  comb2 = comb2 << (10) | values.loadCell;
+  comb2 = comb2 << (10) | values.bottleTemperature;
+
+  long comb3 = values.nozzleTemperature;
+  comb3 = comb3 << (14) | values.pipingTemperature;
+
+  long comb4 = values.IR;
+  comb4 = comb4 << (10) | values.dumpValveButton;
+  comb4 = comb4 << (1) | values.heatingBlanketButton;
+  comb4 = comb4 << (1) | values.ignitionButton;
+  comb4 = comb4 << (1) | values.n2FeedingButton;
+  comb4 = comb4 << (1) | values.oxidizerValveButton;
+  comb4 = comb4 << (1) | statusValues.ignitionEngagedActive;
+  comb4 = comb4 << (1) | statusValues.valveActive;
+  comb4 = comb4 << (3) | statusValues.mode;
+  comb4 = comb4 << (3) | statusValues.subState;
+  comb4 = comb4 << (4) | msgIndex;
+
+    Serial.print(values.timestamp);     //Arduino time in us. Dataline index 2
     Serial.print(",");
-    Serial.print(values.timestamp);     //Arduino time in ms. Dataline index 2
-    Serial.print(",");
+    /*
     Serial.print(values.N2FeedingPressure);     //N2 Feeding pressure . Dataline index 3
     Serial.print(",");
     Serial.print(values.linePressure);     //Line pressure . Dataline index 4 
     Serial.print(",");
     Serial.print(values.combustionPressure);     //Chamber pressure . Dataline index 5
+    */
+    Serial.print(comb1);
     Serial.print(",");
+    /*
     Serial.print(values.N2OFeedingPressure);     //Oxidizer Feeding pressure . Dataline index 6
     Serial.print(",");
     Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
     Serial.print(",");
     Serial.print(values.bottleTemperature);  //Bottle/Heating blanket temperature. Dataline index 8
+    */
+    Serial.print(comb2);
     Serial.print(",");
+    /*
     Serial.print(values.notConnectedTemperature);  //Not connected. Dataline index 9
     Serial.print(",");
     Serial.print(values.nozzleTemperature);  //Nozzle temperature. Dataline index 10
     Serial.print(",");
     Serial.print(values.pipingTemperature);  //Piping temperature. Dataline index 11
+    */
+    Serial.print(comb3);
     Serial.print(",");
+    
+    /*
     Serial.print(values.IR);            //Plume temperature. Dataline index 12
     Serial.print(",");
 
@@ -129,12 +166,17 @@ void writeValues(values_t values, statusValues_t statusValues){
     Serial.print(",");
     Serial.print(msg);                                  //Message field. Dataline index 22
     Serial.print("\n");
-    
+    */
+    Serial.print(comb4);
+    Serial.print("\n");
+
     //Clear message
-    strcpy(msg, " ");
+    //strcpy(msg, " ");
+    msgIndex = 0;
 
   //  xSemaphoreGive(serialMutex);
   //}
+    lastTime = micros();
 }
 
 void saveMessage(char* message){

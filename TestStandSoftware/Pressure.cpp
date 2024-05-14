@@ -28,10 +28,14 @@ void initPressure(){
    * pressureCalibration_B[sensorNum] = mapping from voltage to bar for this sensor. Includes calibration values
    * Bars = K * Voltage + B
    */
-float readPressure5V(uint16_t sensorNum){
+int readPressure5V(uint16_t sensorNum){
+  return analogRead(pressurePins[sensorNum]);
+  /*
   float pressureVoltage = analogRead(pressurePins[sensorNum]);
   pressureVoltage = calibrationADC * refADC * (pressureVoltage / maxADC);
   return pressureCalibration_K[sensorNum] * pressureVoltage + pressureCalibration_B[sensorNum];
+  */
+
 }
 
 

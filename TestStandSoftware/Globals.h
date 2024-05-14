@@ -223,16 +223,16 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint32_t timestamp;   //Time since Arduino startup
-  float N2FeedingPressure;      //N2 Feeding line pressure 
-  float linePressure;      //Line pressure 
-  float combustionPressure;      //Combustion chamber pressure 
-  float N2OFeedingPressure;      //Oxidizer Feeding pressure 
-  float loadCell;       //Back of the engine
-  float bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  float notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  float nozzleTemperature;   //Nozzle temperature
-  float pipingTemperature;   //Piping temperature 
-  float IR;             //Plume Temperature
+  int N2FeedingPressure;      //N2 Feeding line pressure 
+  int linePressure;      //Line pressure 
+  int combustionPressure;      //Combustion chamber pressure 
+  int N2OFeedingPressure;      //Oxidizer Feeding pressure 
+  int loadCell;       //Back of the engine
+  int bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  int notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  int nozzleTemperature;   //Nozzle temperature
+  int pipingTemperature;   //Piping temperature 
+  int IR;             //Plume Temperature
   
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
   bool heatingBlanketButton;        //Is heating button pressed
@@ -358,6 +358,8 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
+//Factor of reduction on temperature sensor measurements
+const uint16_t tempSensorSampleReduction = 10;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;

@@ -17,9 +17,13 @@ void initLoad(){
   //Nothing to initialize currently
 }
 
-float readLoad(){
+int readLoad(){
+  
+  return analogRead(LOADCELL_INPUT_PIN);
+  /*
   float sum = 0;
   float sensorValue = 0;
+  */
 
   /* Measurement to value explanation:
    * For loop = measure multiple values and take average, load cells are noisy by default.
@@ -32,13 +36,13 @@ float readLoad(){
    * Newtons = K * Voltage + B
    */
 
+  /*
   for(uint16_t i = 0; i<loadCellAverageCount; i++){
     sensorValue = analogRead(LOADCELL_INPUT_PIN);
     sensorValue = (sensorValue / maxADC) * refADC * calibrationADC;
     sum += sensorValue;  
   }
-
   sensorValue = sum/loadCellAverageCount;
   return loadCellLine_K * sensorValue + loadCellLine_B;
-
+  */
 }

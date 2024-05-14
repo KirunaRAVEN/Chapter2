@@ -1,6 +1,6 @@
 Rock 4C time. 				Dataline index 0
 Dataline marker. 			Dataline index 1
-Arduino time in ms. 			Dataline index 2
+Arduino time in us. 			Dataline index 2
 N2 Feeding pressure. 			Dataline index 3
 Line pressure. 				Dataline index 4
 Chamber pressure. 			Dataline index 5

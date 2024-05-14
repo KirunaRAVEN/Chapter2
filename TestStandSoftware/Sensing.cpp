@@ -23,6 +23,7 @@
 #include "ControlSensing.h"
 
 //values_t values;
+uint32_t loopCount = 0; 
 
 
 void initSensing(){
@@ -52,13 +53,15 @@ void senseLoop(values_t* values){
 
     values->loadCell = readLoad();  //Load cell for thrust
 
-    values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
-    values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
-    values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
-    values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
+    if (loopCount % tempSensorSampleReduction == 0){
+      values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
+      values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
+      values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
+      values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
 
-    values->IR = readIR();   //Plume temperature
-    
+      values->IR = readIR();   //Plume temperature
+    }
+
     //Read control signals
     values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
     values->heatingBlanketButton = readHeatingButton();        //Heating button status
@@ -67,7 +70,7 @@ void senseLoop(values_t* values){
     values->oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
 
     //Save timestamp
-    values->timestamp = millis();            //Arduino time in ms
+    values->timestamp = micros();            //Arduino time in us
 
     //Called from Countdown loop in V1.31    
     //sendToCheck(values);
@@ -79,4 +82,7 @@ void senseLoop(values_t* values){
     //Testing with no delay
     //xTaskDelayUntil(&lastSensingWakeTime, samplingTickDelay);
   //}
+
+  loopCount++;
+
 }
