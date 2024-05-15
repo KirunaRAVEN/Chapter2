@@ -85,7 +85,7 @@ void initSerial(){
 void writeValues(values_t values, statusValues_t statusValues){
   //if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
 
-  int msgIndex = 4;
+  int msgIndex = 0;
 
   long comb1 = values.N2FeedingPressure;
   comb1 = comb1 << (10) | values.linePressure;
@@ -108,12 +108,14 @@ void writeValues(values_t values, statusValues_t statusValues){
   comb4 = comb4 << (3) | statusValues.mode;
   comb4 = comb4 << (3) | statusValues.subState;
   comb4 = comb4 << (4) | msgIndex;
-  comb4 = comb4 << (10) | values.IR;
+  comb4 = comb4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
   
-
   uint32_t printedValue = (uint32_t) (values.timestamp >> 3);
 
+  //uint32_t timeDiff = (uint32_t) (values.timestamp >> 3) * 8 - lastTime;
+
   Serial.print(printedValue);     //Arduino time in us. Dataline index 2
+  //lastTime = millis();
   Serial.print(",");
   /*
   Serial.print(values.N2FeedingPressure);     //N2 Feeding pressure . Dataline index 3
@@ -172,16 +174,14 @@ void writeValues(values_t values, statusValues_t statusValues){
   */
   Serial.print(comb4);
   Serial.print("\n");
-
-  Serial.println(calibrationADC * (values.IR / maxADC) * (maxIR - minIR) + minIR);
-
+  
   //Clear message
   //strcpy(msg, " ");
   msgIndex = 0;
 
   //  xSemaphoreGive(serialMutex);
   //}
-  //lastTime = micros();
+  //lastTime = millis();
 }
 
 void saveMessage(char* message){
