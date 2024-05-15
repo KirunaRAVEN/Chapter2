@@ -228,8 +228,12 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 
 //Structure for storing measurements with a timestamp
 struct values_t {
-  uint32_t timestamp;   //Time since Arduino startup
-  int N2FeedingPressure;      //N2 Feeding line pressure 
+  uint64_t timestamp;           //Time since Arduino startup in us
+  uint32_t msTimestamp;         //Time since Arduino startup in ms
+  uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
+  uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
+  
+  int N2FeedingPressure;        //N2 Feeding line pressure 
   int linePressure;      //Line pressure 
   int combustionPressure;      //Combustion chamber pressure 
   int N2OFeedingPressure;      //Oxidizer Feeding pressure 
@@ -418,7 +422,7 @@ typedef enum{
  */
 
 //Minimum pressure required to start the firing sequence (bar)
-const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the firing
+const int16_t minimumFiringPressure = -1;  //Set to -1 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
 //const int16_t closeN2FeedingPressure = 2;

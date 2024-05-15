@@ -39,6 +39,12 @@ void countdownLoop(){
   //TickType_t lastCountdownWakeTime = xTaskGetTickCount();
   values_t values;
 
+  //Initialize the timing values
+  values.timestamp = 0;
+  values.msTimestamp = 0;
+  values.lastTimestamp = 0;
+  values.timeOverflowOffset = 0;
+
   //Initialize the values after startup
   values.N2FeedingPressure = 0;      //N2 Feeding pressure 
   values.linePressure = 0;      //Oxidizer line pressure 
@@ -50,7 +56,6 @@ void countdownLoop(){
   values.nozzleTemperature = 0;   //Nozzle temperature
   values.pipingTemperature = 0;   //Piping temperature
   values.IR = 0;             //Plume Temperature
-  values.timestamp = 0;      //When was this set of values collected
 
   values.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   values.heatingBlanketButton = false;  //Heating button status
@@ -162,8 +167,13 @@ void countdownLoop(){
          * disengaging the ignition relay and opening and closing the main oxidizer
          * valve based on set timing found in the environmental Globals object.
          */
+
         switch (currentSubstate){     
           case ALL_OFF:
+            
+            //float realN2OPressure = calibrationADC * refADC * (values.N2OFeedingPressure / maxADC);
+            //realN2OPressure = pressureCalibration_K[FEEDING_PRESSURE_OXIDIZER] * realN2OPressure + pressureCalibration_B[FEEDING_PRESSURE_OXIDIZER];
+
             //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
               setNewMode(WAIT);
@@ -171,36 +181,37 @@ void countdownLoop(){
             
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
-            else if ((values.N2FeedingPressure > minimumFiringPressure) || forcedSequence == true){
-              if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
-                countdownStartTime = millis();
-                setNewSubstate(IGNIT_ON);
-                setIgnition(true);
-              }
-              else {
-                if (ignitionValveStateFlag == false){
-                  if (values.dumpValveButton == true){
-                    msg = "Warning:\\nCannot begin sequence\\nwith dump valve open.";
-                    ignitionValveStateFlag = true;
-                    sendMessageToSerial(msg);
-                  }
-                  if (values.n2FeedingButton == true){
-                    msg = "Warning:\\nCannot begin sequence\\nwith N2 feeding valve open.";
-                    ignitionValveStateFlag = true;
-                    sendMessageToSerial(msg);
-                  }
-                  if (values.oxidizerValveButton == true){
-                    msg = "Warning:\\nCannot begin sequence\\nwith Oxidizer valve open.";
-                    ignitionValveStateFlag = true;
-                    sendMessageToSerial(msg);
-                  }
+            //else if ((realN2OPressure > minimumFiringPressure) || forcedSequence == true){
+            if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
+              countdownStartTime = millis();
+              setNewSubstate(IGNIT_ON);
+              setIgnition(true);
+            }
+            else {
+              if (ignitionValveStateFlag == false){
+                if (values.dumpValveButton == true){
+                  msg = "Warning:\\nCannot begin sequence\\nwith dump valve open.";
+                  ignitionValveStateFlag = true;
+                  sendMessageToSerial(msg);
+                }
+                if (values.n2FeedingButton == true){
+                  msg = "Warning:\\nCannot begin sequence\\nwith N2 feeding valve open.";
+                  ignitionValveStateFlag = true;
+                  sendMessageToSerial(msg);
+                }
+                if (values.oxidizerValveButton == true){
+                  msg = "Warning:\\nCannot begin sequence\\nwith Oxidizer valve open.";
+                  ignitionValveStateFlag = true;
+                  sendMessageToSerial(msg);
                 }
               }
             }
+            //}
             break;
 
           case IGNIT_ON:
               //Ignition has been turned on, wait until oxidiser valve needs to be opened
+              
               if (millis() - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
                 setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);

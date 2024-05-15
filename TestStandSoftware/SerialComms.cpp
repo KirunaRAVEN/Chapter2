@@ -98,8 +98,7 @@ void writeValues(values_t values, statusValues_t statusValues){
   long comb3 = values.nozzleTemperature;
   comb3 = comb3 << (14) | values.pipingTemperature;
 
-  long comb4 = values.IR;
-  comb4 = comb4 << (10) | values.dumpValveButton;
+  long comb4 = values.dumpValveButton;
   comb4 = comb4 << (1) | values.heatingBlanketButton;
   comb4 = comb4 << (1) | values.ignitionButton;
   comb4 = comb4 << (1) | values.n2FeedingButton;
@@ -109,74 +108,80 @@ void writeValues(values_t values, statusValues_t statusValues){
   comb4 = comb4 << (3) | statusValues.mode;
   comb4 = comb4 << (3) | statusValues.subState;
   comb4 = comb4 << (4) | msgIndex;
+  comb4 = comb4 << (10) | values.IR;
+  
 
-    Serial.print(values.timestamp);     //Arduino time in us. Dataline index 2
-    Serial.print(",");
-    /*
-    Serial.print(values.N2FeedingPressure);     //N2 Feeding pressure . Dataline index 3
-    Serial.print(",");
-    Serial.print(values.linePressure);     //Line pressure . Dataline index 4 
-    Serial.print(",");
-    Serial.print(values.combustionPressure);     //Chamber pressure . Dataline index 5
-    */
-    Serial.print(comb1);
-    Serial.print(",");
-    /*
-    Serial.print(values.N2OFeedingPressure);     //Oxidizer Feeding pressure . Dataline index 6
-    Serial.print(",");
-    Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
-    Serial.print(",");
-    Serial.print(values.bottleTemperature);  //Bottle/Heating blanket temperature. Dataline index 8
-    */
-    Serial.print(comb2);
-    Serial.print(",");
-    /*
-    Serial.print(values.notConnectedTemperature);  //Not connected. Dataline index 9
-    Serial.print(",");
-    Serial.print(values.nozzleTemperature);  //Nozzle temperature. Dataline index 10
-    Serial.print(",");
-    Serial.print(values.pipingTemperature);  //Piping temperature. Dataline index 11
-    */
-    Serial.print(comb3);
-    Serial.print(",");
-    
-    /*
-    Serial.print(values.IR);            //Plume temperature. Dataline index 12
-    Serial.print(",");
+  uint32_t printedValue = (uint32_t) (values.timestamp >> 3);
 
-    
-    Serial.print(values.dumpValveButton);       //Dump valve button status. Dataline index 13
-    Serial.print(",");
-    Serial.print(values.heatingBlanketButton);  //Heating button status. Dataline index 14
-    Serial.print(",");
-    Serial.print(values.ignitionButton);        //Ignition button status. Dataline index 15
-    Serial.print(",");
-    Serial.print(values.n2FeedingButton);       //N2 Feeding button status. Dataline index 16
-    Serial.print(",");
-    Serial.print(values.oxidizerValveButton);   //Oxidizer valve button status. Dataline index 17
-    Serial.print(",");
-    
-    Serial.print(statusValues.ignitionEngagedActive);   //Ignition SW state. Dataline index 18
-    Serial.print(",");
-    Serial.print(statusValues.valveActive);             //Valve SW state. Dataline index 19
-    Serial.print(",");
-    Serial.print(statusValues.mode);                    //Current SW mode. Dataline index 20
-    Serial.print(",");
-    Serial.print(statusValues.subState);                //Current SW substate. Dataline index 21
-    Serial.print(",");
-    Serial.print(msg);                                  //Message field. Dataline index 22
-    Serial.print("\n");
-    */
-    Serial.print(comb4);
-    Serial.print("\n");
+  Serial.print(printedValue);     //Arduino time in us. Dataline index 2
+  Serial.print(",");
+  /*
+  Serial.print(values.N2FeedingPressure);     //N2 Feeding pressure . Dataline index 3
+  Serial.print(",");
+  Serial.print(values.linePressure);     //Line pressure . Dataline index 4 
+  Serial.print(",");
+  Serial.print(values.combustionPressure);     //Chamber pressure . Dataline index 5
+  */
+  Serial.print(comb1);
+  Serial.print(",");
+  /*
+  Serial.print(values.N2OFeedingPressure);     //Oxidizer Feeding pressure . Dataline index 6
+  Serial.print(",");
+  Serial.print(values.loadCell);      //Load cell for thrust. Dataline index 7
+  Serial.print(",");
+  Serial.print(values.bottleTemperature);  //Bottle/Heating blanket temperature. Dataline index 8
+  */
+  Serial.print(comb2);
+  Serial.print(",");
+  /*
+  Serial.print(values.notConnectedTemperature);  //Not connected. Dataline index 9
+  Serial.print(",");
+  Serial.print(values.nozzleTemperature);  //Nozzle temperature. Dataline index 10
+  Serial.print(",");
+  Serial.print(values.pipingTemperature);  //Piping temperature. Dataline index 11
+  */
+  Serial.print(comb3);
+  Serial.print(",");
+  
+  /*
+  Serial.print(values.IR);            //Plume temperature. Dataline index 12
+  Serial.print(",");
 
-    //Clear message
-    //strcpy(msg, " ");
-    msgIndex = 0;
+  
+  Serial.print(values.dumpValveButton);       //Dump valve button status. Dataline index 13
+  Serial.print(",");
+  Serial.print(values.heatingBlanketButton);  //Heating button status. Dataline index 14
+  Serial.print(",");
+  Serial.print(values.ignitionButton);        //Ignition button status. Dataline index 15
+  Serial.print(",");
+  Serial.print(values.n2FeedingButton);       //N2 Feeding button status. Dataline index 16
+  Serial.print(",");
+  Serial.print(values.oxidizerValveButton);   //Oxidizer valve button status. Dataline index 17
+  Serial.print(",");
+  
+  Serial.print(statusValues.ignitionEngagedActive);   //Ignition SW state. Dataline index 18
+  Serial.print(",");
+  Serial.print(statusValues.valveActive);             //Valve SW state. Dataline index 19
+  Serial.print(",");
+  Serial.print(statusValues.mode);                    //Current SW mode. Dataline index 20
+  Serial.print(",");
+  Serial.print(statusValues.subState);                //Current SW substate. Dataline index 21
+  Serial.print(",");
+  Serial.print(msg);                                  //Message field. Dataline index 22
+  Serial.print("\n");
+  */
+  Serial.print(comb4);
+  Serial.print("\n");
+
+  Serial.println(calibrationADC * (values.IR / maxADC) * (maxIR - minIR) + minIR);
+
+  //Clear message
+  //strcpy(msg, " ");
+  msgIndex = 0;
 
   //  xSemaphoreGive(serialMutex);
   //}
-    lastTime = micros();
+  //lastTime = micros();
 }
 
 void saveMessage(char* message){
