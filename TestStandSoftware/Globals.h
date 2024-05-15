@@ -157,6 +157,7 @@ typedef enum{
 }taskPriorities_t;
 
 //How many bytes allocated to task memory.
+//Not used anymore since FreeRTOS isn't used
 const int16_t taskMemoryBytes = 512;
 
 /*
@@ -255,9 +256,11 @@ struct statusValues_t{
 };
 
 //Sampling tick delay for the Sensing.senseLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t samplingTickDelay = 1;
 
 //Tick delay for the Countdown.countdownLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t countdownTickDelay = 1;
 
 //What resolution will the built in ADC use (bit)
@@ -282,6 +285,7 @@ const mode_t startMode = INIT;
 const substate_t startSubstate = ALL_OFF;
 
 //How long the system waits until starting automatic sequence (ms)
+//Not used anymore
 const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"
