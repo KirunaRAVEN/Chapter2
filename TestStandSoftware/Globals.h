@@ -74,11 +74,12 @@ typedef enum {
   VALVE_ON,
   IGNIT_OFF,
   VALVE_OFF,
+  PURGING,
   FINISHED
 } substate_t;
 
 //Used mainly for debugging and for user information
-const char substateStrings[6][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "FINISHED"};
+const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"};
 
 //Enumeration for the different states of the automated testing sequence
 typedef enum {
@@ -157,6 +158,7 @@ typedef enum{
 }taskPriorities_t;
 
 //How many bytes allocated to task memory.
+//Not used anymore since FreeRTOS isn't used
 const int16_t taskMemoryBytes = 512;
 
 /*
@@ -194,8 +196,11 @@ const int16_t ignitionOffTime = igniterBurnLength;
 //How long from sequence start until closing valves (ms)
 const int16_t valveOffTime = valveOnTime + burnTime;
 
-//How long from sequence start until calling the test finished (ms)
-const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
+//How long from sequence start until the start of purging (ms)
+const int16_t oxidiserEmptyTime = valveOffTime + 500;  //Placeholder value
+
+//How long from sequence start until the end of purging (ms)
+const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value
 
 //How many valves the system has
 const int16_t valveCount = 3; 
@@ -252,10 +257,17 @@ struct statusValues_t{
 };
 
 //Sampling tick delay for the Sensing.senseLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t samplingTickDelay = 1;
 
 //Tick delay for the Countdown.countdownLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t countdownTickDelay = 1;
+
+/*
+ * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
+ * This will be done in combination with reading the Serial data and generating the csv file.
+ */
 
 //What resolution will the built in ADC use (bit)
 const int16_t resolutionADC = 10;
@@ -279,6 +291,7 @@ const mode_t startMode = INIT;
 const substate_t startSubstate = ALL_OFF;
 
 //How long the system waits until starting automatic sequence (ms)
+//Not used anymore
 const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"

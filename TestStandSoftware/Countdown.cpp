@@ -164,6 +164,7 @@ void countdownLoop(){
          */
         switch (currentSubstate){     
           case ALL_OFF:
+            //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
               setNewMode(WAIT);
             }
@@ -199,6 +200,7 @@ void countdownLoop(){
             break;
 
           case IGNIT_ON:
+              //Ignition has been turned on, wait until oxidiser valve needs to be opened
               if (millis() - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
                 setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
@@ -206,6 +208,7 @@ void countdownLoop(){
             break;
 
           case VALVE_ON:
+              //Valve has been opened, wait until ignition can be turned on
               if (millis() - countdownStartTime > ignitionOffTime){
                 setNewSubstate(IGNIT_OFF);
                 setIgnition(false);
@@ -213,6 +216,7 @@ void countdownLoop(){
             break;
 
           case IGNIT_OFF:
+              //Ignition has been turned off, wait until oxidiser valve needs to be closed
               if (millis() - countdownStartTime > valveOffTime){
                 setNewSubstate(VALVE_OFF);
                 setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
@@ -220,12 +224,23 @@ void countdownLoop(){
             break;
 
           case VALVE_OFF:
-              if (millis() - countdownStartTime > cooldownTime){
+              //Oxidiser valve has been closed, wait until piping clears from oxidiser
+              if (millis() - countdownStartTime > oxidiserEmptyTime){
+                setNewSubstate(PURGING);
+                setValve(pin_names_t::N2FEEDING_VALVE_PIN, true);
+              }
+            break;
+
+          case PURGING:
+              //Purging in progress, wait until purging finishes
+              if (millis() - countdownStartTime > purgingTime){
                 setNewSubstate(FINISHED);
+                setValve(pin_names_t::N2FEEDING_VALVE_PIN, false);
               }
             break;
 
           case FINISHED:
+            //Sequence is finished
             setNewMode(SHUTDOWN);
             break;
         }

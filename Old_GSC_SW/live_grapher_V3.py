@@ -84,6 +84,7 @@ substates = ["ALL_OFF",
              "VALVE_ON",
              "IGNIT_OFF",
              "VALVE_OFF",
+             "PURGING",
              "FINISHED"]
 
 # Colors of the indicator LEDs
@@ -99,14 +100,19 @@ useBlitting = True
 
 # How long average is used for the info boxes
 infoBoxAverageCount = 10
-msPerPoint = 8.0
+
+msPerPoint = 1
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
-plotTime = 5
-plotScale = 1
-data_points = math.ceil(plotTime * 1000 / (msPerPoint * plotScale))
+targetFPS = 60
+slowDownFactor = int((1000/targetFPS)/msPerPoint)
+plotTime = 30
+data_points = math.ceil(plotTime * 1000 / (msPerPoint * slowDownFactor))
+
 # How many ticks in axis
 tickCount = 6
+# Used to keep track of skippable lines
+lineNumber = 0
 
 # Corresponding csv positions
 dataIndices = [col_num for i, col_num in enumerate(column_info.keys())]
@@ -283,12 +289,12 @@ for i in range(nrows):
             paddingAmount = (len(str(column_info[dataIndices[dataIndex]]["ymax"]))-2) * (-1) + 4
             ax.set_ylabel(column_info[dataIndices[dataIndex]]["ylabel"] + " (" + column_info[dataIndices[dataIndex]]["unit"] + ")" , labelpad = paddingAmount)
 
-            ax.set_xlim([0, data_points * (msPerPoint/1000)])
+            ax.set_xlim([0, data_points * (msPerPoint * slowDownFactor/1000)])
             line, = ax.plot([], [], animated=useBlitting)
             
-            line.set_xdata([i * (msPerPoint/1000) for i in range(data_points)])
+            line.set_xdata([i * (msPerPoint * slowDownFactor/1000) for i in range(data_points)])
             
-            labels = ["+" + "{:d}".format(int((data_points - i) * (msPerPoint/1000)))
+            labels = ["+" + "{:d}".format(int((data_points - i) * (msPerPoint * slowDownFactor/1000)))
                       for i in range(0, data_points+1, math.floor(data_points/(tickCount-1)))]
             
             ax.set_xticklabels(labels)
@@ -304,7 +310,7 @@ for i in range(nrows):
                 plt.axhline(y = warningLimits[dataIndex], color = 'r', linestyle = ':')
             
             #ax.legend()
-            dataText = ax.text(0.94 * data_points * (msPerPoint/1000),
+            dataText = ax.text(0.94 * data_points * (msPerPoint * slowDownFactor/1000),
                                0.93 * (column_info[dataIndices[dataIndex]]["ymax"] - column_info[dataIndices[dataIndex]]["ymin"]),
                                str(box.value) + box.unit, ha='center', va='center', fontsize = dataTextFont, fontweight='bold')
            
@@ -333,6 +339,7 @@ def update(frame):
     global lines
     global data
     global messageList
+    global lineNumber
     messageListUpdated = False
     
     #This seemed to cause performance issues
@@ -351,50 +358,53 @@ def update(frame):
         csv_reader = csv.reader(csv_file)
         csv_file.seek(last_pos)
         for row in csv_reader:
-        	#for i in range(plotScale):
-        	#    csv_reader.next()
-            #print(row)
-            #If it is a data line
-            #Rock timestamp = index 0
-            #Data indicator = index 1
-            if len(row) > 1:
-                #Remove the "d"
-                #row = [row[0]] + row[2:]
-                #Continue noramlly
-                for i, column in enumerate(row):
-                    try: 
-                        val = float(column)
-                        if i in calibratedIndices:
-                            val = float(calibration_info[i]["slope"]) * val + float(calibration_info[i]["offset"])
+            if lineNumber % slowDownFactor == 0 or (len(row) == 21 and row[20] != 0):
+                #for i in range(plotScale):
+                #    csv_reader.next()
+                #print(row)
+                #If it is a data line
+                #Rock timestamp = index 0
+                #Data indicator = index 1
+                if len(row) > 1:
+                    #Remove the "d"
+                    #row = [row[0]] + row[2:]
+                    #Continue noramlly
+                    for i, column in enumerate(row):
+                        try: 
+                            val = float(column)
+                            if i in calibratedIndices:
+                                val = float(calibration_info[i]["slope"]) * val + float(calibration_info[i]["offset"])
 
-                    except: val = column
+                        except: val = column
 
-                    # On reset, skip the line
-                    # if val == " r":
-                    #     print("reset detected")
-                    #     continue
+                        # On reset, skip the line
+                        # if val == " r":
+                        #     print("reset detected")
+                        #     continue
 
-                    #Only smooth sensor data, not time or binary values
-                    if 1 <= i <= 9:
-                        try:
-                            data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
-                        except:
-                            continue
-                    elif i < csvDataCount:
-                        data[i] += [val]
-            #Else it is a message line --> Print out
-            #else:
-            if len(row) == csvDataCount and row[-1] != 0:
-                #print(messageList)
+                        #Only smooth sensor data, not time or binary values
+                        if 1 <= i <= 9:
+                            try:
+                                data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
+                            except:
+                                continue
+                        elif i < csvDataCount:
+                            data[i] += [val]
+                #Else it is a message line --> Print out
+                #else:
+                if len(row) == csvDataCount and row[-1] != 0:
+                    #print(messageList)
 
-                messageList += "Message" + str(row[-1])
-                """
-                messageListUpdated = True
-                splitRow = row[-1].split("\\n")
-                for newRow in splitRow:
-                    messageList += [newRow]
-                messageList = messageList[-maxMessageCount:]
-                """
+                    messageList += "Message" + str(row[-1])
+                    """
+                    messageListUpdated = True
+                    splitRow = row[-1].split("\\n")
+                    for newRow in splitRow:
+                        messageList += [newRow]
+                    messageList = messageList[-maxMessageCount:]
+                    """
+            lineNumber += 1
+
         last_pos = csv_file.tell()  
     
     for i in range(csvDataCount):
@@ -416,7 +426,7 @@ def update(frame):
                     roundedValue = column_info[dataIndices[dataIndex]]["ymax"] - textOffset
                     
                 dataTexts[dataIndex].set_text("{:3.1f} {:s}".format(roundedValue, column_info[dataIndices[dataIndex]]["unit"]))
-                dataTexts[dataIndex].set_position((0.94 * data_points * (msPerPoint/1000), textOffset + roundedValue))
+                dataTexts[dataIndex].set_position((0.94 * data_points * (msPerPoint * slowDownFactor/1000), textOffset + roundedValue))
                 
                 dataIndex += 1
     
