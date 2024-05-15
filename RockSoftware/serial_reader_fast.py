@@ -141,7 +141,7 @@ def readLoad(sensorValue):
     """
     return loadCellLine_K * sensorValue + loadCellLine_B
     
-def readTMP36(sensorValue)
+def readTMP36(sensorValue):
     """Measurement to value explanation:
     * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
     * sensorValue = measured voltage on the pin, within 0...1023
@@ -155,51 +155,21 @@ def readTMP36(sensorValue)
     return temperature
 
  
-#Thermocouple:
+def readTemp(temperature):
+    return temperature * 0.25
  
-"""
-temperature = thermocouples[sensorNum].spiread32();
- 
-if (temperature & 0x80000000) {
-// Negative value, drop the lower 18 bits and explicitly extend sign bits.
-temperature = 0xFFFFC000 | ((temperature >> 18) & 0x00003FFF);
-} else {
-// Positive value, just drop the lower 18 bits.
-temperature >>= 18;
-}
-// Serial.println(v, HEX);
- 
- 
-// LSB = 0.25 degrees C
-//centigrade *= 0.25;
- 
-return temperature;// * 0.25;
-"""
- 
-#Infra Red:
- 
-"""Measurement to value explanation:
-* calibration ADC = Ratio of how much the internal voltage is off from 5.00V
-* sensorValue = measured voltage on the pin, within 0...1023
-* maxADC = 1023, since we are using 10-bit analog to digital converter
-* maxIR = maximum temperature in C measured by the IR sensor
-* minIR = minimum temperature in C measured by the IR sensor
-* calibratedValue * (maxIR - minIR) + minIR = mapping to the actual temp value
-* Measurement is repeated IrAverageCount times each loop to reduce noise
-"""
- 
-"""
-float sensorValueSum = 0;
-for (int i = 0; i < IrAverageCount; i++){
-sensorValueSum += analogRead(INFRARED_INPUT_PIN);
-}
- 
-float temperature = calibrationADC * (sensorValueSum / (IrAverageCount * maxADC)) * (maxIR - minIR) + minIR;
-return temperature;
-"""
-
-
-
+def readIR(sensorValue):
+    """Measurement to value explanation:
+    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
+    * sensorValue = measured voltage on the pin, within 0...1023
+    * maxADC = 1023, since we are using 10-bit analog to digital converter
+    * maxIR = maximum temperature in C measured by the IR sensor
+    * minIR = minimum temperature in C measured by the IR sensor
+    * calibratedValue * (maxIR - minIR) + minIR = mapping to the actual temp value
+    * Measurement is repeated IrAverageCount times each loop to reduce noise
+    """
+    temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR
+    return temperature
 
 # ----------------
 # START OF PROGRAM
@@ -247,19 +217,18 @@ with open("data.csv", "w", newline='') as file:
 
         dataBit = int(data_list[2])
 
-        botTemp = dataBit & 1023
+        botTemp = readTMP36(dataBit & 1023)
         dataBit = dataBit >> 10
-        loadC = dataBit & 1023
+        loadC = readLoad(dataBit & 1023)
         dataBit = dataBit >> 10
         n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
 
 
         dataBit = int(data_list[3])
 
-        pipeT = dataBit & 16383
+        pipeT = readTemp(dataBit & 16383)
         dataBit = dataBit >> 14
-        nozzT = dataBit & 16383
-
+        nozzT = readTemp(dataBit & 16383)
 
         dataBit = int(data_list[4])
 
@@ -283,12 +252,31 @@ with open("data.csv", "w", newline='') as file:
         dataBit = dataBit >> 1
         dumpButton = dataBit & 1
         dataBit = dataBit >> 10
-        IR = data_list[4] & 1023
+        IR = readIR(dataBit & 1023)
 
         #Generate the csv line
 
         fstring = f'{values[0]}'
-        fstring += f',{}'
+        fstring += f',{n2feedP}'
+        fstring += f',{lineP}'
+        fstring += f',{combP}'
+        fstring += f',{n2oFeedP}'
+        fstring += f',{loadC}'
+        fstring += f',{botTemp}'
+        fstring += f',{0}'
+        fstring += f',{nozzT}'
+        fstring += f',{pipeT}'
+        fstring += f',{IR}'
+        fstring += f',{dumpButton}'
+        fstring += f',{heatButton}'
+        fstring += f',{igniButton}'
+        fstring += f',{n2Button}'
+        fstring += f',{oxButton}'
+        fstring += f',{ignStatus}'
+        fstring += f',{valveStatus}'
+        fstring += f',{swMode}'
+        fstring += f',{swSub}'
+        fstring += f',{msgIndex}'
 
         file.write(fstring) # + "\n")
         file.flush()

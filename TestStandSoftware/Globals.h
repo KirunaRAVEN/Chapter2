@@ -149,7 +149,7 @@ typedef enum{
   BUZZER_TEST
 }buzzerPattern_t;
 
-/
+//Not used anymore since FreeRTOS isn't used
 typedef enum{
   LOW_PRIORITY = 0,
   NORMAL_PRIORITY = 1,
