@@ -148,6 +148,7 @@ typedef enum{
   BUZZER_TEST
 }buzzerPattern_t;
 
+/
 typedef enum{
   LOW_PRIORITY = 0,
   NORMAL_PRIORITY = 1,
