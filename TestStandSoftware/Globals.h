@@ -263,6 +263,11 @@ const int16_t samplingTickDelay = 1;
 //Not used anymore since FreeRTOS isn't used
 const int16_t countdownTickDelay = 1;
 
+/*
+ * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
+ * This will be done in combination with reading the Serial data and generating the csv file.
+ */
+
 //What resolution will the built in ADC use (bit)
 const int16_t resolutionADC = 10;
 
