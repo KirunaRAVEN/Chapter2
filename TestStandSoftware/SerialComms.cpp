@@ -25,7 +25,7 @@ static uint16_t msgIndex = 0;
 uint32_t lastTime = 0;
 uint32_t count = 0;
 
-cppQueue	msgBuffer(sizeof(char), msgBufferSize, FIFO, true);
+cppQueue	msgBuffer(sizeof(uint16_t), msgBufferSize, FIFO, true);
 
 void initSerial(){
 
@@ -94,7 +94,9 @@ void writeValues(values_t values, statusValues_t statusValues){
   msgIndex = 0;
   if (!msgBuffer.isEmpty()){
     msgBuffer.pop(&msgIndex);
+    //Serial.println(msgIndex);
   }
+  //return;
 
   long comb1 = values.N2FeedingPressure;
   comb1 = comb1 << (10) | values.linePressure;
@@ -183,7 +185,7 @@ void writeValues(values_t values, statusValues_t statusValues){
   */
   Serial.print(comb4);
   Serial.print("\n");
-  
+
   //Clear message
   //strcpy(msg, " ");
 
@@ -194,7 +196,7 @@ void writeValues(values_t values, statusValues_t statusValues){
 
 void saveMessage(uint16_t messageIndex){
     //if (xSemaphoreTake(messageMutex, 10) == pdTRUE){
-    msgBuffer.push(messageIndex);
+    msgBuffer.push(&messageIndex);
       //strcat(msg, message);
     //  xSemaphoreGive(messageMutex);
     //}

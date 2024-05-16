@@ -236,8 +236,8 @@ with open("data.csv", "w", newline='') as file:
 
         IR = readIR(dataBit & 1023)
         dataBit = dataBit >> 10
-        msgIndex = dataBit & 15
-        dataBit = dataBit >> 4
+        msgIndex = dataBit & 255
+        dataBit = dataBit >> 8
         swSub = dataBit & 7
         dataBit = dataBit >> 3
         swMode = dataBit & 7
@@ -311,6 +311,8 @@ with open("data.csv", "w", newline='') as file:
         fstring += f',{swMode}'
         fstring += f',{swSub}'
         fstring += f',{msgIndex}'
+
+        #if int(msgIndex) != 0: print(msgIndex)
 
         file.write(fstring + "\n")
         file.flush()
