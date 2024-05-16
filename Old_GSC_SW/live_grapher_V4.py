@@ -382,6 +382,7 @@ def update(frame):
     global data
     global messageList
     global lineNumber
+    global endCountdownTimer
     messageListUpdated = False
     
     global csv_file
@@ -432,13 +433,14 @@ def update(frame):
                 
                 messageListUpdated = True
                 
-                if int(row[-1] != endCountdownIndex):
-                    messageList += [messageStrings[endCountdownIndex]]
+                if int(row[-1]) != endCountdownIndex:
+                    messageList += [messageStrings[int(row[-1])]]
                 else:
                     messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
                     endCountdownTimer += 1
                     if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
                         endCountdownTimer = 0
+                        
                 messageList = messageList[-maxMessageCount:]
                 
         lineNumber += 1
@@ -490,6 +492,7 @@ def update(frame):
         
         if messageListUpdated:
             mi_value = ""
+
             for message in messageList:
                 mi_value += message
                 #mi_value += "\n"
