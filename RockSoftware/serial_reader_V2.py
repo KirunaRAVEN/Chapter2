@@ -178,7 +178,7 @@ def readIR(sensorValue):
 
 ser = serial.Serial()
 ser.port = '/dev/ttyACM0'
-ser.baudrate = 115200
+ser.baudrate = 500*1000
 ser.timeout = 5
 ser.open()
 if ser.is_open == True:
@@ -186,6 +186,13 @@ if ser.is_open == True:
     print(ser, '\n')
 
 with open("data.csv", "w", newline='') as file:
+  
+  #Init values that aren't received always
+  botTemp = 0  
+  nozzT = 0  
+  pipeT = 0  
+  IR = 0
+
   while True:
     data = ser.readline()
     data = data.rstrip(b'\n')
@@ -201,43 +208,29 @@ with open("data.csv", "w", newline='') as file:
     try:
         values = []
         #If length not nominal, skip
-        if len(data_list) != 5:
+        if len(data_list) != 5 or len(data_list) != 3:
             continue
 
         #Excecute unmushing
 
         timestamp = int(data_list[0]) * 8 #timestamp is bitshifted >> 3
 
+        #First 32bits, always received
         dataBit = int(data_list[1])
 
+        heatButton = dataBit & 1
+        dataBit = dataBit >> 1
+        dumpButton = dataBit & 1
+        dataBit = dataBit >> 1
         combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
         dataBit = dataBit >> 10
         lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
         dataBit = dataBit >> 10
         n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
 
-
+        #Second 32bits, always received
         dataBit = int(data_list[2])
 
-        botTemp = readTMP36(dataBit & 1023)
-        dataBit = dataBit >> 10
-        loadC = readLoad(dataBit & 1023)
-        dataBit = dataBit >> 10
-        n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
-
-
-        dataBit = int(data_list[3])
-
-        pipeT = readTemp(dataBit & 16383)
-        dataBit = dataBit >> 14
-        nozzT = readTemp(dataBit & 16383)
-
-        dataBit = int(data_list[4])
-
-        IR = readIR(dataBit & 1023)
-        dataBit = dataBit >> 10
-        msgIndex = dataBit & 255
-        dataBit = dataBit >> 8
         swSub = dataBit & 7
         dataBit = dataBit >> 3
         swMode = dataBit & 7
@@ -252,9 +245,31 @@ with open("data.csv", "w", newline='') as file:
         dataBit = dataBit >> 1
         igniButton = dataBit & 1
         dataBit = dataBit >> 1
-        heatButton = dataBit & 1
-        dataBit = dataBit >> 1
-        dumpButton = dataBit & 1
+        loadC = readLoad(dataBit & 1023)
+        dataBit = dataBit >> 10
+        n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
+
+        msgIndex = 0
+
+        if len(data_list) == 5:
+            #Second 32bits, received every ~100ms
+            dataBit = int(data_list[3])
+
+            msgIndex = dataBit & 7
+            dataBit = dataBit >> 3  #First part of the msgIndex
+            pipeT = readTemp(dataBit & 16383)
+            dataBit = dataBit >> 14
+            nozzT = readTemp(dataBit & 16383)
+
+            #Second 32bits, received every ~100ms
+            dataBit = int(data_list[4])
+
+            IR = readIR(dataBit & 1023)
+            dataBit = dataBit >> 10
+            msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+            dataBit = dataBit >> 3
+            botTemp = readTMP36(dataBit & 1023)
+
         #dataBit = dataBit >> 10
         #IR = readIR(dataBit & 1023)
 

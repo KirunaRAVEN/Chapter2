@@ -20,7 +20,6 @@
 
 //static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
 //static char* msg = datalineMessage;
-static uint16_t msgIndex = 0;
 
 uint32_t lastTime = 0;
 uint32_t count = 0;
@@ -90,7 +89,7 @@ void initSerial(){
 
 void writeValues(values_t values, statusValues_t statusValues){
 
-  msgIndex = 0;
+  uint16_t msgIndex = 0;
   if (!msgBuffer.isEmpty()){
     msgBuffer.pop(&msgIndex);
   }
@@ -113,36 +112,34 @@ void writeValues(values_t values, statusValues_t statusValues){
   combinedValue2 = combinedValue2 << (3) | statusValues.mode;
   combinedValue2 = combinedValue2 << (3) | statusValues.subState;
 
-
   //Third 32bit data - sent at most every 100ms
-
   long combinedValue3 = values.nozzleTemperature;
   combinedValue3 = combinedValue3 << (14) | values.pipingTemperature;
-  combinedValue2 = combinedValue2 << (10) | values.bottleTemperature;
-
+  combinedValue3 = combinedValue3 << (3) | msgIndex & 7; //first part of the message bits
 
   //Fourth 32bit data - sent at most every 100ms
-
-  combinedValue4 = combinedValue4 << (6) | msgIndex;
+  long combinedValue4 = values.bottleTemperature;
+  combinedValue4 = combinedValue4 << (3) | (msgIndex >> 3) & 7; //second part of the message bits
   combinedValue4 = combinedValue4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
   
   uint32_t sentTimeValue = (uint32_t) (values.timestamp >> 3);
 
   Serial.print(sentTimeValue);     //Arduino time in us. Dataline index 2
   Serial.print(",");
-
   Serial.print(combinedValue1);
   Serial.print(",");
-
   Serial.print(combinedValue2);
-  Serial.print(",");
 
-  Serial.print(combinedValue3);
-  Serial.print(",");
+  if (values.slowUpdated == true){
+    Serial.print(",");
+    Serial.print(combinedValue3);
+    Serial.print(",");
+    Serial.print(combinedValue4);
 
-  Serial.print(combinedValue4);
+    values.slowUpdated = false;
+  }
+
   Serial.print("\n");
-
 }
 
 void saveMessage(uint16_t messageIndex){

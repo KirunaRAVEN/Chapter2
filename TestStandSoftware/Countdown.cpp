@@ -45,6 +45,9 @@ void countdownLoop(){
   values.lastTimestamp = 0;
   values.timeOverflowOffset = 0;
 
+  //Initialize the sending of slower values
+  values.slowUpdated = false;
+
   //Initialize the values after startup
   values.N2FeedingPressure = 0;      //N2 Feeding pressure 
   values.linePressure = 0;      //Oxidizer line pressure 

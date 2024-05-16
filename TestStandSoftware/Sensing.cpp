@@ -24,7 +24,7 @@
 
 //values_t values;
 //When were the temperature sensors measured last time
-static uint32_t lastTempTime = 0; 
+static uint32_t lastSlowTime = 0; 
 
 
 void initSensing(){
@@ -54,7 +54,9 @@ void senseLoop(values_t* values){
 
     values->loadCell = readLoad();  //Load cell for thrust
 
-    if (lastTempTime - millis() > 1000/tempSensorRate){
+    if (lastSlowTime - millis() > 1000/tempSensorRate){ 
+      values->slowUpdated = true;
+
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
       values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
       values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
@@ -62,7 +64,7 @@ void senseLoop(values_t* values){
 
       values->IR = readIR();   //Plume temperature
       
-      lastTempTime = millis()
+      lastSlowTime = millis();
     }
 
     //Read control signals
@@ -92,6 +94,6 @@ void senseLoop(values_t* values){
     //xTaskDelayUntil(&lastSensingWakeTime, samplingTickDelay);
   //}
 
-  loopCount++;
+  //loopCount++;
 
 }

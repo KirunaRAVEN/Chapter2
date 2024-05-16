@@ -232,6 +232,8 @@ struct values_t {
   uint32_t msTimestamp;         //Time since Arduino startup in ms
   uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
   uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
+
+  bool slowUpdated = false;     //If the less frequently sent values were updated this loop
   
   int N2FeedingPressure;        //N2 Feeding line pressure 
   int linePressure;      //Line pressure 
@@ -438,8 +440,8 @@ const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 //Buzzer warning length (ms)
 const int16_t buzzerOnTime = 1 * 500;
 
-//Baudrate for serial communications
-const uint32_t serialBaud = 115200;
+//Baudrate for serial communications (500kbps)
+const uint32_t serialBaud = 500 * 1000;
 
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 12; //N successive passes lead to threshold trigger

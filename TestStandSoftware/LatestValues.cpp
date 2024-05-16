@@ -27,7 +27,13 @@ void initLatestValues(){
   latestValues.nozzleTemperature = 0;   //Nozzle temperature
   latestValues.pipingTemperature = 0;   //Piping temperature
   latestValues.IR = 0;             //Plume Temperature
-  latestValues.timestamp = 0;      //When was this set of values collected
+
+  latestValues.timestamp = 0;
+  latestValues.msTimestamp = 0;
+  latestValues.lastTimestamp = 0;
+  latestValues.timeOverflowOffset = 0;
+
+  latestValues.slowUpdated = false;
 
   latestValues.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   latestValues.heatingBlanketButton = false;  //Heating button status
