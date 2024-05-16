@@ -23,7 +23,8 @@
 #include "ControlSensing.h"
 
 //values_t values;
-uint32_t loopCount = 0; 
+//When were the temperature sensors measured last time
+static uint32_t lastTempTime = 0; 
 
 
 void initSensing(){
@@ -53,13 +54,15 @@ void senseLoop(values_t* values){
 
     values->loadCell = readLoad();  //Load cell for thrust
 
-    if (loopCount % tempSensorSampleReduction == 0){
+    if (lastTempTime - millis() > 1000/tempSensorRate){
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
       values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
       values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
       values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
 
       values->IR = readIR();   //Plume temperature
+      
+      lastTempTime = millis()
     }
 
     //Read control signals

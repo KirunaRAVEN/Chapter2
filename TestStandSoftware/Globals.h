@@ -380,8 +380,8 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
-//Factor of reduction on temperature sensor measurements
-const uint16_t tempSensorSampleReduction = 10;
+//At what rate the temperature data is gathered (hz)
+const uint16_t tempSensorRate = 10;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;

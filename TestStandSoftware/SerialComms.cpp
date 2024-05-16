@@ -115,7 +115,7 @@ void writeValues(values_t values, statusValues_t statusValues){
   combinedValue4 = combinedValue4 << (1) | statusValues.valveActive;
   combinedValue4 = combinedValue4 << (3) | statusValues.mode;
   combinedValue4 = combinedValue4 << (3) | statusValues.subState;
-  combinedValue4 = combinedValue4 << (8) | msgIndex;
+  combinedValue4 = combinedValue4 << (6) | msgIndex;
   combinedValue4 = combinedValue4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
   
   uint32_t sentTimeValue = (uint32_t) (values.timestamp >> 3);
