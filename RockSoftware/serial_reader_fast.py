@@ -22,7 +22,7 @@ AMBIENT_TC = 3
 resolutionADC = 10
  
 #Maximum ADC value
-maxADC = 2**resolutionADC - 1
+maxADC = 1023.0
  
 #Optimal ADC reference voltage
 refADC = 5.00
@@ -123,7 +123,6 @@ def readPressure5V(pressureVoltage, sensorNum):
     * Bars = K * Voltage + B
     """
 
-
     pressureVoltage = calibrationADC * refADC * (pressureVoltage / maxADC)
     return pressureCalibration_K[sensorNum] * pressureVoltage + pressureCalibration_B[sensorNum]
 
@@ -139,8 +138,10 @@ def readLoad(sensorValue):
     * LoadCellLine_B = mapping from voltage to Newtons. Includes calibration values
     * Newtons = K * Voltage + B
     """
-    return loadCellLine_K * sensorValue + loadCellLine_B
-    
+
+    loadVoltage = (sensorValue/maxADC) * refADC * calibrationADC
+    return loadCellLine_K * loadVoltage + loadCellLine_B
+
 def readTMP36(sensorValue):
     """Measurement to value explanation:
     * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
@@ -187,6 +188,7 @@ if ser.is_open == True:
 with open("data.csv", "w", newline='') as file:
   while True:
     data = ser.readline()
+    data = data.rstrip(b'\n')
     data = data.replace(b'\x00',b'')
     # split on comma and newline
     data_list = re.split(b',', data) # comma-separated
@@ -204,7 +206,7 @@ with open("data.csv", "w", newline='') as file:
 
         #Excecute unmushing
 
-        timestamp = int(data_list[0])
+        timestamp = int(data_list[0]) * 8 #timestamp is bitshifted >> 3
 
         dataBit = int(data_list[1])
 
@@ -232,6 +234,8 @@ with open("data.csv", "w", newline='') as file:
 
         dataBit = int(data_list[4])
 
+        IR = readIR(dataBit & 1023)
+        dataBit = dataBit >> 10
         msgIndex = dataBit & 15
         dataBit = dataBit >> 4
         swSub = dataBit & 7
@@ -251,22 +255,52 @@ with open("data.csv", "w", newline='') as file:
         heatButton = dataBit & 1
         dataBit = dataBit >> 1
         dumpButton = dataBit & 1
-        dataBit = dataBit >> 10
-        IR = readIR(dataBit & 1023)
+        #dataBit = dataBit >> 10
+        #IR = readIR(dataBit & 1023)
 
+        """
+        dataBit = int(data_list[4])
+        print("\ndata_list index 4:")
+        print(bin(dataBit))
+
+        print(bin(dataBit & 1023))
+        print(dataBit & 1023)
+        print(readIR(dataBit & 1023))
+
+        dataBit = dataBit >> 10
+        print(bin(dataBit & 15))
+        dataBit = dataBit >> 4
+        print(bin(dataBit & 7))
+        dataBit = dataBit >> 3
+        print(bin(dataBit & 7))
+        dataBit = dataBit >> 3
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        dataBit = dataBit >> 1
+        print(bin(dataBit & 1))
+        """
         #Generate the csv line
 
-        fstring = f'{values[0]}'
-        fstring += f',{n2feedP}'
-        fstring += f',{lineP}'
-        fstring += f',{combP}'
-        fstring += f',{n2oFeedP}'
-        fstring += f',{loadC}'
-        fstring += f',{botTemp}'
+        fstring = f'{timestamp}'
+        fstring += f',{n2feedP:.2f}'
+        fstring += f',{lineP:.2f}'
+        fstring += f',{combP:.2f}'
+        fstring += f',{n2oFeedP:.2f}'
+        fstring += f',{loadC:.2f}'
+        fstring += f',{botTemp:.2f}'
         fstring += f',{0}'
-        fstring += f',{nozzT}'
-        fstring += f',{pipeT}'
-        fstring += f',{IR}'
+        fstring += f',{nozzT:.2f}'
+        fstring += f',{pipeT:.2f}'
+        fstring += f',{IR:.2f}'
         fstring += f',{dumpButton}'
         fstring += f',{heatButton}'
         fstring += f',{igniButton}'
@@ -278,10 +312,10 @@ with open("data.csv", "w", newline='') as file:
         fstring += f',{swSub}'
         fstring += f',{msgIndex}'
 
-        file.write(fstring) # + "\n")
+        file.write(fstring + "\n")
         file.flush()
-        print(fstring)
 
-    except UnicodeDecodeError:
+    except Exception as exc:
+        print(exc)
         #Corrupted data due to reset
         continue
