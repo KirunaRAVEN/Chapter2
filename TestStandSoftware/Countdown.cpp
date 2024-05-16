@@ -190,19 +190,16 @@ void countdownLoop(){
             else {
               if (ignitionValveStateFlag == false){
                 if (values.dumpValveButton == true){
-                  msg = "Warning:\\nCannot begin sequence\\nwith dump valve open.";
                   ignitionValveStateFlag = true;
-                  sendMessageToSerial(msg);
+                  sendMessageToSerial(MSG_DUMP_WARNING);
                 }
                 if (values.n2FeedingButton == true){
-                  msg = "Warning:\\nCannot begin sequence\\nwith N2 feeding valve open.";
                   ignitionValveStateFlag = true;
-                  sendMessageToSerial(msg);
+                  sendMessageToSerial(MSG_N2_FEED_WARNING);
                 }
                 if (values.oxidizerValveButton == true){
-                  msg = "Warning:\\nCannot begin sequence\\nwith Oxidizer valve open.";
                   ignitionValveStateFlag = true;
-                  sendMessageToSerial(msg);
+                  sendMessageToSerial(MSG_OX_FEED_WARNING);
                 }
               }
             }

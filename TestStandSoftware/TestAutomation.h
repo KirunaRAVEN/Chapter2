@@ -85,7 +85,7 @@ void sendValuesToSerial(values_t values, statusValues_t statusValues);
  * IN:            Pointer to a character array where the message is stored
  * OUT:           Nothing
  */
- void sendMessageToSerial(char* message);
+ void sendMessageToSerial(uint16_t message);
 
 
 /* Function:      Intermediate interface for sending a single integer to the 

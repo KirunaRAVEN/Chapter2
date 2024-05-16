@@ -448,6 +448,48 @@ const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 //Warning thresholds
 const int16_t N2OFeedingPressureWarning = 65;
 
+//Indexes of all the possible messages to send
+typedef enum{
+  MSG_TEST_SEQUENCE_START = 1,
+  MSG_NO_BUTTONS = 2,
+  MSG_RELEASE_OX = 3,
+  MSG_RELEASE_IGN = 4,
+  MSG_RELEASE_HEAT = 5,
+  MSG_PASS = 6,
+  MSG_FAIL = 7,
+  MSG_IGN_24_OFF = 8,
+  MSG_IGN_GND_OFF = 9,
+  MSG_IGN_SW_OFF = 10,
+  MSG_HEAT_OFF = 11,
+  MSG_OX_OFF = 12,
+  MSG_HEAT_ON_START = 13,
+  MSG_HEAT_BUTTON = 14,
+  MSG_HEAT_ON_RESULT = 15,
+  MSG_HEAT_RELEASE = 16,
+  MSG_OX_ON_START = 17,
+  MSG_OX_BUTTON = 18,
+  MSG_OX_ON_RESULT = 19,
+  MSG_OX_RELEASE = 20,
+  MSG_IGN_ON_START = 21,
+  MSG_IGN_BUTTON = 22,
+  MSG_IGN_ON_24_RESULT = 23,
+  MSG_IGN_ON_GND_RESULT = 24,
+  MSG_IGN_ON_SW_RESULT = 25,
+  MSG_IGN_ON_RELEASE = 26,
+  MSG_TEST_FINISH = 27,
+  MSG_TEST_PASSED = 28,
+  MSG_TEST_FAILED = 29,
+  MSG_TEST_ENDING = 30,
+  MSG_DUMP_WARNING = 31,
+  MSG_N2_FEED_WARNING = 32,
+  MSG_OX_FEED_WARNING = 33
+  }messageIndices_t;
+
+//Maximum length of the message buffer;
+const uint16_t msgBufferSize = 16;
+
+
+
 //Other stuff to come. Add any constants here instead of in each separate file.
 
 #endif

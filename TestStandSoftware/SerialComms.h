@@ -62,6 +62,6 @@ void writeValues(values_t values, statusValues_t statusValues);
  * IN:            A single int16_t integer to be sent
  * OUT:           Nothing
  */
-void saveMessage(char* message);
+void saveMessage(uint16_t message);
 
 #endif

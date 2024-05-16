@@ -74,9 +74,9 @@ void senseLoop(values_t* values){
     if (newTimestamp < values->lastTimestamp){
       values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
     }
-    values->timestamp = values->timeOverflowOffset + micros();  //Arduino time in us
+    values->timestamp = values->timeOverflowOffset + newTimestamp;  //Arduino time in us
 
-    values->lastTimestamp = micros();
+    values->lastTimestamp = newTimestamp;
 
     //Called from Countdown loop in V1.31    
     //sendToCheck(values);

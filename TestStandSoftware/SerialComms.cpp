@@ -12,14 +12,20 @@
 //#include <semphr.h>
 
 #include "Globals.h"
+
+#include <cppQueue.h>
+
 //static SemaphoreHandle_t serialMutex;
 //static SemaphoreHandle_t messageMutex;
 
-static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
-static char* msg = datalineMessage;
+//static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
+//static char* msg = datalineMessage;
+static uint16_t msgIndex = 0;
 
 uint32_t lastTime = 0;
 uint32_t count = 0;
+
+cppQueue	msgBuffer(sizeof(char), msgBufferSize, FIFO, true);
 
 void initSerial(){
 
@@ -85,7 +91,10 @@ void initSerial(){
 void writeValues(values_t values, statusValues_t statusValues){
   //if (xSemaphoreTake(serialMutex, 10) == pdTRUE){
 
-  int msgIndex = 0;
+  msgIndex = 0;
+  if (!msgBuffer.isEmpty()){
+    msgBuffer.pop(&msgIndex);
+  }
 
   long comb1 = values.N2FeedingPressure;
   comb1 = comb1 << (10) | values.linePressure;
@@ -107,7 +116,7 @@ void writeValues(values_t values, statusValues_t statusValues){
   comb4 = comb4 << (1) | statusValues.valveActive;
   comb4 = comb4 << (3) | statusValues.mode;
   comb4 = comb4 << (3) | statusValues.subState;
-  comb4 = comb4 << (4) | msgIndex;
+  comb4 = comb4 << (8) | msgIndex;
   comb4 = comb4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
   
   uint32_t printedValue = (uint32_t) (values.timestamp >> 3);
@@ -177,16 +186,16 @@ void writeValues(values_t values, statusValues_t statusValues){
   
   //Clear message
   //strcpy(msg, " ");
-  msgIndex = 0;
 
   //  xSemaphoreGive(serialMutex);
   //}
   //lastTime = millis();
 }
 
-void saveMessage(char* message){
+void saveMessage(uint16_t messageIndex){
     //if (xSemaphoreTake(messageMutex, 10) == pdTRUE){
-      strcat(msg, message);
+    msgBuffer.push(messageIndex);
+      //strcat(msg, message);
     //  xSemaphoreGive(messageMutex);
     //}
 }
