@@ -303,8 +303,8 @@ void countdownLoop(){
     sendValuesToSerial(values, statusValues);
     //}
 
-    //Testing with no delay
-
-    //xTaskDelayUntil(&lastCountdownWakeTime, countdownTickDelay);
+    if (currentMode != SEQUENCE){
+      delay(1000/limitedSampleRate);
+    }
   }
 }

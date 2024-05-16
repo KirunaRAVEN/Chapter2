@@ -387,7 +387,7 @@ def update(frame):
     csv_file.seek(last_pos)
     updated = False
     for row in csv_reader:
-        if (lineNumber % slowDownFactor == 0) or (len(row) == csvDataCount and int(row[-1]) != 0):
+        if (lineNumber % slowDownFactor == 0) or (len(row) == csvDataCount and int(row[-1]) != 0) or (int(row[18]) != 3):
             updated = True
             #for i in range(plotScale):
             #    csv_reader.next()
