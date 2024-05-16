@@ -1,7 +1,7 @@
 /* Filename:      Buzzer.h
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.45 (11.05.2024)
+ * Version:       V1.5 (16.05.2024)
  *
  * Purpose:       Header file for the Buzzer <<device>> object. 
  *                Contains function definitions.
