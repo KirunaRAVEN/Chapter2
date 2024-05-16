@@ -95,26 +95,34 @@ void writeValues(values_t values, statusValues_t statusValues){
     msgBuffer.pop(&msgIndex);
   }
 
+  // First 32bit data - sent always
   long combinedValue1 = values.N2FeedingPressure;
   combinedValue1 = combinedValue1 << (10) | values.linePressure;
   combinedValue1 = combinedValue1 << (10) | values.combustionPressure;
+  combinedValue1 = combinedValue1 << (1) |  values.dumpValveButton;
+  combinedValue1 = combinedValue1 << (1) | values.heatingBlanketButton;
 
+  //Second 32bit data - sent always
   long combinedValue2 = values.N2OFeedingPressure;
   combinedValue2 = combinedValue2 << (10) | values.loadCell;
-  combinedValue2 = combinedValue2 << (10) | values.bottleTemperature;
+  combinedValue2 = combinedValue2 << (1) | values.ignitionButton;
+  combinedValue2 = combinedValue2 << (1) | values.n2FeedingButton;
+  combinedValue2 = combinedValue2 << (1) | values.oxidizerValveButton;
+  combinedValue2 = combinedValue2 << (1) | statusValues.ignitionEngagedActive;
+  combinedValue2 = combinedValue2 << (1) | statusValues.valveActive;
+  combinedValue2 = combinedValue2 << (3) | statusValues.mode;
+  combinedValue2 = combinedValue2 << (3) | statusValues.subState;
+
+
+  //Third 32bit data - sent at most every 100ms
 
   long combinedValue3 = values.nozzleTemperature;
   combinedValue3 = combinedValue3 << (14) | values.pipingTemperature;
+  combinedValue2 = combinedValue2 << (10) | values.bottleTemperature;
 
-  long combinedValue4 = values.dumpValveButton;
-  combinedValue4 = combinedValue4 << (1) | values.heatingBlanketButton;
-  combinedValue4 = combinedValue4 << (1) | values.ignitionButton;
-  combinedValue4 = combinedValue4 << (1) | values.n2FeedingButton;
-  combinedValue4 = combinedValue4 << (1) | values.oxidizerValveButton;
-  combinedValue4 = combinedValue4 << (1) | statusValues.ignitionEngagedActive;
-  combinedValue4 = combinedValue4 << (1) | statusValues.valveActive;
-  combinedValue4 = combinedValue4 << (3) | statusValues.mode;
-  combinedValue4 = combinedValue4 << (3) | statusValues.subState;
+
+  //Fourth 32bit data - sent at most every 100ms
+
   combinedValue4 = combinedValue4 << (6) | msgIndex;
   combinedValue4 = combinedValue4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
   
