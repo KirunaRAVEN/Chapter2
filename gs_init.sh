@@ -1,20 +1,26 @@
 #!/bin/bash
-# execute this bash script in a terminal with the command 'source gs_init.sh'
-# alternatively, edit the .bashrc file in the home/ directory by adding the line ''
-# the script can then be launched by the shortcut 'gsi'
+# execute bash script with 'source gs_init.sh'
 
 # navigate to working directory
 cd ~/Documents/ROCK_SOFTWARE/
-
-# ping the rock three times to check packet loss
 echo 'Pinging rock ...'
-ping -c 3 rock-4c-plus.local | grep 'received'
 
-# establish ssh connection and launch the serial reader code on the rock 
-sshpass -p "rock" ssh rock@rock-4c-plus.local "cd scripts; echo 'rock' | sudo -S python3 serial_reader.py" &
+# ping the rock to check packet loss
+ping -c 1 rock-4c-plus.local | grep 'received'
 
-# open new terminal and stream the data to the laptop
-gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee data.csv"  
+# establish ssh connection and remove old csv
+sshpass -p "rock" ssh rock@rock-4c-plus.local "cd scripts; echo 'y' | rm data.csv ; echo 'rock' | sudo -S python3 serial_reader_V2.py" &
 
-# open new terminal and run the interface software
-gnome-terminal -- sh -c "python3 live_grapher_V3.py"
+# give time to the rock for creating the new csv
+sleep 1
+
+gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee data.csv 1>/dev/null"  
+
+#gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee ~/Documents/GroundStationSoftware/interface/data.csv"  
+
+sleep 1
+
+# gnome-terminal -- sh -c "python3 live_grapher_V3.py"
+
+#gnome-terminal -- sh -c "cd ~/Documents/GroundStationSoftware/interface/ && python3 interface.py"
+gnome-terminal -- sh -c "cd ~/Documents/ROCK_SOFTWARE && python3 live_grapher_V4.py"
