@@ -87,6 +87,43 @@ substates = ["ALL_OFF",
              "PURGING",
              "FINISHED"]
 
+#Message strings the message indecies map to
+messageStrings = [  "",  
+                    "Running testing sequence\nTesting all OFF-states...\nRelease all buttons!\n",
+                    "No button presses detected\n",
+                    "Please release the oxidizer valve button.\n",
+                    "Please release the ignition button.\n",
+                    "Please release the heating blanket button.\n",
+                    "Passed\n"
+                    "Failed\n"
+                    "Ignition 24V relay OFF-state:\n",
+                    "Ignition GND relay OFF-state:\n",
+                    "Ignition SW relay OFF-state:\n",
+                    "Heating relay OFF-state:\n",
+                    "Oxidizer Valve OFF-state:\n",
+                    "Testing heating relay ON-state...\nPress the Heating button!\n",
+                    "Heating button press detected\n",
+                    "Heating relay ON-state:\n",
+                    "Release the Heating button\n",
+                    "Testing Oxidizer Valve ON-state...\nPress the Oxidizer Valve button!\n",
+                    "Oxidizer Valve button press detected\n",
+                    "Oxidizer Valve ON-state:\n",
+                    "Release the Oxidizer Valve button\n",
+                    "Testing ignition relays ON-state...\nPress the Ignition button!\n",
+                    "Ignition button press detected\n",
+                    "Ignition Power relay ON-state:\n",
+                    "Ignition Ground relay ON-state:\n",
+                    "Ignition Software relay ON-state:\n",
+                    "Release the Ignition button\n",
+                    "Actuator testing completed...\nVerification status:\n",
+                    "All tests passed!\nStarting up software...\n",
+                    "Fault detected!\nFind and fix the issue!\n",
+                    "Restarting test sequence...\n",
+                    "Warning:\nCannot begin sequence\nwith dump valve open.",
+                    "Warning:\nCannot begin sequence\nwith N2 feeding valve open.",
+                    "Warning:\nCannot begin sequence\nwith Oxidizer valve open."]
+
+
 # Colors of the indicator LEDs
 ledColors = [['dimgray', 'gray'], ['orangered', 'lightcoral']]
 
@@ -388,7 +425,7 @@ def update(frame):
             if len(row) == csvDataCount and row[-1] != 0:
                 #print(messageList)
 
-                messageList += "Message" + str(row[-1])
+                messageList += "Message" + messageList[int(row[-1])]
                 """
                 messageListUpdated = True
                 splitRow = row[-1].split("\\n")
