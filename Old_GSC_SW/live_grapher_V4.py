@@ -118,11 +118,14 @@ messageStrings = [  "",
                     "Actuator testing completed...\nVerification status:\n",
                     "All tests passed!\nStarting up software...\n",
                     "Fault detected!\nFind and fix the issue!\n",
-                    "Restarting test sequence...\n",
+                    ["10...\n", "9...\n",  "8...\n",  "7...\n",  "6...\n",  "5...\n",  "4...\n",  "3...\n",  "2...\n",  "1...\n",  "0...\n"],
                     "Warning:\nCannot begin sequence\nwith dump valve open.\n",
                     "Warning:\nCannot begin sequence\nwith N2 feeding valve open.\n",
                     "Warning:\nCannot begin sequence\nwith Oxidizer valve open.\n"]
 
+# Counter for the end countdown
+endCountdownTimer = 0
+endCountdownIndex = 30
 
 # Colors of the indicator LEDs
 ledColors = [['dimgray', 'gray'], ['orangered', 'lightcoral']]
@@ -428,7 +431,14 @@ def update(frame):
                 #messageList += "Message" + messageStrings[int(row[-1])]
                 
                 messageListUpdated = True
-                messageList += [messageStrings[int(row[-1])]]
+                
+                if int(row[-1] != endCountdownIndex):
+                    messageList += [messageStrings[endCountdownIndex]]
+                else:
+                    messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
+                    endCountdownTimer += 1
+                    if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
+                        endCountdownTimer = 0
                 messageList = messageList[-maxMessageCount:]
                 
         lineNumber += 1
