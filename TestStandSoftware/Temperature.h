@@ -23,7 +23,7 @@ void initTemp(void);
  * IN:            Temperature sensor number to be read.
  * OUT:           Float value with the temperature measurements
  */
-float readTemp(uint16_t senorNum);
+int readTemp(uint16_t senorNum);
 
 
 /* Function:      Read the TMP36 temperature sensors and return the measurements.
@@ -31,6 +31,6 @@ float readTemp(uint16_t senorNum);
  * IN:            Nothing
  * OUT:           Float value with the temperature measurements
  */
-float readTMP36(void);
+int readTMP36(void);
 
 #endif

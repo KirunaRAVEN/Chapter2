@@ -42,6 +42,9 @@ void checkData(values_t values){
   //REDLINE TRIGGERS
   
   //N2O feeding pressure SAFE mode entry disabled for first hot flow  in version V_1.45 on (10.05.2024)
+  
+  float realN2OPressure = calibrationADC * refADC * (values.N2OFeedingPressure / maxADC);
+  realN2OPressure = pressureCalibration_K[FEEDING_PRESSURE_OXIDIZER] * realN2OPressure + pressureCalibration_B[FEEDING_PRESSURE_OXIDIZER];
   /*
   if (values.N2OFeedingPressure > N2OFeedingPressureThreshold){
     N2OFeedingPassCount++;
@@ -51,7 +54,12 @@ void checkData(values_t values){
   }else{N2OFeedingPassCount = 0;}
   */
 
-  if (values.combustionPressure > chamberPressureThreshold){
+  
+
+  float realCombustionPressure = calibrationADC * refADC * (values.combustionPressure / maxADC);
+  realCombustionPressure = pressureCalibration_K[CHAMBER_PRESSURE] * realCombustionPressure + pressureCalibration_B[CHAMBER_PRESSURE];
+
+  if (realCombustionPressure > chamberPressureThreshold){
     chamberPassCount++;
     if (chamberPassCount > successivePasses){
       activateSafe = true;
@@ -60,7 +68,10 @@ void checkData(values_t values){
 
   //Nozzle temperature SAFE mode entry disabled for first hot flow  in version V_1.45 on (10.05.2024)
   /*
-  if (values.nozzleTemperature > casingTemperatureThreshold){
+  
+  float realNozzleTemperature = values.nozzleTemperature * 0.25
+
+  if (realNozzleTemperature > casingTemperatureThreshold){
     casingPassCount++;
     if (casingPassCount > successivePasses){
       activateSafe = true;
@@ -69,7 +80,7 @@ void checkData(values_t values){
   */
 
   //WARNING TRIGGERS
-  if (values.N2OFeedingPressure > N2OFeedingPressureWarning){
+  if (realN2OPressure > N2OFeedingPressureWarning){
       activateWarning = true;
   }
 

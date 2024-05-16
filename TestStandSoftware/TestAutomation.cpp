@@ -48,8 +48,8 @@ void sendValuesToSerial(values_t values, statusValues_t statusValues){
   writeValues(values, statusValues);
 }
 
-void sendMessageToSerial(char* message){
-  saveMessage(message);
+void sendMessageToSerial(uint16_t messageIndex){
+  saveMessage(messageIndex);
   //writeMessage(message);
 }
 

@@ -94,8 +94,8 @@ messageStrings = [  "",
                     "Please release the oxidizer valve button.\n",
                     "Please release the ignition button.\n",
                     "Please release the heating blanket button.\n",
-                    "Passed\n"
-                    "Failed\n"
+                    "Passed\n",
+                    "Failed\n",
                     "Ignition 24V relay OFF-state:\n",
                     "Ignition GND relay OFF-state:\n",
                     "Ignition SW relay OFF-state:\n",
@@ -119,9 +119,9 @@ messageStrings = [  "",
                     "All tests passed!\nStarting up software...\n",
                     "Fault detected!\nFind and fix the issue!\n",
                     "Restarting test sequence...\n",
-                    "Warning:\nCannot begin sequence\nwith dump valve open.",
-                    "Warning:\nCannot begin sequence\nwith N2 feeding valve open.",
-                    "Warning:\nCannot begin sequence\nwith Oxidizer valve open."]
+                    "Warning:\nCannot begin sequence\nwith dump valve open.\n",
+                    "Warning:\nCannot begin sequence\nwith N2 feeding valve open.\n",
+                    "Warning:\nCannot begin sequence\nwith Oxidizer valve open.\n"]
 
 
 # Colors of the indicator LEDs
@@ -262,7 +262,7 @@ bottleTempInfo = infoBox("Bottle temperature:", " °C", (1, ncols-2), bottleTemp
 loadCellInfo = infoBox("Load cell:", " N", (2, ncols-2), loadCell_Ind)
 swInfo = infoBox("Software mode:\n\n\nSoftware substate:\n\n\nArduino time", "", (3, ncols-2), None, fontSize = 20)
 
-maxMessageCount = 19
+maxMessageCount = 16
 messageList = []
 messageInfo = infoBox("", "", (3, ncols-1), None, fontSize = 8)
 
@@ -422,17 +422,15 @@ def update(frame):
                         data[i] += [val]
             #Else it is a message line --> Print out
             #else:
-            if len(row) == csvDataCount and row[-1] != 0:
-                #print(messageList)
+            if len(row) == csvDataCount and int(row[-1]) != 0:
+                #print(int(row[-1]))#, messageStrings[int(row[-1])])
 
-                messageList += "Message" + messageList[int(row[-1])]
-                """
+                #messageList += "Message" + messageStrings[int(row[-1])]
+                
                 messageListUpdated = True
-                splitRow = row[-1].split("\\n")
-                for newRow in splitRow:
-                    messageList += [newRow]
+                messageList += [messageStrings[int(row[-1])]]
                 messageList = messageList[-maxMessageCount:]
-                """
+                
         lineNumber += 1
 
     if updated:
@@ -483,9 +481,8 @@ def update(frame):
         if messageListUpdated:
             mi_value = ""
             for message in messageList:
-                message = message.replace("\\n", "\n")
                 mi_value += message
-                mi_value += "\n"
+                #mi_value += "\n"
             messageInfo.set_value(mi_value)
          
         bottlePressureInfo.set_value(bp_value)

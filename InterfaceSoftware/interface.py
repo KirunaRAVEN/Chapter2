@@ -37,6 +37,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import numpy as np
 import csv
+import shutil
+import datetime
 
 # internal (functions)
 # from update import update 
@@ -355,6 +357,8 @@ isUsingBlit = True
 isCachingFrameData = False
 updateRate = 16 # milli seconds: seems to be faster than data rate
 
+
+
 # function to add escape key press to exit figure
 def escape(esc):
     if esc.key == 'escape':
@@ -364,8 +368,19 @@ def fullscreen(f):
     if f.key == 'f':
         plt.get_current_fig_manager().full_screen_toggle()
 
-# link the key press event to the interface
+def on_close(event):
+    """
+        Save a copy of the data file to archive and with timestamp
+    """
+    time = datetime.datetime.now().strftime('%Y-%m-%d_%Hh%M') 
+    src = 'data.csv'
+    dst = 'archive/'
+    dst = dst + 'data_' + time + '.csv'
+    shutil.copy2(src, dst)
+
+# link the events fto the interface
 interface.canvas.mpl_connect('key_press_event', escape)
+interface.canvas.mpl_connect('close_event', on_close)
 
 # animate the interface
 interfaceAnimation = ani.FuncAnimation(interface, update, interval=updateRate, blit=isUsingBlit, cache_frame_data=isCachingFrameData)

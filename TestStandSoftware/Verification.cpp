@@ -20,7 +20,7 @@ static bool ignitionPowerPassed;
 static bool ignitionGroundPassed;
 static bool ignitionSoftwarePassed;
 static bool heatingPassed;
-static bool valvePassed;
+static bool oxidizerValvePassed;
 static bool allPassed;
 static bool testCompleted;
 
@@ -29,24 +29,21 @@ static verificationState_t verificationState;
 static uint32_t testStateChangeTime;
 static uint32_t endCountTime;
 static int16_t endCount;
-static char message[64];
-static char* msg = message;
+//static char message[64];
+//static char* msg = message;
+static uint16_t msg;
 
 bool runVerificationStep(values_t buttonValues, testInput_t testInput){
   if (!testCompleted){
     switch (verificationState){
       case TEST_START:
-        msg = "Running testing sequence\\n";
-        sendMessageToSerial(msg);
-        msg = "Testing all OFF-states...\\nRelease all buttons!\\n";
-        sendMessageToSerial(msg);
+        sendMessageToSerial(MSG_TEST_SEQUENCE_START);
         verificationState = OFF_STATE_BUTTON;
         break;
 
       case OFF_STATE_BUTTON:
         if (!buttonValues.oxidizerValveButton && !buttonValues.ignitionButton && !buttonValues.heatingBlanketButton){
-          msg = "No button presses detected\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_NO_BUTTONS);
           testStateChangeTime = millis();
           verificationState = OFF_STATE_TEST;
 
@@ -56,16 +53,13 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
           else if (buttonValues.oxidizerValveButton == true){
-            msg = "Please release the oxidizer valve button.\\n";
-            sendMessageToSerial(msg);
+            sendMessageToSerial(MSG_RELEASE_OX);
           }
           else if (buttonValues.ignitionButton == true){
-            msg = "Please release the ignition button.\\n";
-            sendMessageToSerial(msg);
+            sendMessageToSerial(MSG_RELEASE_IGN);
           }
           else if (buttonValues.heatingBlanketButton == true){
-            msg = "Please release the heating blanket button.\\n";
-            sendMessageToSerial(msg);
+            sendMessageToSerial(MSG_RELEASE_HEAT);
           }
         break;
         
@@ -76,50 +70,36 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           ignitionGroundPassed = (testInput.IGN_GND_IN > ignitionGroundOpenPassLimit);
           ignitionSoftwarePassed = (testInput.IGN_SW_IN == false);
           heatingPassed = (buttonValues.heatingBlanketButton == false);
-          valvePassed = (testInput.MAIN_VALVE_IN == true);   //Inverted input
+          oxidizerValvePassed = (testInput.MAIN_VALVE_IN == true);   //Inverted input
 
-          allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && valvePassed;
+          allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && oxidizerValvePassed;
 
-          msg = "Ignition 24V relay OFF-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionPowerPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_24_OFF);
+          sendMessageToSerial(ignitionPowerPassed ? MSG_PASS : MSG_FAIL);
           
-          msg = "Ignition GND relay OFF-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionGroundPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_GND_OFF);
+          sendMessageToSerial(ignitionGroundPassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Ignition SW relay OFF-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionSoftwarePassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_SW_OFF);
+          sendMessageToSerial(ignitionSoftwarePassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Heating relay OFF-state:\\n";
-          sendMessageToSerial(msg);
-          msg = heatingPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_HEAT_OFF);
+          sendMessageToSerial(heatingPassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Oxidizer Valve OFF-state:\\n";
-          sendMessageToSerial(msg);
-          msg = valvePassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_OX_OFF);
+          sendMessageToSerial(oxidizerValvePassed ? MSG_PASS : MSG_FAIL);
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
           
           verificationState = HEAT_ON_BUTTON;
         
-          msg = "Testing heating relay ON-state...\\n";
-          sendMessageToSerial(msg);          
-          msg = "Press the Heating button!\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_HEAT_ON_START);   
         }
         break;
 
       case HEAT_ON_BUTTON:
         if (buttonValues.heatingBlanketButton){
-          msg = "Heating button press detected\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_HEAT_BUTTON);
 
           testStateChangeTime = millis();
           verificationState = HEAT_ON_TEST;
@@ -133,13 +113,10 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           allPassed = allPassed && heatingPassed;
 
-          msg = "Heating relay ON-state:\\n";
-          sendMessageToSerial(msg);
-          msg = heatingPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_HEAT_ON_RESULT);
+          sendMessageToSerial(heatingPassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Release the Heating button\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_HEAT_RELEASE);
 
           verificationState = HEAT_RELEASE;
 
@@ -150,18 +127,14 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (!buttonValues.heatingBlanketButton){    
           verificationState = VALVE_ON_BUTTON;
 
-          msg = "Testing Oxidizer Valve ON-state...\\n";
-          sendMessageToSerial(msg);
-          msg = "Press the Oxidizer Valve button!\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_OX_ON_START);
 
         }
         break;
       
       case VALVE_ON_BUTTON:
         if (buttonValues.oxidizerValveButton){
-          msg = "Oxidizer Valve button press detected\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_OX_BUTTON);
 
           setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
 
@@ -173,18 +146,15 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case VALVE_ON_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          valvePassed = (testInput.MAIN_VALVE_IN == false);   //Inverted input
+          oxidizerValvePassed = (testInput.MAIN_VALVE_IN == false);   //Inverted input
 
-          allPassed = allPassed && valvePassed;
+          allPassed = allPassed && oxidizerValvePassed;
 
 
-          msg = "Oxidizer Valve ON-state:\\n";
-          sendMessageToSerial(msg);
-          msg = valvePassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_OX_ON_RESULT);
+          sendMessageToSerial(oxidizerValvePassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Release the Oxidizer Valve button\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_OX_RELEASE);
 
           verificationState = VALVE_RELEASE;
         }
@@ -196,17 +166,13 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
 
           verificationState = IGN_ON_BUTTON;
 
-          msg = "Testing ignition relays ON-state...\\n";
-          sendMessageToSerial(msg);
-          msg = "Press the Ignition button!\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_ON_START);
         }
         break;
       
       case IGN_ON_BUTTON:
         if (buttonValues.ignitionButton){
-          msg = "Ignition button press detected\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_BUTTON);
 
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, true);
 
@@ -225,23 +191,16 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed;
 
 
-          msg = "Ignition Power relay ON-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionPowerPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_ON_24_RESULT);
+          sendMessageToSerial(ignitionPowerPassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Ignition Ground relay ON-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionGroundPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_ON_GND_RESULT);
+          sendMessageToSerial(ignitionGroundPassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Ignition Software relay ON-state:\\n";
-          sendMessageToSerial(msg);
-          msg = ignitionSoftwarePassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_ON_SW_RESULT);
+          sendMessageToSerial(ignitionSoftwarePassed ? MSG_PASS : MSG_FAIL);
 
-          msg = "Release the Ignition button\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_IGN_ON_RELEASE);
 
           verificationState = IGN_RELEASE;
 
@@ -252,23 +211,15 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (!buttonValues.ignitionButton){
           setTestOutput(IGN_GND_RELAY_TEST_DRIVE_PIN, false);
 
-          msg = "Actuator testing completed...\\n";
-          sendMessageToSerial(msg);
-          msg = "Verification status:\\n";
-          sendMessageToSerial(msg);
-          msg = allPassed ? "Passed\\n" : "Failed\\n";
-          sendMessageToSerial(msg);
+          sendMessageToSerial(MSG_TEST_FINISH);
+          sendMessageToSerial(allPassed ? MSG_PASS : MSG_FAIL);
 
 
           if (allPassed){
-            msg = "All tests passed!\\nStarting up software...\\n";
-            sendMessageToSerial(msg);
+            sendMessageToSerial(MSG_TEST_PASSED);
           }
           else{
-            msg = "Fault detected!\\nFind and fix the issue!\\n";
-            sendMessageToSerial(msg);
-            msg = "Restarting test sequence...\\n";
-            sendMessageToSerial(msg);
+            sendMessageToSerial(MSG_TEST_FAILED);
           }
           verificationState = TEST_END;
           //Immediately start the countdown
@@ -279,10 +230,10 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case TEST_END:
         if (millis() - endCountTime >= 1000){
           //I'm sorry about this crime against humanity
-          char* listOfNumbers[11] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-          sendMessageToSerial(listOfNumbers[endCount]);
-          msg = "...";
-          sendMessageToSerial(msg);
+          //char* listOfNumbers[11] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+          //sendMessageToSerial(listOfNumbers[endCount]);
+          //msg = "...";
+          sendMessageToSerial(MSG_TEST_ENDING);
 
           endCountTime = millis();
           endCount--;
@@ -315,7 +266,7 @@ void initVerification(){
   ignitionGroundPassed = true;
   ignitionSoftwarePassed = true;
   heatingPassed = true;
-  valvePassed = true;
+  oxidizerValvePassed = true;
   
   /* Initially set to pass, bitwise AND with all the other tests
    * determines if all tests have passed.

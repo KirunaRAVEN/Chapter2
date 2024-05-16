@@ -27,7 +27,7 @@ void initPressure(void);
  * IN:            Sensor number to be read.
  * OUT:           Float with the pressure measurements
  */
-float readPressure5V(uint16_t sensorNumber);
+int readPressure5V(uint16_t sensorNumber);
 
 /* Function:      Read the 20mA output pressure sensors and return the measurements.
  *

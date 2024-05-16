@@ -74,11 +74,12 @@ typedef enum {
   VALVE_ON,
   IGNIT_OFF,
   VALVE_OFF,
+  PURGING,
   FINISHED
 } substate_t;
 
 //Used mainly for debugging and for user information
-const char substateStrings[6][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "FINISHED"};
+const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"};
 
 //Enumeration for the different states of the automated testing sequence
 typedef enum {
@@ -148,6 +149,7 @@ typedef enum{
   BUZZER_TEST
 }buzzerPattern_t;
 
+//Not used anymore since FreeRTOS isn't used
 typedef enum{
   LOW_PRIORITY = 0,
   NORMAL_PRIORITY = 1,
@@ -156,6 +158,7 @@ typedef enum{
 }taskPriorities_t;
 
 //How many bytes allocated to task memory.
+//Not used anymore since FreeRTOS isn't used
 const int16_t taskMemoryBytes = 512;
 
 /*
@@ -193,8 +196,11 @@ const int16_t ignitionOffTime = igniterBurnLength;
 //How long from sequence start until closing valves (ms)
 const int16_t valveOffTime = valveOnTime + burnTime;
 
-//How long from sequence start until calling the test finished (ms)
-const int16_t cooldownTime = valveOffTime + 10 * 1000;  //Placeholder value
+//How long from sequence start until the start of purging (ms)
+const int16_t oxidiserEmptyTime = valveOffTime + 500;  //Placeholder value
+
+//How long from sequence start until the end of purging (ms)
+const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value
 
 //How many valves the system has
 const int16_t valveCount = 3; 
@@ -222,17 +228,21 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 
 //Structure for storing measurements with a timestamp
 struct values_t {
-  uint32_t timestamp;   //Time since Arduino startup
-  float N2FeedingPressure;      //N2 Feeding line pressure 
-  float linePressure;      //Line pressure 
-  float combustionPressure;      //Combustion chamber pressure 
-  float N2OFeedingPressure;      //Oxidizer Feeding pressure 
-  float loadCell;       //Back of the engine
-  float bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  float notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  float nozzleTemperature;   //Nozzle temperature
-  float pipingTemperature;   //Piping temperature 
-  float IR;             //Plume Temperature
+  uint64_t timestamp;           //Time since Arduino startup in us
+  uint32_t msTimestamp;         //Time since Arduino startup in ms
+  uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
+  uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
+  
+  int N2FeedingPressure;        //N2 Feeding line pressure 
+  int linePressure;      //Line pressure 
+  int combustionPressure;      //Combustion chamber pressure 
+  int N2OFeedingPressure;      //Oxidizer Feeding pressure 
+  int loadCell;       //Back of the engine
+  int bottleTemperature;   //Bottle temperature - Switched to TMP36 output, uses different pin
+  int notConnectedTemperature;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  int nozzleTemperature;   //Nozzle temperature
+  int pipingTemperature;   //Piping temperature 
+  int IR;             //Plume Temperature
   
   bool dumpValveButton;             //Is dump valve button pressed (normally open)
   bool heatingBlanketButton;        //Is heating button pressed
@@ -251,10 +261,17 @@ struct statusValues_t{
 };
 
 //Sampling tick delay for the Sensing.senseLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t samplingTickDelay = 1;
 
 //Tick delay for the Countdown.countdownLoop task (Ticks between excecutions)
+//Not used anymore since FreeRTOS isn't used
 const int16_t countdownTickDelay = 1;
+
+/*
+ * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
+ * This will be done in combination with reading the Serial data and generating the csv file.
+ */
 
 //What resolution will the built in ADC use (bit)
 const int16_t resolutionADC = 10;
@@ -278,6 +295,7 @@ const mode_t startMode = INIT;
 const substate_t startSubstate = ALL_OFF;
 
 //How long the system waits until starting automatic sequence (ms)
+//Not used anymore
 const int16_t sensorSettleTime = 2 * 1000;
 
 //Which pressure sensors corresponds to which "location"
@@ -358,6 +376,8 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
+//Factor of reduction on temperature sensor measurements
+const uint16_t tempSensorSampleReduction = 10;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
@@ -402,7 +422,7 @@ typedef enum{
  */
 
 //Minimum pressure required to start the firing sequence (bar)
-const int16_t minimumFiringPressure = 0;  //Set to 0 bar to always allow the firing
+const int16_t minimumFiringPressure = -1;  //Set to -1 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
 //const int16_t closeN2FeedingPressure = 2;
@@ -427,6 +447,48 @@ const int16_t casingTemperatureThreshold = 800; //Placeholder Value
 
 //Warning thresholds
 const int16_t N2OFeedingPressureWarning = 65;
+
+//Indexes of all the possible messages to send
+typedef enum{
+  MSG_TEST_SEQUENCE_START = 1,
+  MSG_NO_BUTTONS = 2,
+  MSG_RELEASE_OX = 3,
+  MSG_RELEASE_IGN = 4,
+  MSG_RELEASE_HEAT = 5,
+  MSG_PASS = 6,
+  MSG_FAIL = 7,
+  MSG_IGN_24_OFF = 8,
+  MSG_IGN_GND_OFF = 9,
+  MSG_IGN_SW_OFF = 10,
+  MSG_HEAT_OFF = 11,
+  MSG_OX_OFF = 12,
+  MSG_HEAT_ON_START = 13,
+  MSG_HEAT_BUTTON = 14,
+  MSG_HEAT_ON_RESULT = 15,
+  MSG_HEAT_RELEASE = 16,
+  MSG_OX_ON_START = 17,
+  MSG_OX_BUTTON = 18,
+  MSG_OX_ON_RESULT = 19,
+  MSG_OX_RELEASE = 20,
+  MSG_IGN_ON_START = 21,
+  MSG_IGN_BUTTON = 22,
+  MSG_IGN_ON_24_RESULT = 23,
+  MSG_IGN_ON_GND_RESULT = 24,
+  MSG_IGN_ON_SW_RESULT = 25,
+  MSG_IGN_ON_RELEASE = 26,
+  MSG_TEST_FINISH = 27,
+  MSG_TEST_PASSED = 28,
+  MSG_TEST_FAILED = 29,
+  MSG_TEST_ENDING = 30,
+  MSG_DUMP_WARNING = 31,
+  MSG_N2_FEED_WARNING = 32,
+  MSG_OX_FEED_WARNING = 33
+  }messageIndices_t;
+
+//Maximum length of the message buffer;
+const uint16_t msgBufferSize = 16;
+
+
 
 //Other stuff to come. Add any constants here instead of in each separate file.
 

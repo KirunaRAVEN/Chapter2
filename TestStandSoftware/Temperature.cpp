@@ -11,7 +11,11 @@
 
 #include "Temperature.h"
 #include "Globals.h"
-#include "Adafruit_MAX31855.h"
+
+/*
+  NOTICE: Uses a modified version of the Adafruit library to gain access to the raw spiread32() function
+*/
+#include "Adafruit_MAX31855_RAVEN.h"
 
 //This pin number list was kept due to the higher number of thermocouples, and the fact that reading TCs is done with differently
 static const uint16_t tempChipSelectPins[tempCount] = {THERMOCOUPLE_CS_PIN0, THERMOCOUPLE_CS_PIN1, THERMOCOUPLE_CS_PIN2, THERMOCOUPLE_CS_PIN3};
@@ -37,12 +41,13 @@ void initTemp(){
   }
 } 
 
-float readTemp(uint16_t sensorNum){
+int readTemp(uint16_t sensorNum){
   //digitalWrite(tempChipSelectPins[sensorNum], LOW);
   //Serial.print(thermocouples[sensorNum].readInternal());
   //Serial.print("\n");
-  float temperature = thermocouples[sensorNum].readCelsius();;
   
+  //float temperature = thermocouples[sensorNum].readCelsius();
+  int32_t temperature = thermocouples[sensorNum].spiread32();
   /*
   if (isnan(temperature)){
     Serial.print("Thermocouple fault(s) detected!\n");
@@ -56,12 +61,28 @@ float readTemp(uint16_t sensorNum){
      //Serial.print("\n");
    }
     */
-  
+
+  if (temperature & 0x80000000) {
+    // Negative value, drop the lower 18 bits and explicitly extend sign bits.
+    temperature = 0xFFFFC000 | ((temperature >> 18) & 0x00003FFF);
+  } else {
+    // Positive value, just drop the lower 18 bits.
+    temperature >>= 18;
+  }
+  // Serial.println(v, HEX);
+
+
+  // LSB = 0.25 degrees C
+  //centigrade *= 0.25;
+
   return temperature;// * 0.25;
 }
 
 
-float readTMP36(){
+int readTMP36(){
+
+  return analogRead(TMP36_INPUT_PIN);
+
   /* Measurement to value explanation:
    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
    * sensorValue = measured voltage on the pin, within 0...1023
@@ -70,7 +91,7 @@ float readTMP36(){
    * (voltage - 0.5) * 100 = voltage to celsius conversion formula for TMP36 sensors
    * Measurement is repeated TMP36AverageCount times each loop to reduce noise
    */
-
+  /*
   float sensorValueSum = 0; 
   for (int i = 0; i < TMP36AverageCount; i++){
     sensorValueSum += analogRead(TMP36_INPUT_PIN);
@@ -78,4 +99,5 @@ float readTMP36(){
 
   float temperature = (calibrationADC * (sensorValueSum / (TMP36AverageCount * maxADC)) * refADC - 0.5) * 100;
   return temperature;
+  */
 }

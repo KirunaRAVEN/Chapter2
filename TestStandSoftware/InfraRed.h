@@ -23,6 +23,6 @@ void initIR(void);
  * IN:            Number of the sensor to be read. 
  * OUT:           Float with the measurement in degrees of Celsius
  */
-float readIR();
+int readIR();
 
 #endif

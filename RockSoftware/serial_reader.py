@@ -12,6 +12,11 @@ if ser.is_open == True:
     print(ser, '\n')
 
 file = open("data.csv", "w")
+
+#Header to the csv data file
+file.write("Time, Aurdino time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Ambient temperature, Plumb temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message field")
+file.flush()
+
 while True:
     data = ser.readline()
     
