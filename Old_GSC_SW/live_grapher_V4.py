@@ -131,7 +131,7 @@ endCountdownIndex = 30
 ledColors = [['dimgray', 'gray'], ['orangered', 'lightcoral']]
 
 #Font sizes for the info panels
-infoBoxFont = 32
+infoBoxFont = 28
 indicatorFont = 20
 dataTextFont = 12
 
@@ -139,7 +139,7 @@ dataTextFont = 12
 useBlitting = True
 
 # How long average is used for the info boxes
-infoBoxAverageCount = 10
+infoBoxAverageCount = 25
 
 slowDownFactor = 10 #int((1000/targetFPS)/msPerPoint)
 msPerPoint = 3 * slowDownFactor
@@ -149,7 +149,7 @@ update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 plotTime = 30
 data_points = math.ceil(plotTime * 1000 / (msPerPoint))
 
-print(slowDownFactor, data_points)
+#print(slowDownFactor, data_points)
 
 # How many ticks in axis
 tickCount = 6
@@ -179,6 +179,10 @@ data = []
 for i in range(csvDataCount):
     # Set the initial values
     data.append([0] * data_points)
+
+smoothData = []
+for i in range(csvDataCount):
+    smoothData.append([0] * infoBoxAverageCount)
     
 #How much the plots are smoothed, 0 to <1, higher has more smoothing
 smoothingFactor = 0.5
@@ -391,46 +395,29 @@ def update(frame):
     csv_file.seek(last_pos)
     updated = False
     for row in csv_reader:
-        if (lineNumber % slowDownFactor == 0) or (len(row) == csvDataCount and int(row[-1]) != 0) or (int(row[18]) != 3):
-            updated = True
-            #for i in range(plotScale):
-            #    csv_reader.next()
-            #print(row)
-            #If it is a data line
-            #Rock timestamp = index 0
-            #Data indicator = index 1
-            if len(row) > 1:
-                #Remove the "d"
-                #row = [row[0]] + row[2:]
-                #Continue noramlly
-                for i, column in enumerate(row):
-                    try: 
-                        val = float(column)
-                        if i in calibratedIndices:
-                            val = float(calibration_info[i]["slope"]) * val + float(calibration_info[i]["offset"])
+        plottedData = (lineNumber % slowDownFactor == 0)
+        plottedData = plottedData or (len(row) == csvDataCount and int(row[-1]) != 0)
+        plottedData = plottedData or (int(row[18]) != 3)
 
-                    except: val = column
+        if plottedData == True: updated = True
 
-                    # On reset, skip the line
-                    # if val == " r":
-                    #     print("reset detected")
-                    #     continue
-
+        if len(row) > 1:
+            for i, column in enumerate(row):
+                if plottedData:
                     #Only smooth sensor data, not time or binary values
-                    if 1 <= i <= 10:
-                        try:
+                    if i in calibratedIndices:
+                            val = float(calibration_info[i]["slope"]) * float(column) + float(calibration_info[i]["offset"])
                             data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
-                        except:
-                            continue
+                            smoothData[i] += [val]
                     elif i < csvDataCount:
-                        data[i] += [val]
-            #Else it is a message line --> Print out
-            #else:
+                        data[i] += [column]
+                else:
+                    if i in calibratedIndices:
+                        smoothData[i] += [float(calibration_info[i]["slope"]) * float(column) + float(calibration_info[i]["offset"])]
+        #Else it is a message line --> Print out
+        #else
+        if plottedData:
             if len(row) == csvDataCount and int(row[-1]) != 0:
-                #print(int(row[-1]))#, messageStrings[int(row[-1])])
-
-                #messageList += "Message" + messageStrings[int(row[-1])]
-                
                 messageListUpdated = True
                 
                 if int(row[-1]) != endCountdownIndex:
@@ -448,27 +435,14 @@ def update(frame):
     if updated:
         for i in range(csvDataCount):
             data[i] = data[i][-data_points:]
-                    
+
         dataIndex = 0
         for i in range(nrows):
             for j in range(ncols):
                 if j < ncols - ninfo:
                     lines[dataIndex].set_ydata(data[dataIndices[dataIndex]])
-                    
-                    roundedValue = sum(data[dataIndices[dataIndex]][-infoBoxAverageCount:]) / infoBoxAverageCount
-                    
-                    textOffset = 0.1 * (column_info[dataIndices[dataIndex]]["ymax"] - column_info[dataIndices[dataIndex]]["ymin"])
-                    
-                    if roundedValue < column_info[dataIndices[dataIndex]]["ymin"]:
-                       roundedValue = column_info[dataIndices[dataIndex]]["ymin"] 
-                    elif roundedValue + textOffset > column_info[dataIndices[dataIndex]]["ymax"]:
-                        roundedValue = column_info[dataIndices[dataIndex]]["ymax"] - textOffset
-                        
-                    dataTexts[dataIndex].set_text("{:3.1f} {:s}".format(roundedValue, column_info[dataIndices[dataIndex]]["unit"]))
-                    dataTexts[dataIndex].set_position((0.94 * data_points * (msPerPoint/1000), textOffset + roundedValue))
-                    
                     dataIndex += 1
-        
+
         # Get states from csv after updating the list
         # Use last value from the list
         h_state = int(data[12][-1])  # CSV column 12
@@ -479,13 +453,6 @@ def update(frame):
         valveIndicator.set_state(v_state)
         ignitionRelayIndicator.set_state(ign_state)
             
-        # Get values from csv after updating the list
-        # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
-        # Smooths the data making it easier to read    
-        bp_value = "{:4.1f}".format(sum(data[bottlePressure_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 3
-        bt_value = "{:4.1f}".format(sum(data[bottleTemperature_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 7
-        lc_value = "{:4.1f}".format(sum(data[loadCell_Ind][-infoBoxAverageCount:]) / infoBoxAverageCount) #CSV column 6
-        
         # No smoothing for mode/substate strings or time
         # To get string use modes[data[18][-1]] & substates[data[19][-1]]
         sw_value = modes[int(data[18][-1])] + "\n\n" + substates[int(data[19][-1])] + "\n\n" + msToTime(int(data[0][-1]/1000))  #CSV columns 20 & 21 & 2 respectively
@@ -498,16 +465,48 @@ def update(frame):
                 #mi_value += "\n"
             messageInfo.set_value(mi_value)
          
-        bottlePressureInfo.set_value(bp_value)
-        bottleTempInfo.set_value(bt_value)
-        loadCellInfo.set_value(lc_value) 
         swInfo.set_value(sw_value)
-            
-    waitTime = 0 #1.0/60 - (time.time() - loopTime)
 
+    #Update the smoothData that is updated every frame   
+    for i in range(csvDataCount):
+        smoothData[i] = smoothData[i][-infoBoxAverageCount:]
+
+    # Get values from csv after updating the list
+    # Calculate a rolling average with sum(data[column_number][-infoBoxAverageCount:]) / infoBoxAverageCount 
+    # Smooths the data making it easier to read    
+    bp_value = "{:4.2f}".format(sum(smoothData[bottlePressure_Ind]) / infoBoxAverageCount) #CSV column 3
+    bt_value = "{:4.2f}".format(sum(smoothData[bottleTemperature_Ind]) / infoBoxAverageCount) #CSV column 7
+    lc_value = "{:4.2f}".format(sum(smoothData[loadCell_Ind]) / infoBoxAverageCount) #CSV column 6
+
+    bottlePressureInfo.set_value(bp_value)
+    bottleTempInfo.set_value(bt_value)
+    loadCellInfo.set_value(lc_value) 
+                 
+    dataIndex = 0
+    for i in range(nrows):
+        for j in range(ncols):
+            if j < ncols - ninfo:
+                roundedValue = sum(smoothData[dataIndices[dataIndex]]) / infoBoxAverageCount
+                positionalValue = roundedValue
+                textOffset = 0.1 * (column_info[dataIndices[dataIndex]]["ymax"] - column_info[dataIndices[dataIndex]]["ymin"])
+                
+                if positionalValue < column_info[dataIndices[dataIndex]]["ymin"]:
+                    positionalValue = column_info[dataIndices[dataIndex]]["ymin"] 
+                elif positionalValue > column_info[dataIndices[dataIndex]]["ymax"] - 2 * textOffset:
+                    positionalValue = column_info[dataIndices[dataIndex]]["ymax"] - 2 * textOffset
+                    
+                dataTexts[dataIndex].set_text("{:3.1f} {:s}".format(roundedValue, column_info[dataIndices[dataIndex]]["unit"]))
+                dataTexts[dataIndex].set_position((0.94 * data_points * (msPerPoint/1000), textOffset + positionalValue))
+                
+                dataIndex += 1
+
+    """ 
+    # Don't sleep, update as fast as possible
+    waitTime = 0 #1.0/60 - (time.time() - loopTime)
     if waitTime > 0:
         time.sleep(waitTime)
-    
+    """
+
     loopTime = time.time()
     last_pos = csv_file.tell()  
 

@@ -24,7 +24,7 @@
 uint32_t lastTime = 0;
 uint32_t count = 0;
 
-cppQueue	msgBuffer(sizeof(uint16_t), msgBufferSize, FIFO, true);
+cppQueue msgBuffer(sizeof(uint16_t), msgBufferSize, FIFO, true);
 
 void initSerial(){
 
