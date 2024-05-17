@@ -67,8 +67,8 @@ void getWarning(bool *warning){
   //}
 }
 
-void setForcedIndicator(bool state){
-  digitalWrite(FORCED_SEQUENCE_LED_PIN, state);
+void setRepeatIndicator(bool state){
+  digitalWrite(REPEAT_SEQUENCE_LED_PIN, state);
 }
 
 void setTestModeIndicator(bool state){
@@ -88,8 +88,8 @@ void initMode(){
   pinMode(TEST_MODE_LED_PIN, OUTPUT);
   digitalWrite(TEST_MODE_LED_PIN, LOW);
 
-  pinMode(FORCED_SEQUENCE_LED_PIN, OUTPUT);
-  digitalWrite(FORCED_SEQUENCE_LED_PIN, LOW);
+  pinMode(REPEAT_SEQUENCE_LED_PIN, OUTPUT);
+  digitalWrite(REPEAT_SEQUENCE_LED_PIN, LOW);
 
   //Check if system is started in TEST mode or normal WAIT mode
   testInput_t startTestInput;

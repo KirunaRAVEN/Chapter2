@@ -22,7 +22,7 @@ typedef enum {
   DUMP_VALVE_PIN = 3,
   N2FEEDING_VALVE_PIN = 4,
   TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
-  FORCED_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,
   HEATING_SENSE_PIN = 9,
   DUMP_VALVE_BUTTON_PIN = 10,
@@ -38,7 +38,7 @@ typedef enum {
   IGN_GND_RELAY_TEST_DRIVE_PIN = 29,
   THERMOCOUPLE_CS_PIN3 = 30,
   MAIN_VALVE_TEST_PIN = 31,
-  FORCED_SEQUENECE_PIN = 33,
+  REPEAT_SEQUENECE_PIN = 33,
   SW_RESET_PIN = 35
 } pin_names_t;
 
@@ -111,7 +111,7 @@ const int16_t ignitionGroundClosedPassLimit = 10; // 10 / 1024 * 5V ~= 0V -> Clo
 //Structure for storing the states of the test pins
 struct testInput_t {
   bool startTest;
-  bool forced;
+  bool repeat;
   bool resetSW;
   uint16_t IGN_GND_IN;
   bool IGN_SW_IN;

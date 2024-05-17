@@ -23,7 +23,7 @@ TEST INPUT SCHEMATIC:
   ______|
   | GND |  -          Analog ground                   -
   | 35  | resetSW     !Resets the software!           2 (pullups)
-  | 33  | forced      !Forced sequence!               1 (pullups)
+  | 33  | repeat      !Repeat sequence!               1 (pullups)
   | 31  | VALVE_IN    Valve test input                1 (inputs)      ______________
   | 29  | IGN_OUT     IGN_GND Relay test (OUTPUT)     0 (outputs)     |ARDUINO MEGA|
   | 27  | IGN_SW_IN   IGN_SW Relay test input         0 (inputs)      ¨¨¨¨¨¨¨¨¨¨¨¨¨¨
@@ -36,7 +36,7 @@ TEST INPUT SCHEMATIC:
 
 //Trying out a more sensible way of writing the code and not using pin number lists of miniscule length.
 //static const int16_t testInputPins[testInputCount] = {IGN_SW_RELAY_TEST_PIN, MAIN_VALVE_TEST_PIN};
-//static const int16_t testInputPullups[testPullupCount] = {AUTO_TEST_START_PIN, FORCED_SEQUENECE_PIN, SW_RESET_PIN};
+//static const int16_t testInputPullups[testPullupCount] = {AUTO_TEST_START_PIN, REPEAT_SEQUENECE_PIN, SW_RESET_PIN};
 //static const int16_t testOutputPins[testOutputCount] = {IGN_GND_RELAY_TEST_DRIVE_PIN};
 //static const int16_t testAnalogPins[testAnalogCount] = {IGN_GND_RELAY_TEST_MEASURE_PIN};
 
@@ -45,7 +45,7 @@ TEST INPUT SCHEMATIC:
 
 void initTestInOut(){
   pinMode(AUTO_TEST_START_PIN, INPUT_PULLUP);
-  pinMode(FORCED_SEQUENECE_PIN, INPUT_PULLUP);
+  pinMode(REPEAT_SEQUENECE_PIN, INPUT_PULLUP);
   pinMode(SW_RESET_PIN, INPUT_PULLUP);
 
   pinMode(IGN_SW_RELAY_TEST_PIN, INPUT);
@@ -61,7 +61,7 @@ void readTestInput(testInput_t* testInput){
   //f (xSemaphoreTake(testPinInMutex, 10) == pdTRUE){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
     testInput->startTest = !digitalRead(AUTO_TEST_START_PIN);   //Inverted input
-    testInput->forced = !digitalRead(FORCED_SEQUENECE_PIN);     //Inverted input
+    testInput->repeat = !digitalRead(REPEAT_SEQUENECE_PIN);     //Inverted input
     testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
 
     //Analog to digital calibration is not included here due to the 

@@ -9,7 +9,6 @@
  *                Contains the FreeRTOS task called countdownLoop.
  */
 
-//#include <Arduino_FreeRTOS.h>
 #include <Arduino.h>
 
 #include "Countdown.h"
@@ -23,20 +22,10 @@
 void(* resetFunc) (void) = 0;
 
 void initCountdown(){
-    
-    /*
-    xTaskCreate(
-    countdownLoop        //Name of the task function
-    ,  "CountdownLoop"   // A name just for humans
-    ,  taskMemoryBytes   // This stack size can be checked & adjusted by reading the Stack Highwater
-    ,  NULL              // Ppinter to passed variable
-    ,  CRITICAL_PRIORITY // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
-    ,  NULL);            // Handle to the created task
-    */
+  // Nothing to initialize there currently
 }
 
 void countdownLoop(){
-  //TickType_t lastCountdownWakeTime = xTaskGetTickCount();
   values_t values;
 
   //Initialize the timing values
@@ -80,17 +69,15 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  //In forced sequence the system reverts back to initial state for repeated testing.
-  //Uses the old forced sequence functionality, hence the variable naming.
-  bool forcedSequence = false;
+  //In repeat sequence the system reverts back to initial state for repeated testing.
+  //Uses the old repeat sequence functionality, hence the variable naming.
+  bool repeatSequence = false;
 
   bool verificationDone = true;
 
   uint32_t countdownStartTime = 0;
   uint32_t ignitionPressTime = 0;
   while (true){
-
-    //activateMeasurement();
 
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
@@ -105,13 +92,13 @@ void countdownLoop(){
       resetFunc();
     }
 
-    if (testInput.forced == true){
+    if (testInput.repeat == true){
       //The ability to bypass the minimum tank/feeding pressure requirement.
-      forcedSequence = true;
-      setNewForcedIndicator(true);
+      repeatSequence = true;
+      setNewRepeatIndicator(true);
     }else{
-      forcedSequence = false;
-      setNewForcedIndicator(false);
+      repeatSequence = false;
+      setNewRepeatIndicator(false);
     }
 
     //Perform and fetch latest measurements
@@ -122,9 +109,7 @@ void countdownLoop(){
 
     // The dump valve is within the main loop as it must always be accessible.
     // As of V1.31 the dump is always operable
-    //if (currentMode != SAFE){
     setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-    //}
 
     //Should we have the ability to control the valves in all modes?
     if ((currentMode != SEQUENCE) && (currentMode != SAFE)){
@@ -184,7 +169,7 @@ void countdownLoop(){
             
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
-            //else if ((realN2OPressure > minimumFiringPressure) || forcedSequence == true){
+            //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
             if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
               countdownStartTime = millis();
               setNewSubstate(IGNIT_ON);
@@ -270,11 +255,6 @@ void countdownLoop(){
         setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
         setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
 
-        //setValve(pin_names_t::DUMP_VALVE_PIN, false); // FALSE because it is normally open
-        //setValve(pin_names_t::N2FEEDING_VALVE_PIN, false); // FALSE because it is normally closed
-        // In safe mode, the dump value is hard-coded to open if SAFE MODE is entered.
-
-        // TODO: Do we also want the OXIDIZER_VALVE_PIN open here as well?
         break;
 
         
@@ -282,7 +262,7 @@ void countdownLoop(){
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-        if (forcedSequence == true){
+        if (repeatSequence == true){
           setNewSubstate(ALL_OFF);
           setNewMode(WAIT);
         }
@@ -304,7 +284,6 @@ void countdownLoop(){
     //NOTE: Previous note is now in effect
     //if (verificationDone){
     
-    //Serial.println(values.slowUpdated);
     sendValuesToSerial(&values, statusValues);
     
     //}

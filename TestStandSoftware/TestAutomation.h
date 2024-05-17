@@ -126,13 +126,13 @@ void setTestOutput(uint16_t pinIndex, bool pinState);
 void setNewBuzzerState(bool newState);
 
 
-/* Function:      Intermediate interface for controlling the forced sequence LED
- *                in the Mode object. Uses the setForcedIndicator() interface.
+/* Function:      Intermediate interface for controlling the repeat sequence LED
+ *                in the Mode object. Uses the setRepeatIndicator() interface.
  *
  * IN:            Boolean that the LED is set to. true -> ON, false -> OFF.
  * OUT:           Nothing
  */
-void setNewForcedIndicator(bool newState);
+void setNewRepeatIndicator(bool newState);
 
 
 /* Function:      Intermediate interface for calling the buzzer update function

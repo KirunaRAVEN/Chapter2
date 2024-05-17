@@ -71,8 +71,8 @@ void setNewBuzzerState(bool newState){
   setBuzzer(newState);
 }
 
-void setNewForcedIndicator(bool newState){
-  setForcedIndicator(newState);
+void setNewRepeatIndicator(bool newState){
+  setRepeatIndicator(newState);
 }
 
 void callBuzzerUpdate(){

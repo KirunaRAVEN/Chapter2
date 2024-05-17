@@ -87,6 +87,7 @@ void checkData(values_t values){
   //Affecting the modes
   if ((fetchedMode != SAFE) && (activateSafe == true)){
     setMode(SAFE);
+    setSubstate(ALL_OFF);
     //What other things to trigger when entering safe mode?
     //Buzzer?
     

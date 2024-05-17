@@ -80,12 +80,12 @@ void setWarning(bool newWarning);
 void getWarning(bool *warning);
 
 
-/* Function:      Set the forced sequence indicator LED to the desired state
+/* Function:      Set the repeat sequence indicator LED to the desired state
  *
  * IN:            State the LED is set to
  * OUT:           Nothing
  */
-void setForcedIndicator(bool state);
+void setRepeatIndicator(bool state);
 
 
 /* Function:      Set the TEST mode indicator LED to the desired state
