@@ -24,11 +24,11 @@ void initSerial(void);
 /* Function:      Sends the latest measurements and the status values of the 
  *                system using the Arduino Serial interface.
  *
- * IN:            values_t struct with the latest sensor measurements,
+ * IN:            Pointer to a values_t struct with the latest sensor measurements,
  *                statusValues_t struct with information about the status of the SW
  * OUT:           Nothing
  */
-void writeValues(values_t values, statusValues_t statusValues);
+void writeValues(values_t* values, statusValues_t statusValues);
 
 
 /* WriteMessage and WriteIntMessage are removed for now to test the 

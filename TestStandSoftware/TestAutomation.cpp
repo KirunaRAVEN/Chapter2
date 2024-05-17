@@ -44,7 +44,7 @@ void forwardGetLatestValues(values_t* values){
   getValuesFromSensors(values);
 }
 
-void sendValuesToSerial(values_t values, statusValues_t statusValues){
+void sendValuesToSerial(values_t* values, statusValues_t statusValues){
   writeValues(values, statusValues);
 }
 

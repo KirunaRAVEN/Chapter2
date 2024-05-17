@@ -72,11 +72,11 @@ void forwardGetLatestValues(values_t* values);
  *                current state of the SW to the SerialComms object.
  *                Uses the writeValues() interface.
  *    
- * IN:            values_t struct with the latest sensor measurements
+ * IN:            Pointer to a values_t struct with the latest sensor measurements
  *                statusValues_t struct with information about the status of the SW
  * OUT:           Nothing      
  */
-void sendValuesToSerial(values_t values, statusValues_t statusValues);
+void sendValuesToSerial(values_t* values, statusValues_t statusValues);
 
 
 /* Function:      Intermediate interface for sending text message to the 

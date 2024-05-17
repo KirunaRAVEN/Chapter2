@@ -34,28 +34,25 @@ void initSerial(){
   Serial.print("\n r\n");
 }
 
-void writeValues(values_t values, statusValues_t statusValues){
+void writeValues(values_t* values, statusValues_t statusValues){
 
   uint16_t msgIndex = 0;
-  if (!msgBuffer.isEmpty()){
-    msgBuffer.pop(&msgIndex);
-  }
 
-  uint32_t sentTimeValue = (uint32_t) (values.timestamp >> 3); // Bitshift by 3 to get 8*72 minutes of runtime without 32bit overflow
+  uint32_t sentTimeValue = (uint32_t) (values->timestamp >> 3); // Bitshift by 3 to get 8*72 minutes of runtime without 32bit overflow
 
   // First 32bit data - sent always
-  long combinedValue1 = values.N2FeedingPressure;
-  combinedValue1 = combinedValue1 << (10) | values.linePressure;
-  combinedValue1 = combinedValue1 << (10) | values.combustionPressure;
-  combinedValue1 = combinedValue1 << (1) |  values.dumpValveButton;
-  combinedValue1 = combinedValue1 << (1) | values.heatingBlanketButton;
+  long combinedValue1 = values->N2FeedingPressure;
+  combinedValue1 = combinedValue1 << (10) | values->linePressure;
+  combinedValue1 = combinedValue1 << (10) | values->combustionPressure;
+  combinedValue1 = combinedValue1 << (1) |  values->dumpValveButton;
+  combinedValue1 = combinedValue1 << (1) | values->heatingBlanketButton;
 
   //Second 32bit data - sent always
-  long combinedValue2 = values.N2OFeedingPressure;
-  combinedValue2 = combinedValue2 << (10) | values.loadCell;
-  combinedValue2 = combinedValue2 << (1) | values.ignitionButton;
-  combinedValue2 = combinedValue2 << (1) | values.n2FeedingButton;
-  combinedValue2 = combinedValue2 << (1) | values.oxidizerValveButton;
+  long combinedValue2 = values->N2OFeedingPressure;
+  combinedValue2 = combinedValue2 << (10) | values->loadCell;
+  combinedValue2 = combinedValue2 << (1) | values->ignitionButton;
+  combinedValue2 = combinedValue2 << (1) | values->n2FeedingButton;
+  combinedValue2 = combinedValue2 << (1) | values->oxidizerValveButton;
   combinedValue2 = combinedValue2 << (1) | statusValues.ignitionEngagedActive;
   combinedValue2 = combinedValue2 << (1) | statusValues.valveActive;
   combinedValue2 = combinedValue2 << (3) | statusValues.mode;
@@ -67,24 +64,29 @@ void writeValues(values_t values, statusValues_t statusValues){
   Serial.print(",");
   Serial.print(combinedValue2);
 
-  if (values.slowUpdated == true){
-
+  if (values->slowUpdated == true){
+    //Serial.println("Slow update");
+    
+    if (!msgBuffer.isEmpty()){
+      msgBuffer.pop(&msgIndex);
+    }
+    
     //Third 32bit data - sent at most every 100ms
-      long combinedValue3 = values.nozzleTemperature;
-      combinedValue3 = combinedValue3 << (14) | values.pipingTemperature;
-      combinedValue3 = combinedValue3 << (3) | msgIndex & 7; //first part of the message bits
+    long combinedValue3 = values->nozzleTemperature;
+    combinedValue3 = combinedValue3 << (14) | values->pipingTemperature;
+    combinedValue3 = combinedValue3 << (3) | msgIndex & 7; //first part of the message bits
 
-      //Fourth 32bit data - sent at most every 100ms
-      long combinedValue4 = values.bottleTemperature;
-      combinedValue4 = combinedValue4 << (3) | (msgIndex >> 3) & 7; //second part of the message bits
-      combinedValue4 = combinedValue4 << (10) | values.IR; //For unkown reasons this didn't work with having IR as the first value
+    //Fourth 32bit data - sent at most every 100ms
+    long combinedValue4 = values->bottleTemperature;
+    combinedValue4 = combinedValue4 << (3) | (msgIndex >> 3) & 7; //second part of the message bits
+    combinedValue4 = combinedValue4 << (10) | values->IR; //For unkown reasons this didn't work with having IR as the first value
       
     Serial.print(",");
     Serial.print(combinedValue3);
     Serial.print(",");
     Serial.print(combinedValue4);
 
-    values.slowUpdated = false;
+    values->slowUpdated = false;
   }
 
   Serial.print("\n");

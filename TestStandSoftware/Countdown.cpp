@@ -303,7 +303,10 @@ void countdownLoop(){
     //NOTE: Could possibly forego this clause and just send them always
     //NOTE: Previous note is now in effect
     //if (verificationDone){
-    sendValuesToSerial(values, statusValues);
+    
+    //Serial.println(values.slowUpdated);
+    sendValuesToSerial(&values, statusValues);
+    
     //}
 
     if (currentMode != SEQUENCE){

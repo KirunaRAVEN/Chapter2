@@ -54,7 +54,19 @@ void senseLoop(values_t* values){
 
     values->loadCell = readLoad();  //Load cell for thrust
 
-    if (lastSlowTime - millis() > 1000/tempSensorRate){ 
+    /*
+    Serial.print(millis());
+    Serial.print(" ");
+    Serial.print(lastSlowTime);
+    Serial.print(" ");
+    Serial.print(1000/tempSensorRate);
+    Serial.print(" ");
+    Serial.print(millis() - lastSlowTime > 1000/tempSensorRate);
+    Serial.print(" ");
+    Serial.println(values->slowUpdated);
+    */
+
+    if (millis() - lastSlowTime > 1000/tempSensorRate){
       values->slowUpdated = true;
 
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
@@ -66,6 +78,10 @@ void senseLoop(values_t* values){
       
       lastSlowTime = millis();
     }
+
+    //Serial.println("After:");
+    //Serial.println(values->slowUpdated);
+
 
     //Read control signals
     values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
