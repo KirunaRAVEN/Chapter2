@@ -59,8 +59,8 @@ void sendIntMessageToSerial(int16_t integer){
 }
 */
 
-void getTestInput(testInput_t* testInput){
-  readTestInput(testInput);
+void getTestInput(testInput_t* testInput, bool readAll){
+  readTestInput(testInput, readAll);
 }
 
 void setTestOutput(uint16_t pinNumber, bool pinState){

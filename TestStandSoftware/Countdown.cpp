@@ -59,15 +59,13 @@ void countdownLoop(){
   mode_t currentMode;
   substate_t currentSubstate;
   testInput_t testInput;
-  static bool ignitionValveStateFlag;
-
-  // Add the capability to print lines to the ground station computer if needed
-  static char message[64];
-  static char* msg = message;
+  bool ignitionValveStateFlag;
 
   statusValues_t statusValues;
   bool valveState;
   bool ignitionState;
+
+  uint32_t currentTime = 0;
 
   //In repeat sequence the system reverts back to initial state for repeated testing.
   //Uses the old repeat sequence functionality, hence the variable naming.
@@ -77,6 +75,7 @@ void countdownLoop(){
 
   uint32_t countdownStartTime = 0;
   uint32_t ignitionPressTime = 0;
+
   while (true){
 
     getCurrentMode(&currentMode);
@@ -84,21 +83,12 @@ void countdownLoop(){
 
     callBuzzerUpdate();
     
-    //Read test pins
-    getTestInput(&testInput);
+    //Read test pins, read all of them only outside SEQUENCE
+    getTestInput(&testInput, currentMode != SEQUENCE);
 
     if (testInput.resetSW){
       //Ability to reset the Arduino through software
       resetFunc();
-    }
-
-    if (testInput.repeat == true){
-      //The ability to bypass the minimum tank/feeding pressure requirement.
-      repeatSequence = true;
-      setNewRepeatIndicator(true);
-    }else{
-      repeatSequence = false;
-      setNewRepeatIndicator(false);
     }
 
     //Perform and fetch latest measurements
@@ -112,10 +102,18 @@ void countdownLoop(){
     setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
 
     //Should we have the ability to control the valves in all modes?
-    if ((currentMode != SEQUENCE) && (currentMode != SAFE)){
-      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+    if (currentMode != SEQUENCE){
       setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
       setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
+
+      if (testInput.repeat == true){
+        //The ability to reset the sequence afterwards for repeated testing
+        repeatSequence = true;
+        setNewRepeatIndicator(true);
+      }else{
+        repeatSequence = false;
+        setNewRepeatIndicator(false);
+      }
     }
 
     //MODE switch case
@@ -155,13 +153,13 @@ void countdownLoop(){
          * disengaging the ignition relay and opening and closing the main oxidizer
          * valve based on set timing found in the environmental Globals object.
          */
+        currentTime = millis();     
+        //float realN2OPressure = calibrationADC * refADC * (values.N2OFeedingPressure / maxADC);
+        //realN2OPressure = pressureCalibration_K[FEEDING_PRESSURE_OXIDIZER] * realN2OPressure + pressureCalibration_B[FEEDING_PRESSURE_OXIDIZER];
 
-        switch (currentSubstate){     
+        switch (currentSubstate){
           case ALL_OFF:
-            
-            //float realN2OPressure = calibrationADC * refADC * (values.N2OFeedingPressure / maxADC);
-            //realN2OPressure = pressureCalibration_K[FEEDING_PRESSURE_OXIDIZER] * realN2OPressure + pressureCalibration_B[FEEDING_PRESSURE_OXIDIZER];
-
+              
             //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
               setNewMode(WAIT);
@@ -170,8 +168,8 @@ void countdownLoop(){
             //We might not want to have a hard pressure limit. Minimum firing 
             //pressure currently set to 0 bar.
             //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
-            if ((millis() - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
-              countdownStartTime = millis();
+            if ((currentTime - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
+              countdownStartTime = currentTime;
               setNewSubstate(IGNIT_ON);
               setIgnition(true);
             }
@@ -197,7 +195,7 @@ void countdownLoop(){
           case IGNIT_ON:
               //Ignition has been turned on, wait until oxidiser valve needs to be opened
               
-              if (millis() - countdownStartTime > valveOnTime){
+              if (currentTime - countdownStartTime > valveOnTime){
                 setNewSubstate(VALVE_ON);
                 setValve(pin_names_t::OXIDIZER_VALVE_PIN, true);
               }
@@ -205,7 +203,7 @@ void countdownLoop(){
 
           case VALVE_ON:
               //Valve has been opened, wait until ignition can be turned on
-              if (millis() - countdownStartTime > ignitionOffTime){
+              if (currentTime - countdownStartTime > ignitionOffTime){
                 setNewSubstate(IGNIT_OFF);
                 setIgnition(false);
               }
@@ -213,7 +211,7 @@ void countdownLoop(){
 
           case IGNIT_OFF:
               //Ignition has been turned off, wait until oxidiser valve needs to be closed
-              if (millis() - countdownStartTime > valveOffTime){
+              if (currentTime - countdownStartTime > valveOffTime){
                 setNewSubstate(VALVE_OFF);
                 setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
               }
@@ -221,7 +219,7 @@ void countdownLoop(){
 
           case VALVE_OFF:
               //Oxidiser valve has been closed, wait until piping clears from oxidiser
-              if (millis() - countdownStartTime > oxidiserEmptyTime){
+              if (currentTime - countdownStartTime > oxidiserEmptyTime){
                 setNewSubstate(PURGING);
                 setValve(pin_names_t::N2FEEDING_VALVE_PIN, true);
               }
@@ -229,7 +227,7 @@ void countdownLoop(){
 
           case PURGING:
               //Purging in progress, wait until purging finishes
-              if (millis() - countdownStartTime > purgingTime){
+              if (currentTime - countdownStartTime > purgingTime){
                 setNewSubstate(FINISHED);
                 setValve(pin_names_t::N2FEEDING_VALVE_PIN, false);
               }
@@ -251,10 +249,6 @@ void countdownLoop(){
         //Turn off ignition
         setIgnition(false);
 
-        //Ability to control the system in the safe mode as well.
-        setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
-        setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
-
         break;
 
         
@@ -262,6 +256,9 @@ void countdownLoop(){
         //Testfire over
         // Dump valve commented out as it is checked in every single loop regardless of mode
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+
+        //Read test pins, read all of them only in TEST mode
+
         if (repeatSequence == true){
           setNewSubstate(ALL_OFF);
           setNewMode(WAIT);
@@ -269,12 +266,11 @@ void countdownLoop(){
         break;
     }
 
-
     //Get the valve state using the voltage measurement from TestInOut.
     statusValues.valveActive = !testInput.MAIN_VALVE_IN;   //Iverted input
 
-    getIgnition(&ignitionState);
-    statusValues.ignitionEngagedActive = ignitionState;
+    //getIgnition(&ignitionState);
+    statusValues.ignitionEngagedActive = testInput.IGN_SW_IN;
 
     statusValues.mode = currentMode;
     statusValues.subState = currentSubstate;

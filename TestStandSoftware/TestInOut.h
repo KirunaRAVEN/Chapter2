@@ -25,9 +25,10 @@ void initTestInOut(void);
  *                and to read the actuator states in TEST mode.
  *
  * IN:            testInput_t pointer where the readout will be stored
+ *                readAll boolean telling if all input values are read
  * OUT:           Nothing
  */
-void readTestInput(testInput_t* testInput);
+void readTestInput(testInput_t* testInput, bool readAll);
 
 /* Function:      Set the state of the pin at testOutputPins[pinIndex] to 
  *                the desired state.

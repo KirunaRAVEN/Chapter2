@@ -102,9 +102,10 @@ void sendValuesToSerial(values_t* values, statusValues_t statusValues);
  *                Uses the readTestInput() interface.
  *
  * IN:            testInput_t pointer where the readout will be stored
+ *                readAll boolean telling if all input values are read
  * OUT:           Nothing
  */
-void getTestInput(testInput_t* testInput);
+void getTestInput(testInput_t* testInput, bool readAll);
 
 
 /* Function:      Intermediate interface for setting the state of the output

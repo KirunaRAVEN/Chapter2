@@ -40,7 +40,9 @@ int readPressure5V(uint16_t sensorNum){
   */
 }
 
-float readcombustionPressure0mA(uint16_t sensorNum){
+
+//UNUSED
+//float readPressure20mA(uint16_t sensorNum){
 
   /* Measurement to value explanation:
    * Multiple readings may be taken and averaged out
@@ -55,7 +57,7 @@ float readcombustionPressure0mA(uint16_t sensorNum){
    * maxPressureCurrent = Maximum output current from the sensor
    * Reading is calibrated linearly with: Bars = K * pressureReading + B
    */
-
+  /*
   int32_t sum = 0;
   for(uint16_t i = 0; i < pressureAverageCount20mA; i++){
     sum += analogRead(pressurePins[sensorNum]);
@@ -67,3 +69,4 @@ float readcombustionPressure0mA(uint16_t sensorNum){
 
   return pressureReading * pressureLine_K20mA + pressureLine_B20mA;
 }
+*/

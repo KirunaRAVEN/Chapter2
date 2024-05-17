@@ -94,8 +94,8 @@ messageStrings = [  "",
                     "Please release the oxidizer valve button.\n",
                     "Please release the ignition button.\n",
                     "Please release the heating blanket button.\n",
-                    "Passed\n",
-                    "Failed\n",
+                    "->  Passed\n",
+                    "->  Failed\n",
                     "Ignition 24V relay OFF-state:\n",
                     "Ignition GND relay OFF-state:\n",
                     "Ignition SW relay OFF-state:\n",
@@ -139,9 +139,9 @@ dataTextFont = 12
 useBlitting = True
 
 # How long average is used for the info boxes
-infoBoxAverageCount = 25
+infoBoxAverageCount = 50
 
-slowDownFactor = 10 #int((1000/targetFPS)/msPerPoint)
+slowDownFactor = 20 #int((1000/targetFPS)/msPerPoint)
 msPerPoint = 3 * slowDownFactor
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
@@ -395,6 +395,12 @@ def update(frame):
     csv_file.seek(last_pos)
     updated = False
     for row in csv_reader:
+
+        #Skip first line with the headers
+        if lineNumber == 0: 
+            lineNumber += 1
+            continue
+
         plottedData = (lineNumber % slowDownFactor == 0)
         plottedData = plottedData or (len(row) == csvDataCount and int(row[-1]) != 0)
         plottedData = plottedData or (int(row[18]) != 3)
@@ -409,6 +415,8 @@ def update(frame):
                             val = float(calibration_info[i]["slope"]) * float(column) + float(calibration_info[i]["offset"])
                             data[i] += [smoothingFactor * data[i][-1] + (1-smoothingFactor) * val]
                             smoothData[i] += [val]
+                    elif i == 0:
+                        data[i] += [int(column)]
                     elif i < csvDataCount:
                         data[i] += [column]
                 else:

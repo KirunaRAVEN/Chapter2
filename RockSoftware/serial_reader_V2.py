@@ -178,7 +178,7 @@ def readIR(sensorValue):
 
 ser = serial.Serial()
 ser.port = '/dev/ttyACM0'
-ser.baudrate = 500*1000
+ser.baudrate = 1000*1000
 ser.timeout = 5
 ser.open()
 if ser.is_open == True:
@@ -187,14 +187,18 @@ if ser.is_open == True:
 
 with open("data.csv", "w", newline='') as file:
     #Header to the csv data file
-    file.write("Aurdino time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index")
+    file.write("Aurdino time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index\n")
     file.flush()
 
     #Init values that aren't received always
-    botTemp = 0  
-    nozzT = 0  
-    pipeT = 0  
+    botTemp = 0
+    nozzT = 0
+    pipeT = 0
     IR = 0
+
+    oldTime = 0
+
+    ser.reset_input_buffer()
 
     while True:
         data = ser.readline()
@@ -202,7 +206,12 @@ with open("data.csv", "w", newline='') as file:
         data = data.replace(b'\x00',b'')
         # split on comma and newline
         data_list = re.split(b',', data) # comma-separated
-
+        """
+        try:
+            print(data.decode())
+        except Exception as exc:
+            pirnt(exc)
+        """
         if data_list[-1] == b' r\n': # Discard restarting lines
             file.write("\n")
             file.flush()
@@ -211,7 +220,7 @@ with open("data.csv", "w", newline='') as file:
         try:
             values = []
             #If length not nominal, skip
-            if len(data_list) != 5 or len(data_list) != 3:
+            if not (len(data_list) == 5 or len(data_list) == 3):
                 continue
 
             #Excecute unmushing
@@ -331,6 +340,10 @@ with open("data.csv", "w", newline='') as file:
             fstring += f',{msgIndex}'
 
             #if int(msgIndex) != 0: print(msgIndex)
+
+            #print(fstring)
+            #print((timestamp - oldTime))
+            #oldTime = timestamp
 
             file.write(fstring + "\n")
             file.flush()

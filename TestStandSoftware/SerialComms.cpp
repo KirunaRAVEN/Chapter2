@@ -21,8 +21,8 @@
 //static char datalineMessage[512];  //As much as I despise dynamic memory allocation, I also don't like this
 //static char* msg = datalineMessage;
 
-uint32_t lastTime = 0;
-uint32_t count = 0;
+//uint32_t lastTime = 0;
+//uint32_t count = 0;
 
 cppQueue msgBuffer(sizeof(uint16_t), msgBufferSize, FIFO, true);
 

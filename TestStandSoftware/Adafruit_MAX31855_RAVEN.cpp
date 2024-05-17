@@ -57,7 +57,7 @@
 */
 /**************************************************************************/
 Adafruit_MAX31855::Adafruit_MAX31855(int8_t _sclk, int8_t _cs, int8_t _miso)
-    : spi_dev(_cs, _sclk, _miso, -1, 1000000) {}
+    : spi_dev(_cs, _sclk, _miso, -1, 4000000) {}
 
 /**************************************************************************/
 /*!
@@ -68,7 +68,7 @@ Adafruit_MAX31855::Adafruit_MAX31855(int8_t _sclk, int8_t _cs, int8_t _miso)
 */
 /**************************************************************************/
 Adafruit_MAX31855::Adafruit_MAX31855(int8_t _cs, SPIClass *_spi)
-    : spi_dev(_cs, 1000000, SPI_BITORDER_MSBFIRST, SPI_MODE0, _spi) {}
+    : spi_dev(_cs, 4000000, SPI_BITORDER_MSBFIRST, SPI_MODE0, _spi) {}
 
 /**************************************************************************/
 /*!
