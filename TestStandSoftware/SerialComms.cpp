@@ -24,7 +24,7 @@ const uint8_t ESCAPE_BYTE = 0x7D;
 const uint8_t ESCAPE_XOR = 0x20;
 
 void initSerial(){
-  Serial.begin(serialBaud);
+  Serial.begin(serialBaudNormal);
   while (!Serial){}
 
   //Indicate reset of the system
@@ -103,7 +103,6 @@ void writeValues(values_t* values, statusValues_t statusValues){
 
     bufferLength = 20;
 
-    
     //Third 32bit data - sent at most every 100ms
     uint32_t combinedValue3 = values->nozzleTemperature;
     combinedValue3 = combinedValue3 << (14) | values->pipingTemperature;

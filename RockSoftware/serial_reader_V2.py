@@ -206,9 +206,12 @@ def read_message(ser):
 # START OF PROGRAM
 # ----------------
 
+normalBaud = 115200
+fastBaud = 1000000
+
 ser = serial.Serial()
 ser.port = '/dev/ttyACM0'
-ser.baudrate = 1000*1000
+ser.baudrate = normalBaud
 ser.timeout = 5
 ser.open()
 if ser.is_open == True:
@@ -248,13 +251,12 @@ with open("data.csv", "w", newline='') as file:
         data, length = read_message(ser)
         byteList = list(data)
 
-        """
+        
         if length == 0:
-            if ser.baudrate == 115200: ser.baudrate = 1000000
-            elif ser.baudrate == 1000000: ser.baudrate = 115200
+            if ser.baudrate == normalBaud: ser.baudrate = fastBaud
+            elif ser.baudrate == fastBaud: ser.baudrate = normalBaud
             
             continue
-        """
 
         """
         if data_list[-1] == b' r\n': # Discard restarting lines

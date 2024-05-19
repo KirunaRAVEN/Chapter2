@@ -134,6 +134,7 @@ void countdownLoop(){
         // The WAIT mode includes heating. The HEATING mode was removed. 
         if (values.ignitionButton == true){
           setNewMode(SEQUENCE);
+          setNewBaudRate(serialBaudFast);
           ignitionPressTime = millis();
         }
 
@@ -162,6 +163,7 @@ void countdownLoop(){
               
             //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
+              setNewBaudRate(serialBaudNormal);
               setNewMode(WAIT);
             }
             

@@ -53,6 +53,10 @@ void sendMessageToSerial(uint16_t messageIndex){
   //writeMessage(message);
 }
 
+void setNewBaudRate(uint16_t newBaudrate){
+  switchBaudrate(newBaudrate);
+}
+
 /*
 void sendIntMessageToSerial(int16_t integer){
   writeIntMessage(integer);

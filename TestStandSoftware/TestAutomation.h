@@ -164,5 +164,12 @@ void callBuzzerUpdate(void);
 void sendToCheck(values_t values);
 
 
+/* Function:      Intermediate interface for switching the baudrate of 
+ *                the Serial interface.
+ *
+ * IN:            uint16_t to set the baudrate to
+ * OUT:           Nothing
+ */
+void setNewBaudRate(uint16_t newBaudrate);
 
 #endif

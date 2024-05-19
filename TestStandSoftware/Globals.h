@@ -440,8 +440,9 @@ const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 //Buzzer warning length (ms)
 const int16_t buzzerOnTime = 1 * 500;
 
-//Baudrate for serial communications (500kbps)
-const uint32_t serialBaud = 250000;// * 1000;
+//Baudrate for serial communications
+const uint32_t serialBaudNormal = 115200;
+const uint32_t serialBaudFast = 1000000;
 
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 12; //N successive passes lead to threshold trigger
