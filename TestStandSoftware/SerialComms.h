@@ -75,4 +75,12 @@ void saveMessage(uint16_t message);
  */
 void sendByteArray(uint8_t *data, uint8_t length);
 
+
+/* Function:      For switching the BAUD rate on the fly.
+ * 
+ * IN:            The desired baudrate
+ * OUT:           Nothing
+ */
+void switchBaudrate(uint16_t newBaud);
+
 #endif

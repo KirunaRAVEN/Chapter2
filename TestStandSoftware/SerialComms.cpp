@@ -143,3 +143,12 @@ void saveMessage(uint16_t messageIndex){
   msgBuffer.push(&messageIndex);
 }
 
+void switchBaudrate(uint16_t newBaudrate){
+  //Send a message notifying the receiver of the switch
+  sendMessage(byteBuffer, 0);
+  delay(20);
+
+  Serial.end();
+  Serial.flush();
+  Serial.begin(newBaudrate);
+}
