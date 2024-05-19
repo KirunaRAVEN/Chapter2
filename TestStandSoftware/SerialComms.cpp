@@ -145,7 +145,7 @@ void saveMessage(uint16_t messageIndex){
 
 void switchBaudrate(uint16_t newBaudrate){
   //Send a message notifying the receiver of the switch
-  sendMessage(byteBuffer, 0);
+  sendByteArray(byteBuffer, 0);
   delay(20);
 
   Serial.end();
