@@ -172,6 +172,36 @@ def readIR(sensorValue):
     temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR
     return temperature
 
+
+# -----------------
+# BYTESREAM READING
+# -----------------
+
+START_MARKER = 0x7E
+END_MARKER = 0x7F
+ESCAPE_BYTE = 0x7D
+ESCAPE_XOR = 0x20
+
+def read_message(ser):
+    data = bytearray(20)
+    index = 0
+    while True:
+        # Wait for start marker
+        if ser.read(1)[0] == START_MARKER:
+            while True:
+                byte = ser.read(1)[0]
+                if byte == END_MARKER or index == 20:
+                    if index == 0: return [], 0
+                    else: return bytes(data), index
+                elif byte == ESCAPE_BYTE:
+                    next_byte = ser.read(1)[0]
+                    data[index] = next_byte ^ ESCAPE_XOR
+                    index += 1
+                else:
+                    data[index] = byte
+                    index += 1
+                    
+                
 # ----------------
 # START OF PROGRAM
 # ----------------
@@ -201,27 +231,55 @@ with open("data.csv", "w", newline='') as file:
     ser.reset_input_buffer()
 
     while True:
+        """
         data = ser.readline()
         data = data.rstrip(b'\n')
         data = data.replace(b'\x00',b'')
         # split on comma and newline
         data_list = re.split(b',', data) # comma-separated
         """
+        """
         try:
             print(data.decode())
         except Exception as exc:
             pirnt(exc)
         """
+
+        data, length = read_message(ser)
+        byteList = list(data)
+
+        """
+        if length == 0:
+            if ser.baudrate == 115200: ser.baudrate = 1000000
+            elif ser.baudrate == 1000000: ser.baudrate = 115200
+            
+            continue
+        """
+
+        """
         if data_list[-1] == b' r\n': # Discard restarting lines
             file.write("\n")
             file.flush()
             continue
+        """
 
         try:
+            """
             values = []
             #If length not nominal, skip
             if not (len(data_list) == 5 or len(data_list) == 3):
                 continue
+            """
+
+            data_list = [0, 0, 0, 0, 0]
+        
+            data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3] 
+            data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7] 
+            data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
+            
+            if length == 20:
+                data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15] 
+                data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
 
             #Excecute unmushing
 
@@ -263,7 +321,7 @@ with open("data.csv", "w", newline='') as file:
 
             msgIndex = 0
 
-            if len(data_list) == 5:
+            if length == 20:
                 #Second 32bits, received every ~100ms
                 dataBit = int(data_list[3])
 
@@ -282,41 +340,7 @@ with open("data.csv", "w", newline='') as file:
                 dataBit = dataBit >> 3
                 botTemp = readTMP36(dataBit & 1023)
 
-            #dataBit = dataBit >> 10
-            #IR = readIR(dataBit & 1023)
-
-            """
-            dataBit = int(data_list[4])
-            print("\ndata_list index 4:")
-            print(bin(dataBit))
-
-            print(bin(dataBit & 1023))
-            print(dataBit & 1023)
-            print(readIR(dataBit & 1023))
-
-            dataBit = dataBit >> 10
-            print(bin(dataBit & 15))
-            dataBit = dataBit >> 4
-            print(bin(dataBit & 7))
-            dataBit = dataBit >> 3
-            print(bin(dataBit & 7))
-            dataBit = dataBit >> 3
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            """
             #Generate the csv line
-
             fstring = f'{timestamp}'
             fstring += f',{n2feedP:.2f}'
             fstring += f',{lineP:.2f}'

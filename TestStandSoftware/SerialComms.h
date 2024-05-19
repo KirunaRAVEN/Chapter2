@@ -64,4 +64,15 @@ void writeValues(values_t* values, statusValues_t statusValues);
  */
 void saveMessage(uint16_t message);
 
+
+/* Function:      Sends a given byte array of given length using
+ *                the Serial.write() interface. Pads the message with
+ *                start, end and masking bytes where neccessary
+ * 
+ * IN:            Pointer to a byte array to be sent
+ *                Length of the array to be sent
+ * OUT:           Nothing
+ */
+void sendByteArray(uint8_t *data, uint8_t length);
+
 #endif
