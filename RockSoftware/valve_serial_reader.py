@@ -1,7 +1,7 @@
 import datetime as dt
 import serial
 import re
-from serial.tools import list_ports
+import serial.tools.list_ports
 
 
 ser = serial.Serial()

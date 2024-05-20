@@ -1,7 +1,7 @@
 import datetime as dt
 import serial
 import re
-
+import serial.tools.list_ports
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
 # ------------------------------------------
