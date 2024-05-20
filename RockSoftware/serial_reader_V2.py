@@ -177,7 +177,21 @@ def readIR(sensorValue):
 # ----------------
 
 ser = serial.Serial()
-ser.port = '/dev/ttyACM0'
+
+#Ivar's regarded addition: Retrieves information about the Arduinos connected to the USB-ports
+ports = list_ports.comports()
+
+#Finds which one the Arduino Mega is connected to via reading the 'SER' part of hwid
+for port, desc, hwid in sorted(ports):    
+      if hwid[22:46] == 'SER=859373133373515062A1': 
+         ser.port = port
+         break
+      else: 
+        print('The Arduino Mega does not seem to be connected.')
+
+#Legacy equipment:
+#ser.port = '/dev/ttyACM0'
+
 ser.baudrate = 1000*1000
 ser.timeout = 5
 ser.open()
