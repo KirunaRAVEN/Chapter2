@@ -213,7 +213,7 @@ normalBaud = 1000000
 #fastBaud = 1000000
 
 ser = serial.Serial()
-ser.port = '/dev/ttyACM0'
+ser.port = "COM3"#'/dev/ttyACM0'
 ser.baudrate = normalBaud
 ser.timeout = 5
 ser.open()
@@ -223,7 +223,7 @@ if ser.is_open == True:
 
 with open("data.csv", "w", newline='') as file:
     #Header to the csv data file
-    file.write("Aurdino time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index\n")
+    file.write("Arduino Time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index\n")
     file.flush()
 
     #Init values that aren't received always

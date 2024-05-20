@@ -401,8 +401,11 @@ def update(frame):
             lineNumber += 1
             continue
 
+        if len(row) != csvDataCount:
+            continue
+
         plottedData = (lineNumber % slowDownFactor == 0)
-        plottedData = plottedData or (len(row) == csvDataCount and int(row[-1]) != 0)
+        plottedData = plottedData or int(row[-1]) != 0
         plottedData = plottedData or (int(row[18]) != 3)
 
         if plottedData == True: updated = True
