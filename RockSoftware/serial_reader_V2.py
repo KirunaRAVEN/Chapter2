@@ -1,7 +1,7 @@
 import datetime as dt
 import serial
 import re
-import serial.tools.list_ports
+import serial.tools.list_ports as list_ports
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
 # ------------------------------------------
@@ -219,11 +219,11 @@ ports = list_ports.comports()
 
 #Finds which one the Arduino Mega is connected to via reading the 'SER' part of hwid
 for port, desc, hwid in sorted(ports):    
-      if hwid[22:46] == 'SER=859373133373515062A1': 
-         ser.port = port
-         break
-      else: 
-        print('The Arduino Mega does not seem to be connected.')
+    if hwid[22:46] == 'SER=859373133373515062A1': 
+        ser.port = port
+        break
+else: 
+    print('The Arduino Mega does not seem to be connected.')
 
 #Legacy equipment:
 #ser.port = '/dev/ttyACM0'
