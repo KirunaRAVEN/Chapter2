@@ -30,7 +30,6 @@ void initSensing(){
 
 void senseLoop(values_t* values, substate_t currentSubstate){
 
-
   // These values are saved in every MODE and SUBSTATE
   values->linePressure = readPressure5V(LINE_PRESSURE);                   //Line pressure 
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
@@ -42,14 +41,13 @@ void senseLoop(values_t* values, substate_t currentSubstate){
     values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
     values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
 
-
     if (millis() - lastSlowTime > 1000/tempSensorRate){
       values->slowUpdated = true;
 
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
       values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
       values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
-      values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
+      values->pipingTemperature = readTemp(PIPING_TC);            //Piping temperature
 
       values->IR = readIR();   //Plume temperature
       
@@ -66,16 +64,14 @@ void senseLoop(values_t* values, substate_t currentSubstate){
     //Called from Countdown loop in V1.31    
     //sendToCheck(values);
     //setLatest(values);
-  }
 
-  //Save timestamp in every mode
-  uint32_t newTimestamp = micros();
-  if (newTimestamp < values->lastTimestamp){
-    values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
-  }
-  
-  values->timestamp = values->timeOverflowOffset + newTimestamp;  //Arduino time in us
-
-  values->lastTimestamp = newTimestamp;
-
+    //Save timestamp
+    uint32_t newTimestamp = micros();
+    if (newTimestamp < values->lastTimestamp){
+      values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
+    }
+    
+    values->timestamp = values->timeOverflowOffset + newTimestamp;  //Arduino time in us
+    values->lastTimestamp = newTimestamp;
+    }
 }

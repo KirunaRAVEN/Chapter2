@@ -65,6 +65,9 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
+  substate_t lastSubstate = ALL_OFF;
+  bool lastDump = true;
+
   uint32_t currentTime = 0;
 
   //In repeat sequence the system reverts back to initial state for repeated testing.
@@ -83,11 +86,9 @@ void countdownLoop(){
     // Read test pins, read all of them only outside SEQUENCE
     // If more sampling rate is needed, this could be fully skipped
     // in certain substates >ALL_OFF and <PURGING
-    getTestInput(&testInput, currentMode != SEQUENCE);
-
-    if (testInput.resetSW){
-      //Ability to reset the Arduino through software
-      resetFunc();
+    if ((currentSubstate != lastSubstate) || (currentMode != SEQUENCE)){
+      lastSubstate = currentSubstate;
+      getTestInput(&testInput, currentMode != SEQUENCE);
     }
 
     //Perform and fetch latest measurements
@@ -98,10 +99,17 @@ void countdownLoop(){
 
     // The dump valve is within the main loop as it must always be accessible.
     // As of V1.31 the dump is always operable
-    setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-
+    if (lastDump != values.dumpValveButton){
+      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+      lastDump = values.dumpValveButton;
+    }
     // Limit the amount of things done in sequence mode to make the burst mode sampling faster
     if (currentMode != SEQUENCE){
+
+      if (testInput.resetSW){
+        //Ability to reset the Arduino through software
+        resetFunc();
+      }
 
       callBuzzerUpdate();
 
@@ -117,6 +125,7 @@ void countdownLoop(){
         setNewRepeatIndicator(false);
       }
     }
+
 
     //MODE switch case
     switch(currentMode){

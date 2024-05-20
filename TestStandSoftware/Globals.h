@@ -419,7 +419,7 @@ typedef enum{
   NOT_CONNECTED0 = 0,
   NOT_CONNECTED_1 = 1,
   NOZZLE_TC = 2,
-  AMBIENT_TC = 3
+  PIPING_TC = 3
 }tempSensorNames_t;
 
 /*
