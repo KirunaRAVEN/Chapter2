@@ -141,8 +141,8 @@ useBlitting = True
 # How long average is used for the info boxes
 infoBoxAverageCount = 50
 
-slowDownFactor = 20 #int((1000/targetFPS)/msPerPoint)
-msPerPoint = 3 * slowDownFactor
+slowDownFactor = 100 #int((1000/targetFPS)/msPerPoint)
+msPerPoint = 0.2 * slowDownFactor
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
 #targetFPS = 60

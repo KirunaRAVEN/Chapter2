@@ -237,7 +237,7 @@ if ser.is_open == True:
 
 with open("data.csv", "w", newline='') as file:
     #Header to the csv data file
-    file.write("Arduino Time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index\n")
+    file.write("ArduinoTime, NitrogenPressure, LinePressure, ChamberPressure, OxidizerPressure, LoadCell, HeatingBlanketTemperature, NotConnected, NozzleTemperature, PipingTemperature, PlumeTemperature, DumpValveButtonStatus, HeatingButtonStatus, IgnitionButtonStatus, NitrogenFeedingButtonStatus, OxidizerValveButtonStatus, IgnitionSwState, ValveSwSstate, CurrentSwMode, CurrentSwSubstate, MessageIndex\n")
     file.flush()
 
     #Init values that aren't received always
@@ -286,7 +286,7 @@ with open("data.csv", "w", newline='') as file:
             continue
         """
 
-        try:
+        if (length == 4) or (length == 12) or (length == 20):
             data_list = [0, 0, 0, 0, 0]
         
             data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
@@ -405,7 +405,7 @@ with open("data.csv", "w", newline='') as file:
             file.write(fstring + "\n")
             file.flush()
 
-        except Exception as exc:
-            print(exc)
-            #Corrupted data due to reset
-            continue
+        #except Exception as exc:
+        #    print(exc)
+        #    #Corrupted data due to reset
+        #    continue

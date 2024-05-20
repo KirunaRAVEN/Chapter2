@@ -178,33 +178,36 @@ void countdownLoop(){
             if (values.ignitionButton == false){
               //setNewBaudRate(serialBaudNormal);
               setNewMode(WAIT);
-            }
-            
-            //We might not want to have a hard pressure limit. Minimum firing 
-            //pressure currently set to 0 bar.
-            //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
-            if ((currentTime - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
-              countdownStartTime = currentTime;
-              setNewSubstate(IGNIT_ON);
-              setIgnition(true);
-            }
-            else {
-              if (ignitionValveStateFlag == false){
-                if (values.dumpValveButton == true){
-                  ignitionValveStateFlag = true;
-                  sendMessageToSerial(MSG_DUMP_WARNING);
-                }
-                if (values.n2FeedingButton == true){
-                  ignitionValveStateFlag = true;
-                  sendMessageToSerial(MSG_N2_FEED_WARNING);
-                }
-                if (values.oxidizerValveButton == true){
-                  ignitionValveStateFlag = true;
-                  sendMessageToSerial(MSG_OX_FEED_WARNING);
+              
+            }else{
+              
+              //We might not want to have a hard pressure limit. Minimum firing 
+              //pressure currently set to 0 bar.
+              //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
+              if ((currentTime - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
+                countdownStartTime = currentTime;
+                setNewSubstate(IGNIT_ON);
+                setIgnition(true);
+              }
+              else {
+                if (ignitionValveStateFlag == false){
+                  if (values.dumpValveButton == true){
+                    ignitionValveStateFlag = true;
+                    sendMessageToSerial(MSG_DUMP_WARNING);
+                  }
+                  if (values.n2FeedingButton == true){
+                    ignitionValveStateFlag = true;
+                    sendMessageToSerial(MSG_N2_FEED_WARNING);
+                  }
+                  if (values.oxidizerValveButton == true){
+                    ignitionValveStateFlag = true;
+                    sendMessageToSerial(MSG_OX_FEED_WARNING);
+                  }
                 }
               }
-            }
             //}
+            }
+
             break;
 
           case IGNIT_ON:
@@ -262,6 +265,7 @@ void countdownLoop(){
          * outside safe limits. 
          */
 
+        setNewSubstate(SHUTDOWN);
         //Turn off ignition
         setIgnition(false);
 
