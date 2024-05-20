@@ -187,9 +187,12 @@ def read_message(ser):
     index = 0
     while True:
         # Wait for start marker
-        if ser.read(1)[0] == START_MARKER:
+        byte = ser.read(1)[0]
+        #print(byte)
+        if byte == START_MARKER:
             while True:
                 byte = ser.read(1)[0]
+                #print(byte)
                 if byte == END_MARKER or index == 20:
                     if index == 0: return [], 0
                     else: return bytes(data), index
@@ -201,7 +204,7 @@ def read_message(ser):
                     data[index] = byte
                     index += 1
                     
-                
+                       
 # ----------------
 # START OF PROGRAM
 # ----------------
@@ -229,34 +232,38 @@ with open("data.csv", "w", newline='') as file:
     pipeT = 0
     IR = 0
 
+    timestamp = 0
+    n2feedP = 0
+    lineP = 0
+    combP = 0
+    n2oFeedP = 0
+    loadC = 0
+    dumpButton = 0
+    heatButton = 0
+    igniButton = 0
+    n2Button = 0
+    oxButton = 0
+    ignStatus = 0
+    valveStatus = 0
+    swMode = 0
+    swSub = 0
+    msgIndex = 0
+
     oldTime = 0
 
     ser.reset_input_buffer()
 
     while True:
-        """
-        data = ser.readline()
-        data = data.rstrip(b'\n')
-        data = data.replace(b'\x00',b'')
-        # split on comma and newline
-        data_list = re.split(b',', data) # comma-separated
-        """
-        """
-        try:
-            print(data.decode())
-        except Exception as exc:
-            pirnt(exc)
-        """
-
         data, length = read_message(ser)
         byteList = list(data)
-
         
-        #if length == 0:
-        #    if ser.baudrate == normalBaud: ser.baudrate = fastBaud
-        #    elif ser.baudrate == fastBaud: ser.baudrate = normalBaud
+        """
+        if length == 0:
+            if ser.baudrate == normalBaud: ser.baudrate = fastBaud
+            elif ser.baudrate == fastBaud: ser.baudrate = normalBaud
             
-        #    continue
+            continue
+        """
 
         """
         if data_list[-1] == b' r\n': # Discard restarting lines
@@ -266,18 +273,13 @@ with open("data.csv", "w", newline='') as file:
         """
 
         try:
-            """
-            values = []
-            #If length not nominal, skip
-            if not (len(data_list) == 5 or len(data_list) == 3):
-                continue
-            """
-
             data_list = [0, 0, 0, 0, 0]
         
-            data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3] 
-            data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7] 
-            data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
+            data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
+
+            if length > 4: 
+                data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7] 
+                data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
             
             if length == 20:
                 data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15] 
@@ -285,62 +287,77 @@ with open("data.csv", "w", newline='') as file:
 
             #Excecute unmushing
 
-            timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+            if length == 4:
+                #First 32bits, always received
+                dataBit = int(data_list[0])
 
-            #First 32bits, always received
-            dataBit = int(data_list[1])
-
-            heatButton = dataBit & 1
-            dataBit = dataBit >> 1
-            dumpButton = dataBit & 1
-            dataBit = dataBit >> 1
-            combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-            dataBit = dataBit >> 10
-            lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
-            dataBit = dataBit >> 10
-            n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
-
-            #Second 32bits, always received
-            dataBit = int(data_list[2])
-
-            swSub = dataBit & 7
-            dataBit = dataBit >> 3
-            swMode = dataBit & 7
-            dataBit = dataBit >> 3
-            valveStatus = dataBit & 1
-            dataBit = dataBit >> 1
-            ignStatus = dataBit & 1
-            dataBit = dataBit >> 1
-            oxButton = dataBit & 1
-            dataBit = dataBit >> 1
-            n2Button = dataBit & 1
-            dataBit = dataBit >> 1
-            igniButton = dataBit & 1
-            dataBit = dataBit >> 1
-            loadC = readLoad(dataBit & 1023)
-            dataBit = dataBit >> 10
-            n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
-
-            msgIndex = 0
-
-            if length == 20:
-                #Second 32bits, received every ~100ms
-                dataBit = int(data_list[3])
-
-                msgIndex = dataBit & 7
-                dataBit = dataBit >> 3  #First part of the msgIndex
-                pipeT = readTemp(dataBit & 16383)
-                dataBit = dataBit >> 14
-                nozzT = readTemp(dataBit & 16383)
-
-                #Second 32bits, received every ~100ms
-                dataBit = int(data_list[4])
-
-                IR = readIR(dataBit & 1023)
+                valveStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                ignStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                loadC = readLoad(dataBit & 1023)
                 dataBit = dataBit >> 10
-                msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+                dataBit = dataBit >> 10
+                lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+
+            else:
+                timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+
+                #First 32bits, always received
+                dataBit = int(data_list[1])
+
+                heatButton = dataBit & 1
+                dataBit = dataBit >> 1
+                dumpButton = dataBit & 1
+                dataBit = dataBit >> 1
+                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+                dataBit = dataBit >> 10
+                lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+                dataBit = dataBit >> 10
+                n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
+
+                #Second 32bits, always received
+                dataBit = int(data_list[2])
+
+                swSub = dataBit & 7
                 dataBit = dataBit >> 3
-                botTemp = readTMP36(dataBit & 1023)
+                swMode = dataBit & 7
+                dataBit = dataBit >> 3
+                valveStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                ignStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                oxButton = dataBit & 1
+                dataBit = dataBit >> 1
+                n2Button = dataBit & 1
+                dataBit = dataBit >> 1
+                igniButton = dataBit & 1
+                dataBit = dataBit >> 1
+                loadC = readLoad(dataBit & 1023)
+                dataBit = dataBit >> 10
+                n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
+
+                msgIndex = 0
+
+                if length == 20:
+                    #Second 32bits, received every ~100ms
+                    dataBit = int(data_list[3])
+
+                    msgIndex = dataBit & 7
+                    dataBit = dataBit >> 3  #First part of the msgIndex
+                    pipeT = readTemp(dataBit & 16383)
+                    dataBit = dataBit >> 14
+                    nozzT = readTemp(dataBit & 16383)
+
+                    #Second 32bits, received every ~100ms
+                    dataBit = int(data_list[4])
+
+                    IR = readIR(dataBit & 1023)
+                    dataBit = dataBit >> 10
+                    msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                    dataBit = dataBit >> 3
+                    botTemp = readTMP36(dataBit & 1023)
 
             #Generate the csv line
             fstring = f'{timestamp}'
