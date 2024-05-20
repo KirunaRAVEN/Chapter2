@@ -63,9 +63,10 @@ void getCurrentSubstate(substate_t* substate);
  *                Uses the getLatest() interface.
  *  
  * IN:            values_t pointer where the latest measurements will be stored
+ *                substate_t telling the current system substate
  * OUT:           
  */
-void forwardGetLatestValues(values_t* values);
+void forwardGetLatestValues(values_t* values, substate_t currentSubstate);
 
 
 /* Function:      Intermediate interface for sending the latest values and the

@@ -19,13 +19,13 @@
 void initSensing(void);
 
 
-/* Function:      FreeRTOS task handling the measurements of the different sensors,
- *                storing those to the LatestValues object and checking them for
- *                faults using the FaultDetection object.
+/* Function:      Function for handling the measurements of the different sensors
+ *                and saving the timestamp
  *
- * IN:            Nothing
+ * IN:            values_t pointer where the new measurements are saved
+ *                substate_t telling which substate the system is in
  * OUT:           Nothing
  */
-void senseLoop(values_t* values);
+void senseLoop(values_t* values, substate_t currentSubstate);
 
 #endif

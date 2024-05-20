@@ -26,9 +26,10 @@ void initSensors(void);
  *                Uses the getLatest() interface.
  *
  * IN:            values_t pointer where the newest measurements will be stored
+ *                substate_t telling the current system substate
  * OUT:           Nothing
  */
-void getValuesFromSensors(values_t* values);
+void getValuesFromSensors(values_t* values, substate_t currentSubstate);
 
 
 /* Function:      Intermediate interface for calling the senseLoop function

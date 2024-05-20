@@ -40,8 +40,8 @@ void getCurrentSubstate(substate_t* substate){
   getSubstate(substate);
 }
 
-void forwardGetLatestValues(values_t* values){
-  getValuesFromSensors(values);
+void forwardGetLatestValues(values_t* values, substate_t currentSubstate){
+  getValuesFromSensors(values, currentSubstate);
 }
 
 void sendValuesToSerial(values_t* values, statusValues_t statusValues){

@@ -77,13 +77,12 @@ void countdownLoop(){
   uint32_t ignitionPressTime = 0;
 
   while (true){
-
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
 
-    callBuzzerUpdate();
-    
-    //Read test pins, read all of them only outside SEQUENCE
+    // Read test pins, read all of them only outside SEQUENCE
+    // If more sampling rate is needed, this could be fully skipped
+    // in certain substates >ALL_OFF and <PURGING
     getTestInput(&testInput, currentMode != SEQUENCE);
 
     if (testInput.resetSW){
@@ -92,7 +91,7 @@ void countdownLoop(){
     }
 
     //Perform and fetch latest measurements
-    forwardGetLatestValues(&values);
+    forwardGetLatestValues(&values, currentSubstate);
 
     //Check latest values for anomalies
     sendToCheck(values);
@@ -101,8 +100,11 @@ void countdownLoop(){
     // As of V1.31 the dump is always operable
     setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
 
-    //Should we have the ability to control the valves in all modes?
+    // Limit the amount of things done in sequence mode to make the burst mode sampling faster
     if (currentMode != SEQUENCE){
+
+      callBuzzerUpdate();
+
       setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
       setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
 
@@ -133,9 +135,10 @@ void countdownLoop(){
       case WAIT:
         // The WAIT mode includes heating. The HEATING mode was removed. 
         if (values.ignitionButton == true){
-          setNewMode(SEQUENCE);
-          setNewBaudRate(serialBaudFast);
           ignitionPressTime = millis();
+          
+          setNewMode(SEQUENCE);
+          //setNewBaudRate(serialBaudFast);
         }
 
         // If the system returns to WAIT mode for any reason, the flag is reset to its default value.
@@ -146,6 +149,7 @@ void countdownLoop(){
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
         setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
         setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
+
         break;
 
       case SEQUENCE:
@@ -163,7 +167,7 @@ void countdownLoop(){
               
             //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
-              setNewBaudRate(serialBaudNormal);
+              //setNewBaudRate(serialBaudNormal);
               setNewMode(WAIT);
             }
             
@@ -237,6 +241,7 @@ void countdownLoop(){
 
           case FINISHED:
             //Sequence is finished
+            //setNewBaudRate(serialBaudNormal);
             setNewMode(SHUTDOWN);
             break;
         }
@@ -268,10 +273,8 @@ void countdownLoop(){
         break;
     }
 
-    //Get the valve state using the voltage measurement from TestInOut.
+    //Get the states using the voltage measurement from TestInOut.
     statusValues.valveActive = !testInput.MAIN_VALVE_IN;   //Iverted input
-
-    //getIgnition(&ignitionState);
     statusValues.ignitionEngagedActive = testInput.IGN_SW_IN;
 
     statusValues.mode = currentMode;

@@ -24,9 +24,9 @@ void initSensors(){
 
 }
 
-void getValuesFromSensors(values_t* values){
+void getValuesFromSensors(values_t* values, substate_t currentSubstate){
   //Changed to get directly from senseLoop in V1.31
-  senseLoop(values);
+  senseLoop(values, currentSubstate);
 }
 
 /*

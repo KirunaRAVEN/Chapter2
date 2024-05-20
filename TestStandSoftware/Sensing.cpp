@@ -28,46 +28,54 @@ void initSensing(){
   //Nothing to initalize here
 }
 
-void senseLoop(values_t* values){
+void senseLoop(values_t* values, substate_t currentSubstate){
 
-  values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
+
+  // These values are saved in every MODE and SUBSTATE
   values->linePressure = readPressure5V(LINE_PRESSURE);                   //Line pressure 
-  values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);                //Chamber pressure 
-  values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
-
+  values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
   values->loadCell = readLoad();  //Load cell for thrust
 
-  if (millis() - lastSlowTime > 1000/tempSensorRate){
-    values->slowUpdated = true;
-
-    values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
-    values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
-    values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
-    values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
-
-    values->IR = readIR();   //Plume temperature
+  // Non essential values are skipped during the firing
+  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING){
     
-    lastSlowTime = millis();
+    values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
+    values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
+
+
+    if (millis() - lastSlowTime > 1000/tempSensorRate){
+      values->slowUpdated = true;
+
+      values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
+      values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
+      values->nozzleTemperature = readTemp(NOZZLE_TC);             //Nozzle temperature
+      values->pipingTemperature = readTemp(AMBIENT_TC);            //Piping temperature
+
+      values->IR = readIR();   //Plume temperature
+      
+      lastSlowTime = millis();
+    }
+
+    //Read control signals
+    values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
+    values->heatingBlanketButton = readHeatingButton();        //Heating button status
+    values->ignitionButton = readIgnitionButton();             //Ignition button status
+    values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
+    values->oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
+    
+    //Called from Countdown loop in V1.31    
+    //sendToCheck(values);
+    //setLatest(values);
   }
 
-  //Read control signals
-  values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
-  values->heatingBlanketButton = readHeatingButton();        //Heating button status
-  values->ignitionButton = readIgnitionButton();             //Ignition button status
-  values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
-  values->oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
-
-  //Save timestamp
+  //Save timestamp in every mode
   uint32_t newTimestamp = micros();
   if (newTimestamp < values->lastTimestamp){
     values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
   }
+  
   values->timestamp = values->timeOverflowOffset + newTimestamp;  //Arduino time in us
 
   values->lastTimestamp = newTimestamp;
 
-  //Called from Countdown loop in V1.31    
-  //sendToCheck(values);
-
-  //setLatest(values);
 }

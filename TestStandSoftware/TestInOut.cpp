@@ -47,13 +47,12 @@ void initTestInOut(){
 
 void readTestInput(testInput_t* testInput, bool readAll){
 
-    //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
-    testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
     testInput->MAIN_VALVE_IN = digitalRead(MAIN_VALVE_TEST_PIN);
     testInput->IGN_SW_IN = digitalRead(IGN_SW_RELAY_TEST_PIN);
 
   if (readAll == true){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
+    testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
     testInput->startTest = !digitalRead(AUTO_TEST_START_PIN);   //Inverted input
     testInput->repeat = !digitalRead(REPEAT_SEQUENECE_PIN);     //Inverted input
 
