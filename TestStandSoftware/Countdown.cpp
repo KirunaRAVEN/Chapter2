@@ -265,7 +265,7 @@ void countdownLoop(){
          * outside safe limits. 
          */
 
-        setNewSubstate(SHUTDOWN);
+        setNewSubstate(FINISHED);
         //Turn off ignition
         setIgnition(false);
 

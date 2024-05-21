@@ -21,21 +21,26 @@ void initControlSensing(){
 }
 
 bool readDumpValveButton(){
-  return digitalRead(DUMP_VALVE_BUTTON_PIN);
+  //return digitalRead(DUMP_VALVE_BUTTON_PIN);
+  return PINB & (1 << DUMP_VALVE_BUTTON_PIN_PORTB);
 }
 
 bool readIgnitionButton(){
-  return digitalRead(IGNITION_SENSE_PIN);
+  //return digitalRead(IGNITION_SENSE_PIN);
+  return PINH & (1 << IGNITION_SENSE_PIN_PORTH);
 }
 
 bool readHeatingButton(){
-  return digitalRead(HEATING_SENSE_PIN);
+  //return digitalRead(HEATING_SENSE_PIN);
+  return PINH & (1 << HEATING_SENSE_PIN_PORTH);
 }
 
 bool readN2FeedingValveButton(){
-  return digitalRead(FEEDING_VALVE_BUTTON_PIN);
+  //return digitalRead(FEEDING_VALVE_BUTTON_PIN);
+  return PIND & (1 << FEEDING_VALVE_BUTTON_PIN_PORTD);
 }
 
 bool readOxidizerValveButton(){
-  return digitalRead(MAIN_VALVE_BUTTON_PIN);
+  //return digitalRead(MAIN_VALVE_BUTTON_PIN);
+  return PIND & (1 << MAIN_VALVE_BUTTON_PIN_PORTD);
 }

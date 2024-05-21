@@ -40,7 +40,7 @@ void initBuzzer(){
   
   //Turn Buzzer ON when software starts, turns off after ~1 second.
   digitalWrite(BUZZER_CONTROL_PIN, HIGH);
-  
+
   timedSequence = true;
   buzzerStartTime = millis();
 
@@ -49,10 +49,7 @@ void initBuzzer(){
 
 
 void setBuzzer(bool state){
-  //if (xSemaphoreTake(buzzerSemaphore, 10) == pdTRUE){
-    digitalWrite(BUZZER_CONTROL_PIN, state);
-  //  xSemaphoreGive(buzzerSemaphore);
-  //}
+  digitalWrite(BUZZER_CONTROL_PIN, state);
 }
 
 void updateBuzzer(){
@@ -67,7 +64,6 @@ void updateBuzzer(){
     }
   }
 }
-
 
 //Current version does not support buzzer patterns
 

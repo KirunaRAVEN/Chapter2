@@ -30,8 +30,6 @@ void setIgnition(bool state){
 }
 
 void getIgnition(bool* ignitionState){
-  //if (xSemaphoreTake(ignitionMutex, 10) == pdTRUE){
-    *ignitionState = digitalRead(IGNITER_CONTROL_PIN);
-    //xSemaphoreGive(ignitionMutex);
-  //}
+  //*ignitionState = digitalRead(IGNITER_CONTROL_PIN);
+  *ignitionState = PINB & (1 << IGNITER_CONTROL_PIN_PORTB);
 }

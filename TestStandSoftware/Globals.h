@@ -16,31 +16,178 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-//Pin Enumerators - Add Pins for different functionallities here
+//Pin Enumerators - Add Pins for different functionalities here
 typedef enum {
-  OXIDIZER_VALVE_PIN = 2,
-  DUMP_VALVE_PIN = 3,
-  N2FEEDING_VALVE_PIN = 4,
-  TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
-  IGNITION_SENSE_PIN = 8,
-  HEATING_SENSE_PIN = 9,
-  DUMP_VALVE_BUTTON_PIN = 10,
-  IGNITER_CONTROL_PIN = 12,
-  BUZZER_CONTROL_PIN = 19,
-  MAIN_VALVE_BUTTON_PIN = 20,
-  FEEDING_VALVE_BUTTON_PIN = 21,
-  AUTO_TEST_START_PIN = 23,
-  THERMOCOUPLE_CS_PIN0 = 24, 
-  THERMOCOUPLE_CS_PIN1 = 26,
-  IGN_SW_RELAY_TEST_PIN = 27,
-  THERMOCOUPLE_CS_PIN2 = 28, 
-  IGN_GND_RELAY_TEST_DRIVE_PIN = 29,
-  THERMOCOUPLE_CS_PIN3 = 30,
-  MAIN_VALVE_TEST_PIN = 31,
-  REPEAT_SEQUENECE_PIN = 33,
-  SW_RESET_PIN = 35
+  OXIDIZER_VALVE_PIN = 2,             //Port E4
+  DUMP_VALVE_PIN = 3,                 //Port E5
+  N2FEEDING_VALVE_PIN = 4,            //Port G5
+  TEST_MODE_LED_PIN = 6,              //Port H3   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN = 7,        //Port H4   //In V1 the indicator LEDs use the servo connector
+  IGNITION_SENSE_PIN = 8,             //Port H5
+  HEATING_SENSE_PIN = 9,              //Port H6
+  DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
+  IGNITER_CONTROL_PIN = 12,           //Port B6
+  BUZZER_CONTROL_PIN = 19,            //Port D2
+  MAIN_VALVE_BUTTON_PIN = 20,         //Port D1
+  FEEDING_VALVE_BUTTON_PIN = 21,      //Port D0
+  AUTO_TEST_START_PIN = 23,           //Port A1
+  THERMOCOUPLE_CS_PIN0 = 24,          //Port A2
+  THERMOCOUPLE_CS_PIN1 = 26,          //Port A4
+  IGN_SW_RELAY_TEST_PIN = 27,         //Port A5
+  THERMOCOUPLE_CS_PIN2 = 28,          //Port A6
+  IGN_GND_RELAY_TEST_DRIVE_PIN = 29,  //Port A7
+  THERMOCOUPLE_CS_PIN3 = 30,          //Port C7
+  MAIN_VALVE_TEST_PIN = 31,           //Port C6
+  REPEAT_SEQUENECE_PIN = 33,          //Port C4
+  SW_RESET_PIN = 35                   //Port C2
 } pin_names_t;
+
+//Pins for port manipulation - For Speeeeeeeed
+typedef enum {
+  AUTO_TEST_START_PIN_PORTA = PORTA1,           //Port A1
+  THERMOCOUPLE_CS_PIN0_PORTA = PORTA2,          //Port A2
+  THERMOCOUPLE_CS_PIN1_PORTA = PORTA4,          //Port A4
+  IGN_SW_RELAY_TEST_PIN_PORTA = PORTA5,         //Port A5
+  THERMOCOUPLE_CS_PIN2_PORTA = PORTA6,          //Port A6
+  IGN_GND_RELAY_TEST_DRIVE_PIN_PORTA = PORTA7   //Port A7
+}portA_t;
+
+typedef enum {
+  DUMP_VALVE_BUTTON_PIN_PORTB = PORTB4,         //Port B4
+  IGNITER_CONTROL_PIN_PORTB = PORTB6            //Port B6
+}portB_t;
+
+typedef enum {  
+  THERMOCOUPLE_CS_PIN3_PORTC = PORTC7,          //Port C7
+  MAIN_VALVE_TEST_PIN_PORTC = PORTC6,           //Port C6
+  REPEAT_SEQUENECE_PIN_PORTC = PORTC4,          //Port C4
+  SW_RESET_PIN_PORTC = PORTC2                   //Port C2
+}portC_t;
+
+
+typedef enum {
+  BUZZER_CONTROL_PIN_PORTD = PORTD2,            //Port D2
+  MAIN_VALVE_BUTTON_PIN_PORTD = PORTD1,         //Port D1
+  FEEDING_VALVE_BUTTON_PIN_PORTD = PORTD0       //Port D0
+}portD_t;
+
+
+typedef enum {
+  OXIDIZER_VALVE_PIN_PORTE = PORTE4,            //Port E4
+  DUMP_VALVE_PIN_PORTE = PORTE5,                //Port E5
+}portE_t;
+
+
+typedef enum {
+  N2FEEDING_VALVE_PIN_PORTG = PORTG5,           //Port G5
+}portG_t;
+
+typedef enum {
+  TEST_MODE_LED_PIN_PORTH = PORTH3,             //Port H3   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN_PORTH = PORTH4,       //Port H4   //In V1 the indicator LEDs use the servo connector
+  IGNITION_SENSE_PIN_PORTH = PORTH5,            //Port H5
+  HEATING_SENSE_PIN_PORTH = PORTH6,             //Port H6
+}portH_t;
+
+// Which port each pin connects to. Defined up to the largest pin we use.
+/* 0 = Unused
+ * 1 = A
+ * 2 = B
+ * 3 = C
+ * 4 = D
+ * 5 = E
+ * 6 = F
+ * 7 = G
+ * 8 = H
+ */
+// Used to write to the pin
+const uint8_t pinToPortWriteMap[36] = { 0,      //Pin 0
+                                        0,      //Pin 1
+                                        5,  //Pin 2
+                                        5,  //Pin 3
+                                        7,  //Pin 4
+                                        0,      //Pin 5
+                                        8,  //Pin 6
+                                        8,  //Pin 7
+                                        8,  //Pin 8
+                                        8,  //Pin 9
+                                        2,  //Pin 10
+                                        0,      //Pin 11
+                                        2,  //Pin 12
+                                        0,      //Pin 13
+                                        0,      //Pin 14
+                                        0,      //Pin 15
+                                        0,      //Pin 16
+                                        0,      //Pin 17
+                                        0,      //Pin 18
+                                        4,  //Pin 19
+                                        4,  //Pin 20
+                                        4,  //Pin 21
+                                        0,      //Pin 22
+                                        1,  //Pin 23
+                                        1,  //Pin 24
+                                        0,      //Pin 25
+                                        1,  //Pin 26
+                                        1,  //Pin 27
+                                        1,  //Pin 28
+                                        1,  //Pin 29
+                                        3,  //Pin 30
+                                        3,  //Pin 31
+                                        0,      //Pin 32
+                                        3,  //Pin 33
+                                        0,      //Pin 34
+                                        3,  //Pin 35
+                                        };
+
+// Which port each pin connects to. Defined up to the largest pin we use.
+/* 0 = Unused
+ * 1 = A
+ * 2 = B
+ * 3 = C
+ * 4 = D
+ * 5 = E
+ * 6 = F
+ * 7 = G
+ * 8 = H
+ */
+// Used to read the pin
+const uint8_t pinToPortReadMap[36] = {0,      //Pin 0
+                                      0,      //Pin 1
+                                      5,   //Pin 2
+                                      5,   //Pin 3
+                                      7,   //Pin 4
+                                      0,      //Pin 5
+                                      8,   //Pin 6
+                                      8,   //Pin 7
+                                      8,   //Pin 8
+                                      8,   //Pin 9
+                                      2,   //Pin 10
+                                      0,      //Pin 11
+                                      2,   //Pin 12
+                                      0,      //Pin 13
+                                      0,      //Pin 14
+                                      0,      //Pin 15
+                                      0,      //Pin 16
+                                      0,      //Pin 17
+                                      0,      //Pin 18
+                                      4,   //Pin 19
+                                      4,   //Pin 20
+                                      4,   //Pin 21
+                                      0,      //Pin 22
+                                      1,   //Pin 23
+                                      1,   //Pin 24
+                                      0,      //Pin 25
+                                      1,   //Pin 26
+                                      1,   //Pin 27
+                                      1,   //Pin 28
+                                      1,   //Pin 29
+                                      3,   //Pin 30
+                                      3,   //Pin 31
+                                      0,      //Pin 32
+                                      3,   //Pin 33
+                                      0,      //Pin 34
+                                      3,   //Pin 35
+                                      };
 
 //Pin Enumerators for Analog Pins
 typedef enum {
