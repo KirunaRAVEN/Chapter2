@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -88,106 +88,6 @@ typedef enum {
   IGNITION_SENSE_PIN_PORTH = PORTH5,            //Port H5
   HEATING_SENSE_PIN_PORTH = PORTH6,             //Port H6
 }portH_t;
-
-// Which port each pin connects to. Defined up to the largest pin we use.
-/* 0 = Unused
- * 1 = A
- * 2 = B
- * 3 = C
- * 4 = D
- * 5 = E
- * 6 = F
- * 7 = G
- * 8 = H
- */
-// Used to write to the pin
-const uint8_t pinToPortWriteMap[36] = { 0,      //Pin 0
-                                        0,      //Pin 1
-                                        5,  //Pin 2
-                                        5,  //Pin 3
-                                        7,  //Pin 4
-                                        0,      //Pin 5
-                                        8,  //Pin 6
-                                        8,  //Pin 7
-                                        8,  //Pin 8
-                                        8,  //Pin 9
-                                        2,  //Pin 10
-                                        0,      //Pin 11
-                                        2,  //Pin 12
-                                        0,      //Pin 13
-                                        0,      //Pin 14
-                                        0,      //Pin 15
-                                        0,      //Pin 16
-                                        0,      //Pin 17
-                                        0,      //Pin 18
-                                        4,  //Pin 19
-                                        4,  //Pin 20
-                                        4,  //Pin 21
-                                        0,      //Pin 22
-                                        1,  //Pin 23
-                                        1,  //Pin 24
-                                        0,      //Pin 25
-                                        1,  //Pin 26
-                                        1,  //Pin 27
-                                        1,  //Pin 28
-                                        1,  //Pin 29
-                                        3,  //Pin 30
-                                        3,  //Pin 31
-                                        0,      //Pin 32
-                                        3,  //Pin 33
-                                        0,      //Pin 34
-                                        3,  //Pin 35
-                                        };
-
-// Which port each pin connects to. Defined up to the largest pin we use.
-/* 0 = Unused
- * 1 = A
- * 2 = B
- * 3 = C
- * 4 = D
- * 5 = E
- * 6 = F
- * 7 = G
- * 8 = H
- */
-// Used to read the pin
-const uint8_t pinToPortReadMap[36] = {0,      //Pin 0
-                                      0,      //Pin 1
-                                      5,   //Pin 2
-                                      5,   //Pin 3
-                                      7,   //Pin 4
-                                      0,      //Pin 5
-                                      8,   //Pin 6
-                                      8,   //Pin 7
-                                      8,   //Pin 8
-                                      8,   //Pin 9
-                                      2,   //Pin 10
-                                      0,      //Pin 11
-                                      2,   //Pin 12
-                                      0,      //Pin 13
-                                      0,      //Pin 14
-                                      0,      //Pin 15
-                                      0,      //Pin 16
-                                      0,      //Pin 17
-                                      0,      //Pin 18
-                                      4,   //Pin 19
-                                      4,   //Pin 20
-                                      4,   //Pin 21
-                                      0,      //Pin 22
-                                      1,   //Pin 23
-                                      1,   //Pin 24
-                                      0,      //Pin 25
-                                      1,   //Pin 26
-                                      1,   //Pin 27
-                                      1,   //Pin 28
-                                      1,   //Pin 29
-                                      3,   //Pin 30
-                                      3,   //Pin 31
-                                      0,      //Pin 32
-                                      3,   //Pin 33
-                                      0,      //Pin 34
-                                      3,   //Pin 35
-                                      };
 
 //Pin Enumerators for Analog Pins
 typedef enum {
@@ -530,7 +430,7 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 //At what rate the temperature data is gathered (hz)
-const uint16_t tempSensorRate = 10;
+const uint16_t slowSensorRate = 10;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
@@ -643,7 +543,6 @@ typedef enum{
 
 //Maximum length of the message buffer;
 const uint16_t msgBufferSize = 16;
-
 
 
 //Other stuff to come. Add any constants here instead of in each separate file.

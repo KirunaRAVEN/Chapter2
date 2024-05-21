@@ -1,7 +1,7 @@
 /* Filename:      InfraRed.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Responsible for the device interface of reading the 
  *                infrared sensor used to measure the plume temperature.

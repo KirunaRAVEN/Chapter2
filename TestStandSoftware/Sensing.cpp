@@ -1,7 +1,7 @@
 /* Filename:      Sensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       This object handles the measurements of the different sensors,
  *                storing them to the LatestValues object and checking them for
@@ -22,7 +22,8 @@
 
 //When were the slower sensors measured last time
 static uint32_t lastSlowTime = 0; 
-
+uint32_t newSlowTime;
+bool updateSlow;
 
 void initSensing(){
   //Nothing to initalize here
@@ -35,13 +36,18 @@ void senseLoop(values_t* values, substate_t currentSubstate){
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
   values->loadCell = readLoad();  //Load cell for thrust
 
+  values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
+
   // Non essential values are skipped during the firing
   if (currentSubstate == ALL_OFF || currentSubstate >= PURGING){
     
     values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
     values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
 
-    if (millis() - lastSlowTime > 1000/tempSensorRate){
+    newSlowTime = millis();
+    updateSlow = newSlowTime - lastSlowTime > 1000/slowSensorRate;
+
+    if (updateSlow == true) {
       values->slowUpdated = true;
 
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
@@ -51,20 +57,15 @@ void senseLoop(values_t* values, substate_t currentSubstate){
 
       values->IR = readIR();   //Plume temperature
       
-      lastSlowTime = millis();
+      lastSlowTime = newSlowTime;
     }
 
     //Read control signals
-    values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
     values->heatingBlanketButton = readHeatingButton();        //Heating button status
     values->ignitionButton = readIgnitionButton();             //Ignition button status
     values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
     values->oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
     
-    //Called from Countdown loop in V1.31    
-    //sendToCheck(values);
-    //setLatest(values);
-
     //Save timestamp
     uint32_t newTimestamp = micros();
     if (newTimestamp < values->lastTimestamp){

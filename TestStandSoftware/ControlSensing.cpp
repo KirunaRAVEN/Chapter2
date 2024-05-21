@@ -1,7 +1,7 @@
 /* Filename:      ControlSensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Responsible for reading the five external control signals
  *                passed to the Arduino Shield.

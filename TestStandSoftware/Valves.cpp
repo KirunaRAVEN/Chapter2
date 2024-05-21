@@ -1,7 +1,7 @@
 /* Filename:      Valves.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Responsible for controlling the different valves used to 
  *                control the flow of the oxidizer and purge gas.
@@ -36,7 +36,6 @@ void initValves(){
   digitalWrite(pin_names_t::N2FEEDING_VALVE_PIN, LOW);
   
   //valveSemaphore = xSemaphoreCreateMutex();
-  
 }
 
 void setValve(pin_names_t valve_pin, bool state){

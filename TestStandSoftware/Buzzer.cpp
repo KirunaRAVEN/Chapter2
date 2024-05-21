@@ -1,7 +1,7 @@
 /* Filename:      Buzzer.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Controls a buzzer that is used to indicate a restart of the 
  *                system as well as act as a warning if any of the sensor values 
@@ -49,7 +49,10 @@ void initBuzzer(){
 
 
 void setBuzzer(bool state){
-  digitalWrite(BUZZER_CONTROL_PIN, state);
+  //digitalWrite(BUZZER_CONTROL_PIN, state);
+  if (state == true){PORTD |=  (1 << BUZZER_CONTROL_PIN_PORTD);}
+  else              {PORTD &= ~(1 << BUZZER_CONTROL_PIN_PORTD);}
+
 }
 
 void updateBuzzer(){

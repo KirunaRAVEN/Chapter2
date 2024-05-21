@@ -1,7 +1,7 @@
 /* Filename:      LatestValues.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Stores the latest set of sensors measurements in a protected
  *                object. These values are then fetched by the countdown object.

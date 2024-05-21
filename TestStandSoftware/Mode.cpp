@@ -1,7 +1,7 @@
 /* Filename:      Mode.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       Stores the current mode and substate variables in a portected
  *                object. These values can then be fetched from here by other objects.
@@ -44,11 +44,15 @@ void getWarning(bool *warning){
 }
 
 void setRepeatIndicator(bool state){
-  digitalWrite(REPEAT_SEQUENCE_LED_PIN, state);
+  //digitalWrite(REPEAT_SEQUENCE_LED_PIN, state);
+  if (state == true){PORTH |=  (1 << REPEAT_SEQUENCE_LED_PIN_PORTH);}
+  else              {PORTH &= ~(1 << REPEAT_SEQUENCE_LED_PIN_PORTH);}
 }
 
 void setTestModeIndicator(bool state){
-  digitalWrite(TEST_MODE_LED_PIN, state);
+  //digitalWrite(TEST_MODE_LED_PIN, state);
+  if (state == true){PORTH |=  (1 << TEST_MODE_LED_PIN_PORTH);}
+  else              {PORTH &= ~(1 << TEST_MODE_LED_PIN_PORTH);}
 }
 
 

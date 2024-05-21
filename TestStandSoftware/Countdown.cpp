@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.51 (21.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -49,7 +49,7 @@ void countdownLoop(){
   values.pipingTemperature = 0;   //Piping temperature
   values.IR = 0;             //Plume Temperature
 
-  values.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
+  values.dumpValveButton = false;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   values.heatingBlanketButton = false;  //Heating button status
   values.ignitionButton = false;        //Ignition button status
   values.n2FeedingButton = false;       //N2 Feeding valve status
@@ -86,10 +86,11 @@ void countdownLoop(){
     // Read test pins, read all of them only outside SEQUENCE
     // If more sampling rate is needed, this could be fully skipped
     // in certain substates >ALL_OFF and <PURGING
-    if ((currentSubstate != lastSubstate) || (currentMode != SEQUENCE)){
-      lastSubstate = currentSubstate;
-      getTestInput(&testInput, currentMode != SEQUENCE);
-    }
+    
+    //if ((currentSubstate != lastSubstate) || (currentMode != SEQUENCE)){
+    //  lastSubstate = currentSubstate;
+    getTestInput(&testInput, currentMode != SEQUENCE);
+    //}
 
     //Perform and fetch latest measurements
     forwardGetLatestValues(&values, currentSubstate);
@@ -103,6 +104,7 @@ void countdownLoop(){
       setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
       lastDump = values.dumpValveButton;
     }
+
     // Limit the amount of things done in sequence mode to make the burst mode sampling faster
     if (currentMode != SEQUENCE){
 
@@ -155,9 +157,10 @@ void countdownLoop(){
 
         // In WAIT mode, the operator should have the ability to open and close any controllable valve
         // Dump valve commented out as it is checked in every single loop regardless of mode
+        // Manual valve control now handled outside the mode logic. Since V1.51
         // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-        setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
-        setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
+        //setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
+        //setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
 
         break;
 
@@ -180,7 +183,6 @@ void countdownLoop(){
               setNewMode(WAIT);
               
             }else{
-              
               //We might not want to have a hard pressure limit. Minimum firing 
               //pressure currently set to 0 bar.
               //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
@@ -188,8 +190,8 @@ void countdownLoop(){
                 countdownStartTime = currentTime;
                 setNewSubstate(IGNIT_ON);
                 setIgnition(true);
-              }
-              else {
+                
+              }else {
                 if (ignitionValveStateFlag == false){
                   if (values.dumpValveButton == true){
                     ignitionValveStateFlag = true;
