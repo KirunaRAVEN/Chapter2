@@ -48,22 +48,27 @@ void sendByteArray(uint8_t *data, uint8_t length) {
 
 void writeValues(values_t* values, statusValues_t statusValues){
   msgIndex = 0;
-  bufferLength = 4;
+  bufferLength = 3;
     
   // Only the most essential values are sent in the burst mode
-  if (statusValues.subState > ALL_OFF && statusValues.subState < PURGING){
+  if (statusValues.subState > ALL_OFF && statusValues.subState < PURGING && values->slowUpdated == false){
       // First 32bit data - sent always
-      uint32_t combinedValue1 = values->linePressure;
-      combinedValue1 = combinedValue1 << (10) | values->combustionPressure;
+      uint32_t combinedValue1 = values->combustionPressure;
       combinedValue1 = combinedValue1 << (10) | values->loadCell;
       combinedValue1 = combinedValue1 << (1) | statusValues.ignitionEngagedActive;
       combinedValue1 = combinedValue1 << (1) | statusValues.valveActive;
+      //combinedValue1 = combinedValue1 << 2;
+      
+      //Add combinedValue1 to byteBuffer
+      byteBuffer[0] = combinedValue1 >> 16 & 255;
+      byteBuffer[1] = combinedValue1 >> 8 & 255;
+      byteBuffer[2] = combinedValue1 & 255;
 
       //Add combinedValue1 to byteBuffer
-      byteBuffer[0] = combinedValue1 >> 24 & 255;
-      byteBuffer[1] = combinedValue1 >> 16 & 255;
-      byteBuffer[2] = combinedValue1 >> 8 & 255;
-      byteBuffer[3] = combinedValue1 & 255; 
+      //byteBuffer[0] = combinedValue1 >> 24 & 255;
+      //byteBuffer[1] = combinedValue1 >> 16 & 255;
+      //byteBuffer[2] = combinedValue1 >> 8 & 255;
+      //byteBuffer[3] = combinedValue1 & 255; 
 
   }else{
 

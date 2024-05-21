@@ -32,20 +32,18 @@ void initSensing(){
 void senseLoop(values_t* values, substate_t currentSubstate){
 
   // These values are saved in every MODE and SUBSTATE
-  values->linePressure = readPressure5V(LINE_PRESSURE);                   //Line pressure 
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
   values->loadCell = readLoad();  //Load cell for thrust
 
-  values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
+  newSlowTime = millis();
+  updateSlow = newSlowTime - lastSlowTime > 1000/slowSensorRate;
 
   // Non essential values are skipped during the firing
-  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING){
+  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING || updateSlow){
     
+    values->linePressure = readPressure5V(LINE_PRESSURE);                        //Line pressure 
     values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
-    values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);       //Oxidizer Feeding Pressure 
-
-    newSlowTime = millis();
-    updateSlow = newSlowTime - lastSlowTime > 1000/slowSensorRate;
+    values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);      //Oxidizer Feeding Pressure 
 
     if (updateSlow == true) {
       values->slowUpdated = true;
@@ -61,6 +59,7 @@ void senseLoop(values_t* values, substate_t currentSubstate){
     }
 
     //Read control signals
+    values->dumpValveButton = readDumpValveButton();           //Dump Valve button status (inverted afterwards due to normally open valve)
     values->heatingBlanketButton = readHeatingButton();        //Heating button status
     values->ignitionButton = readIgnitionButton();             //Ignition button status
     values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status

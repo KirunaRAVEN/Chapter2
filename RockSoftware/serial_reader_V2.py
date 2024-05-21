@@ -286,12 +286,14 @@ with open("data.csv", "w", newline='') as file:
             continue
         """
 
-        if (length == 4) or (length == 12) or (length == 20):
+        if (length == 3) or (length == 12) or (length == 20):
             data_list = [0, 0, 0, 0, 0]
-        
-            data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
 
-            if length > 4: 
+            if length == 3:
+                data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2] << 0
+
+            else:
+                data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
                 data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7] 
                 data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
             
@@ -301,7 +303,7 @@ with open("data.csv", "w", newline='') as file:
 
             #Excecute unmushing
 
-            if length == 4:
+            if length == 3:
                 #First 32bits, always received
                 dataBit = int(data_list[0])
 
@@ -312,8 +314,8 @@ with open("data.csv", "w", newline='') as file:
                 loadC = readLoad(dataBit & 1023)
                 dataBit = dataBit >> 10
                 combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-                dataBit = dataBit >> 10
-                lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+                #dataBit = dataBit >> 10
+                #ineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
 
             else:
                 timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW

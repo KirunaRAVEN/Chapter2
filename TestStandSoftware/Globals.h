@@ -318,8 +318,7 @@ const int16_t samplingTickDelay = 1;
 const int16_t countdownTickDelay = 1;
 
 //At what rate sensor sampling is done outside the SEQUENCE (Hz)
-const int16_t limitedSampleRate = 50;
-
+const int16_t limitedSampleRate = 60;
 
 /*
  * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
@@ -430,7 +429,7 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 //At what rate the temperature data is gathered (hz)
-const uint16_t slowSensorRate = 10;
+const uint16_t slowSensorRate = 30;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
