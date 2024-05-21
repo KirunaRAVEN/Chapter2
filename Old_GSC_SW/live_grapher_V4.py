@@ -428,19 +428,22 @@ def update(frame):
         #Else it is a message line --> Print out
         #else
         if plottedData:
-            if len(row) == csvDataCount and int(row[-1]) != 0:
-                messageListUpdated = True
-                
-                if int(row[-1]) != endCountdownIndex:
-                    messageList += [messageStrings[int(row[-1])]]
-                else:
-                    messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
-                    endCountdownTimer += 1
-                    if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
-                        endCountdownTimer = 0
-                        
-                messageList = messageList[-maxMessageCount:]
-                
+            if int(row[-1]) != 0:
+                try:
+                    messageListUpdated = True
+                    
+                    if int(row[-1]) != endCountdownIndex:
+                        messageList += [messageStrings[int(row[-1])]]
+                    else:
+                        messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
+                        endCountdownTimer += 1
+                        if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
+                            endCountdownTimer = 0
+                            
+                    messageList = messageList[-maxMessageCount:]
+                except Exception as exc:
+                    print(exc)
+                                    
         lineNumber += 1
 
     if updated:
