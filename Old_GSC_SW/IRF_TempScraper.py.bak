@@ -31,7 +31,7 @@ def save_to_file(temperature):
 # Main loop to scrape temperature every 60 seconds
 
 startDate = datetime.now().strftime("%Y_%m_%d")
-os.chdir("../../IRF_Temperature_Data")
+os.chdir("../../IRF_Temperature/Data")
 
 while True:
     temperature = scrape_temperature()
