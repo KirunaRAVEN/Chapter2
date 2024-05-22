@@ -24,6 +24,8 @@ static bool oxidizerValvePassed;
 static bool allPassed;
 static bool testCompleted;
 
+static bool buttonFaultMessageFlag = false;
+
 static verificationState_t verificationState;
 
 static uint32_t testStateChangeTime;
@@ -52,15 +54,21 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
-          else if (buttonValues.oxidizerValveButton == true){
-            sendMessageToSerial(MSG_RELEASE_OX);
+          else if (buttonFaultMessageFlag == false){
+            if (buttonValues.oxidizerValveButton == true){
+              sendMessageToSerial(MSG_RELEASE_OX);
+              buttonFaultMessageFlag = true;
+            }
+            if (buttonValues.ignitionButton == true){
+              sendMessageToSerial(MSG_RELEASE_IGN);
+              buttonFaultMessageFlag = true;
+            }
+            if (buttonValues.heatingBlanketButton == true){
+              sendMessageToSerial(MSG_RELEASE_HEAT);
+              buttonFaultMessageFlag = true;
+            }
           }
-          else if (buttonValues.ignitionButton == true){
-            sendMessageToSerial(MSG_RELEASE_IGN);
-          }
-          else if (buttonValues.heatingBlanketButton == true){
-            sendMessageToSerial(MSG_RELEASE_HEAT);
-          }
+          
         break;
         
       case OFF_STATE_TEST:
