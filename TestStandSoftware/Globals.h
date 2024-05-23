@@ -429,7 +429,7 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
 //At what rate the temperature data is gathered (hz)
-const uint16_t slowSensorRate = 30;
+const uint16_t slowSensorRate = 100;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
