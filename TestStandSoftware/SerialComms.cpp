@@ -34,7 +34,7 @@ void initSerial(){
 }
 
 void sendByteArray(uint8_t *data, uint8_t length) {
-  Serial.write(START_MARKER);
+  //Serial.write(START_MARKER);
   for (uint8_t i = 0; i < length; i++) {
     if (data[i] == START_MARKER || data[i] == END_MARKER || data[i] == ESCAPE_BYTE) {
       Serial.write(ESCAPE_BYTE);
@@ -51,7 +51,7 @@ void writeValues(values_t* values, statusValues_t statusValues){
   bufferLength = 3;
     
   // Only the most essential values are sent in the burst mode
-  if (statusValues.subState > ALL_OFF && statusValues.subState < PURGING && values->slowUpdated == false){
+  if (statusValues.subState > ALL_OFF && statusValues.subState < PURGING && values->slowUpdated == false && values->mediumUpdated == false){
       // First 32bit data - sent always
       uint32_t combinedValue1 = values->combustionPressure;
       combinedValue1 = combinedValue1 << (10) | values->loadCell;
@@ -143,6 +143,8 @@ void writeValues(values_t* values, statusValues_t statusValues){
 
       values->slowUpdated = false;
     }
+    
+    values->mediumUpdated = false;
   }
 
   sendByteArray(byteBuffer, bufferLength);

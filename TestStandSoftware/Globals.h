@@ -280,7 +280,8 @@ struct values_t {
   uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
   uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
 
-  bool slowUpdated = false;     //If the less frequently sent values were updated this loop
+  bool slowUpdated = false;     //If the slow frequency values were updated this loop
+  bool mediumUpdated = false;     //If the medium frequency values were updated this loop 
   
   int N2FeedingPressure;        //N2 Feeding line pressure 
   int linePressure;      //Line pressure 
@@ -319,6 +320,10 @@ const int16_t countdownTickDelay = 1;
 
 //At what rate sensor sampling is done outside the SEQUENCE (Hz)
 const int16_t limitedSampleRate = 60;
+
+//At what rate the certain data is gathered (hz)
+const uint16_t slowSensorRate = 10;
+const uint16_t mediumSensorRate = 100;
 
 /*
  * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
@@ -427,9 +432,6 @@ const float pressureSpan20mA = 172.3689;    //Bar
 const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
-
-//At what rate the temperature data is gathered (hz)
-const uint16_t slowSensorRate = 100;
 
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;

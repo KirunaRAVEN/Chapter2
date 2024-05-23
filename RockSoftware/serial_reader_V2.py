@@ -177,7 +177,7 @@ def readIR(sensorValue):
 # BYTESREAM READING
 # -----------------
 
-START_MARKER = 0x7E
+#START_MARKER = 0x7E
 END_MARKER = 0x7F
 ESCAPE_BYTE = 0x7D
 ESCAPE_XOR = 0x20
@@ -187,22 +187,22 @@ def read_message(ser):
     index = 0
     while True:
         # Wait for start marker
+        #byte = ser.read(1)[0]
+        #print(byte)
+        #if byte == START_MARKER:
+            #while True:
         byte = ser.read(1)[0]
         #print(byte)
-        if byte == START_MARKER:
-            while True:
-                byte = ser.read(1)[0]
-                #print(byte)
-                if byte == END_MARKER or index == 20:
-                    if index == 0: return [], 0
-                    else: return bytes(data), index
-                elif byte == ESCAPE_BYTE:
-                    next_byte = ser.read(1)[0]
-                    data[index] = next_byte ^ ESCAPE_XOR
-                    index += 1
-                else:
-                    data[index] = byte
-                    index += 1
+        if byte == END_MARKER or index == 20:
+            if index == 0: return [], 0
+            else: return bytes(data), index
+        elif byte == ESCAPE_BYTE:
+            next_byte = ser.read(1)[0]
+            data[index] = next_byte ^ ESCAPE_XOR
+            index += 1
+        else:
+            data[index] = byte
+            index += 1
                     
                        
 # ----------------

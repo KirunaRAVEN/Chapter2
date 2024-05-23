@@ -21,9 +21,14 @@
 #include "ControlSensing.h"
 
 //When were the slower sensors measured last time
-static uint32_t lastSlowTime = 0; 
-uint32_t newSlowTime;
+static uint32_t lastSlowTime = 0;
+static uint32_t lastMediumTime = 0;
+ 
+uint32_t newTime;
+
 bool updateSlow;
+bool updateMedium;
+
 
 void initSensing(){
   //Nothing to initalize here
@@ -35,18 +40,23 @@ void senseLoop(values_t* values, substate_t currentSubstate){
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
   values->loadCell = readLoad();  //Load cell for thrust
 
-  newSlowTime = millis();
-  updateSlow = newSlowTime - lastSlowTime > 1000/slowSensorRate;
+  newTime = millis();
+  updateMedium = newTime - lastMediumTime > 1000/mediumSensorRate;
 
-  // Non essential values are skipped during the firing
+  // Non essential values are sent at a reduced rate during the firing
   if (currentSubstate == ALL_OFF || currentSubstate >= PURGING || updateSlow){
-    
+    values->mediumUpdated = true;
+    lastMediumTime = newTime;
+
     values->linePressure = readPressure5V(LINE_PRESSURE);                        //Line pressure 
     values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
     values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);      //Oxidizer Feeding Pressure 
 
+    updateSlow = newTime - lastSlowTime > 1000/slowSensorRate;
+
     if (updateSlow == true) {
       values->slowUpdated = true;
+      lastSlowTime = newTime;
 
       values->bottleTemperature = readTMP36();                     //Bottle/Heating blanket temperature
       values->notConnectedTemperature = 0;//readTemp(NOT_CONNECTED_1);   //Not connected
@@ -54,8 +64,6 @@ void senseLoop(values_t* values, substate_t currentSubstate){
       values->pipingTemperature = readTemp(PIPING_TC);            //Piping temperature
 
       values->IR = readIR();   //Plume temperature
-      
-      lastSlowTime = newSlowTime;
     }
 
     //Read control signals
