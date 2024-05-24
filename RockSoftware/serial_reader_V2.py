@@ -376,27 +376,30 @@ with open("data.csv", "w", newline='') as file:
                     botTemp = readTMP36(dataBit & 1023)
 
             #Generate the csv line
-            fstring = f'{timestamp}'
-            fstring += f',{n2feedP:.2f}'
-            fstring += f',{lineP:.2f}'
-            fstring += f',{combP:.2f}'
-            fstring += f',{n2oFeedP:.2f}'
-            fstring += f',{loadC:.2f}'
-            fstring += f',{botTemp:.2f}'
-            fstring += f',{0}'
-            fstring += f',{nozzT:.2f}'
-            fstring += f',{pipeT:.2f}'
-            fstring += f',{IR:.2f}'
-            fstring += f',{dumpButton}'
-            fstring += f',{heatButton}'
-            fstring += f',{igniButton}'
-            fstring += f',{n2Button}'
-            fstring += f',{oxButton}'
-            fstring += f',{ignStatus}'
-            fstring += f',{valveStatus}'
-            fstring += f',{swMode}'
-            fstring += f',{swSub}'
-            fstring += f',{msgIndex}'
+            fstring = f'{timestamp},{n2feedP:.2f},{lineP:.2f},{combP:.2f},{n2oFeedP:.2f},{loadC:.2f},{botTemp:.2f},{0},{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{heatButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{msgIndex}\n'
+            
+            """
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            fstring += f''
+            """
 
             #if int(msgIndex) != 0: print(msgIndex)
 
@@ -404,9 +407,11 @@ with open("data.csv", "w", newline='') as file:
             #print((timestamp - oldTime))
             #oldTime = timestamp
 
-            file.write(fstring + "\n")
+            file.write(fstring)
             file.flush()
-
+        else:
+            print(f"byte length error: {length}")
+            
         #except Exception as exc:
         #    print(exc)
         #    #Corrupted data due to reset
