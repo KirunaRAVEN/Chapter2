@@ -20,7 +20,7 @@ unsigned char byteBuffer[20];
 unsigned char bufferLength;
 
 //These are used to start, end and mask the message
-const uint8_t START_MARKER = 0x7E;
+//const uint8_t START_MARKER = 0x7E;
 const uint8_t END_MARKER = 0x7F;
 const uint8_t ESCAPE_BYTE = 0x7D;
 const uint8_t ESCAPE_XOR = 0x20;
@@ -36,7 +36,8 @@ void initSerial(){
 void sendByteArray(uint8_t *data, uint8_t length) {
   //Serial.write(START_MARKER);
   for (uint8_t i = 0; i < length; i++) {
-    if (data[i] == START_MARKER || data[i] == END_MARKER || data[i] == ESCAPE_BYTE) {
+    //if (data[i] == START_MARKER || data[i] == END_MARKER || data[i] == ESCAPE_BYTE) {
+    if (data[i] == END_MARKER || data[i] == ESCAPE_BYTE) {
       Serial.write(ESCAPE_BYTE);
       Serial.write(data[i] ^ ESCAPE_XOR);
     } else {

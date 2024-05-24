@@ -319,7 +319,7 @@ const int16_t samplingTickDelay = 1;
 const int16_t countdownTickDelay = 1;
 
 //At what rate sensor sampling is done outside the SEQUENCE (Hz)
-const int16_t limitedSampleRate = 60;
+const int16_t limitedSampleRate = 50;
 
 //At what rate the certain data is gathered (hz)
 const uint16_t slowSensorRate = 10;
