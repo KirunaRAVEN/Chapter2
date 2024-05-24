@@ -44,7 +44,7 @@ void senseLoop(values_t* values, substate_t currentSubstate){
   updateMedium = newTime - lastMediumTime > 1000/mediumSensorRate;
 
   // Non essential values are sent at a reduced rate during the firing
-  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING || updateSlow){
+  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING || updateMedium){
     values->mediumUpdated = true;
     lastMediumTime = newTime;
 
