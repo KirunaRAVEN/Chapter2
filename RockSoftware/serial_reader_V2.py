@@ -1,7 +1,12 @@
 import datetime as dt
 import serial
+import time
 import re
 import serial.tools.list_ports as list_ports
+import csv
+
+#import time
+
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
 # ------------------------------------------
@@ -177,7 +182,6 @@ def readIR(sensorValue):
 # BYTESREAM READING
 # -----------------
 
-#START_MARKER = 0x7E
 END_MARKER = 0x7F
 ESCAPE_BYTE = 0x7D
 ESCAPE_XOR = 0x20
@@ -186,13 +190,7 @@ def read_message(ser):
     data = bytearray(20)
     index = 0
     while True:
-        # Wait for start marker
-        #byte = ser.read(1)[0]
-        #print(byte)
-        #if byte == START_MARKER:
-            #while True:
         byte = ser.read(1)[0]
-        #print(byte)
         if byte == END_MARKER or index == 20:
             if index == 0: return [], 0
             else: return bytes(data), index
@@ -203,14 +201,13 @@ def read_message(ser):
         else:
             data[index] = byte
             index += 1
-                    
+            
                        
 # ----------------
 # START OF PROGRAM
 # ----------------
 
 normalBaud = 1000000
-#fastBaud = 1000000
 
 ser = serial.Serial()
 
@@ -236,9 +233,13 @@ if ser.is_open == True:
     print(ser, '\n')
 
 with open("data.csv", "w", newline='') as file:
+    writer = csv.writer(file)
     #Header to the csv data file
-    file.write("ArduinoTime, NitrogenPressure, LinePressure, ChamberPressure, OxidizerPressure, LoadCell, HeatingBlanketTemperature, NotConnected, NozzleTemperature, PipingTemperature, PlumeTemperature, DumpValveButtonStatus, HeatingButtonStatus, IgnitionButtonStatus, NitrogenFeedingButtonStatus, OxidizerValveButtonStatus, IgnitionSwState, ValveSwSstate, CurrentSwMode, CurrentSwSubstate, MessageIndex\n")
-    file.flush()
+    writer.writerow(["ArduinoTime", "NitrogenPressure", "LinePressure", "ChamberPressure", "OxidizerPressure",
+                     "LoadCell", "HeatingBlanketTemperature", "NotConnected", "NozzleTemperature",
+                     "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus",
+                     "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
+                     "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate", "MessageIndex"])
 
     #Init values that aren't received always
     botTemp = 0
@@ -265,19 +266,29 @@ with open("data.csv", "w", newline='') as file:
 
     oldTime = 0
 
+    dataPointCount = 0
+    maxBufferWait = 0
+
     ser.reset_input_buffer()
 
     while True:
+        bufferWait = ser.inWaiting()
+        if bufferWait >= maxBufferWait:
+            maxBufferWait = bufferWait
+            #print(f'Bytes in Waiting: {ser.inWaiting()} at index {dataPointCount}')
+
+        if bufferWait == 0: maxBufferWait = 0
+
         data, length = read_message(ser)
         byteList = list(data)
-        
-        """
-        if length == 0:
-            if ser.baudrate == normalBaud: ser.baudrate = fastBaud
-            elif ser.baudrate == fastBaud: ser.baudrate = normalBaud
-            
-            continue
-        """
+
+        #print(byteList)
+        dataPointCount += 1
+        newTime = time.time()
+        if newTime - oldTime > 1:
+            #print(f'Sampling rate:{int(dataPointCount / (newTime - oldTime))}Hz')
+            oldTime = newTime
+            dataPointCount = 0
 
         """
         if data_list[-1] == b' r\n': # Discard restarting lines
@@ -290,15 +301,15 @@ with open("data.csv", "w", newline='') as file:
             data_list = [0, 0, 0, 0, 0]
 
             if length == 3:
-                data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2] << 0
+                data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
 
             else:
                 data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
-                data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7] 
+                data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
                 data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
-            
+
             if length == 20:
-                data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15] 
+                data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
                 data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
 
             #Excecute unmushing
@@ -314,8 +325,6 @@ with open("data.csv", "w", newline='') as file:
                 loadC = readLoad(dataBit & 1023)
                 dataBit = dataBit >> 10
                 combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-                #dataBit = dataBit >> 10
-                #ineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
 
             else:
                 timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
@@ -357,7 +366,7 @@ with open("data.csv", "w", newline='') as file:
                 msgIndex = 0
 
                 if length == 20:
-                    #Second 32bits, received every ~100ms
+                    #Third 32bits, received every ~100ms
                     dataBit = int(data_list[3])
 
                     msgIndex = dataBit & 7
@@ -366,7 +375,7 @@ with open("data.csv", "w", newline='') as file:
                     dataBit = dataBit >> 14
                     nozzT = readTemp(dataBit & 16383)
 
-                    #Second 32bits, received every ~100ms
+                    #Fourth 32bits, received every ~100ms
                     dataBit = int(data_list[4])
 
                     IR = readIR(dataBit & 1023)
@@ -376,43 +385,7 @@ with open("data.csv", "w", newline='') as file:
                     botTemp = readTMP36(dataBit & 1023)
 
             #Generate the csv line
-            fstring = f'{timestamp},{n2feedP:.2f},{lineP:.2f},{combP:.2f},{n2oFeedP:.2f},{loadC:.2f},{botTemp:.2f},{0},{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{heatButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{msgIndex}\n'
-            
-            """
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            fstring += f''
-            """
-
-            #if int(msgIndex) != 0: print(msgIndex)
-
-            #print(fstring)
-            #print((timestamp - oldTime))
-            #oldTime = timestamp
-
-            file.write(fstring)
-            file.flush()
-        else:
-            print(f"byte length error: {length}")
-            
-        #except Exception as exc:
-        #    print(exc)
-        #    #Corrupted data due to reset
-        #    continue
+            writer.writerow([timestamp, f'{n2feedP:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
+                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}',
+                             dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
+                             swMode, swSub, msgIndex])
