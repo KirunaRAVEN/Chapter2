@@ -1,7 +1,7 @@
 /* Filename:      Sensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       This object handles the measurements of the different sensors,
  *                storing them to the LatestValues object and checking them for
@@ -34,7 +34,7 @@ void initSensing(){
   //Nothing to initalize here
 }
 
-void senseLoop(values_t* values, substate_t currentSubstate){
+void senseLoop(values_t* values, mode_t currentMode){
 
   // These values are saved in every MODE and SUBSTATE
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
@@ -44,7 +44,7 @@ void senseLoop(values_t* values, substate_t currentSubstate){
   updateMedium = newTime - lastMediumTime > 1000/mediumSensorRate;
 
   // Non essential values are sent at a reduced rate during the firing
-  if (currentSubstate == ALL_OFF || currentSubstate >= PURGING || updateMedium){
+  if (currentMode != SEQUENCE || updateMedium){
     values->mediumUpdated = true;
     lastMediumTime = newTime;
 

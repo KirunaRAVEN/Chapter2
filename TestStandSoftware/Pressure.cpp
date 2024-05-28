@@ -1,7 +1,7 @@
 /* Filename:      Pressure.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Responsible for the device interface of reading the 
  *                pressure sensors used to measure the various pressures.

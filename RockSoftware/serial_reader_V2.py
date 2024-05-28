@@ -389,3 +389,4 @@ with open("data.csv", "w", newline='') as file:
                              f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}',
                              dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub, msgIndex])
+            file.flush()

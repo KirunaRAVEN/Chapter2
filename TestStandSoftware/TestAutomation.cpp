@@ -1,7 +1,7 @@
 /* Filename:      TestAutomation.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Parent object the decomposes into <<device>> objects
  *                responsible for handling the hardware side of the test.
@@ -40,8 +40,8 @@ void getCurrentSubstate(substate_t* substate){
   getSubstate(substate);
 }
 
-void forwardGetLatestValues(values_t* values, substate_t currentSubstate){
-  getValuesFromSensors(values, currentSubstate);
+void forwardGetLatestValues(values_t* values, mode_t currentMode){
+  getValuesFromSensors(values, currentMode);
 }
 
 void sendValuesToSerial(values_t* values, statusValues_t statusValues){

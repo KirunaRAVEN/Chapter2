@@ -1,7 +1,7 @@
 /* Filename:      Sensing.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the <<cyclic>> Sensing object. 
  *                Contains function definitions.
@@ -26,6 +26,6 @@ void initSensing(void);
  *                substate_t telling which substate the system is in
  * OUT:           Nothing
  */
-void senseLoop(values_t* values, substate_t currentSubstate);
+void senseLoop(values_t* values, mode_t currentMode);
 
 #endif

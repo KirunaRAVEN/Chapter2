@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -84,7 +84,7 @@ void countdownLoop(){
     getTestInput(&testInput, currentMode != SEQUENCE);
 
     //Perform and fetch latest measurements
-    forwardGetLatestValues(&values, currentSubstate);
+    forwardGetLatestValues(&values, currentMode);
 
     //Check latest values for anomalies
     sendToCheck(values);

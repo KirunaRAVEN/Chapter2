@@ -1,7 +1,7 @@
 /* Filename:      Ignition.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Controlling the final software controlled relay responsible
  *                for igniting the engine

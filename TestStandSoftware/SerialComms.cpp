@@ -1,7 +1,7 @@
 /* Filename:      SerialComms.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Responsible for sending the latest sensor measurements over
  *                the Arduino Serial interface to a Rock 4C+ microcomputer.
@@ -52,7 +52,7 @@ void writeValues(values_t* values, statusValues_t statusValues){
   bufferLength = 3;
     
   // Only the most essential values are sent in the burst mode
-  if (statusValues.subState > ALL_OFF && statusValues.subState < PURGING && values->slowUpdated == false && values->mediumUpdated == false){
+  if (statusValues.mode == SEQUENCE && values->slowUpdated == false && values->mediumUpdated == false){
       // First 32bit data - sent always
       uint32_t combinedValue1 = values->combustionPressure;
       combinedValue1 = combinedValue1 << (10) | values->loadCell;

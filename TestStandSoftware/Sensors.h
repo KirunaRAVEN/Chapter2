@@ -1,7 +1,7 @@
 /* Filename:      Sensors.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the Sensors <<active>> object. 
  *                Contains function definitions.
@@ -29,7 +29,7 @@ void initSensors(void);
  *                substate_t telling the current system substate
  * OUT:           Nothing
  */
-void getValuesFromSensors(values_t* values, substate_t currentSubstate);
+void getValuesFromSensors(values_t* values, mode_t currentMode);
 
 
 /* Function:      Intermediate interface for calling the senseLoop function

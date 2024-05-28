@@ -1,7 +1,7 @@
 /* Filename:      TestAutomation.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the TestAutomation <<active>> object. 
  *                Contains function definitions.
@@ -66,7 +66,7 @@ void getCurrentSubstate(substate_t* substate);
  *                substate_t telling the current system substate
  * OUT:           
  */
-void forwardGetLatestValues(values_t* values, substate_t currentSubstate);
+void forwardGetLatestValues(values_t* values, mode_t currentMode);
 
 
 /* Function:      Intermediate interface for sending the latest values and the

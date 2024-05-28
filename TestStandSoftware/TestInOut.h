@@ -1,7 +1,7 @@
 /* Filename:      TestInOut.h
  * Author:        Eemeli Mykrä
  * Date:          17.04.2023
- * Version:       V1.51 (21.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the TestInOut <<device>> object. 
  *                Contains function definitions.
