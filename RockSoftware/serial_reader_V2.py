@@ -300,6 +300,10 @@ with open("data.csv", "w", newline='') as file:
         if (length == 3) or (length == 12) or (length == 20):
             data_list = [0, 0, 0, 0, 0]
 
+            #Reset message index to not send same message multiple times
+            msgIndex = 0
+
+
             if length == 3:
                 data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
 
@@ -362,8 +366,6 @@ with open("data.csv", "w", newline='') as file:
                 loadC = readLoad(dataBit & 1023)
                 dataBit = dataBit >> 10
                 n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
-
-                msgIndex = 0
 
                 if length == 20:
                     #Third 32bits, received every ~100ms
