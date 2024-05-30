@@ -1,7 +1,7 @@
 /* Filename:      InfraRed.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the InfraRed <<device>> object. 
  *                Contains function definitions.

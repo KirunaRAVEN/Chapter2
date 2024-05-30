@@ -1,7 +1,7 @@
 /* Filename:      Buzzer.cpp
  * Author:        Eemeli Mykrä
  * Date:          29.03.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Controls a buzzer that is used to indicate a restart of the 
  *                system as well as act as a warning if any of the sensor values 
@@ -40,7 +40,7 @@ void initBuzzer(){
   
   //Turn Buzzer ON when software starts, turns off after ~1 second.
   digitalWrite(BUZZER_CONTROL_PIN, HIGH);
-  
+
   timedSequence = true;
   buzzerStartTime = millis();
 
@@ -49,10 +49,10 @@ void initBuzzer(){
 
 
 void setBuzzer(bool state){
-  //if (xSemaphoreTake(buzzerSemaphore, 10) == pdTRUE){
-    digitalWrite(BUZZER_CONTROL_PIN, state);
-  //  xSemaphoreGive(buzzerSemaphore);
-  //}
+  //digitalWrite(BUZZER_CONTROL_PIN, state);
+  if (state == true){PORTD |=  (1 << BUZZER_CONTROL_PIN_PORTD);}
+  else              {PORTD &= ~(1 << BUZZER_CONTROL_PIN_PORTD);}
+
 }
 
 void updateBuzzer(){
@@ -67,7 +67,6 @@ void updateBuzzer(){
     }
   }
 }
-
 
 //Current version does not support buzzer patterns
 

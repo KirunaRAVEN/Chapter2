@@ -1,7 +1,7 @@
 /* Filename:      Sensing.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the <<cyclic>> Sensing object. 
  *                Contains function definitions.
@@ -19,13 +19,13 @@
 void initSensing(void);
 
 
-/* Function:      FreeRTOS task handling the measurements of the different sensors,
- *                storing those to the LatestValues object and checking them for
- *                faults using the FaultDetection object.
+/* Function:      Function for handling the measurements of the different sensors
+ *                and saving the timestamp
  *
- * IN:            Nothing
+ * IN:            values_t pointer where the new measurements are saved
+ *                substate_t telling which substate the system is in
  * OUT:           Nothing
  */
-void senseLoop(values_t* values);
+void senseLoop(values_t* values, mode_t currentMode);
 
 #endif

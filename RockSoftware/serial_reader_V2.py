@@ -1,6 +1,11 @@
 import datetime as dt
 import serial
+import time
 import re
+import serial.tools.list_ports as list_ports
+import csv
+
+#import time
 
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
@@ -172,9 +177,37 @@ def readIR(sensorValue):
     temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR
     return temperature
 
+
+# -----------------
+# BYTESREAM READING
+# -----------------
+
+END_MARKER = 0x7F
+ESCAPE_BYTE = 0x7D
+ESCAPE_XOR = 0x20
+
+def read_message(ser):
+    data = bytearray(20)
+    index = 0
+    while True:
+        byte = ser.read(1)[0]
+        if byte == END_MARKER or index == 20:
+            if index == 0: return [], 0
+            else: return bytes(data), index
+        elif byte == ESCAPE_BYTE:
+            next_byte = ser.read(1)[0]
+            data[index] = next_byte ^ ESCAPE_XOR
+            index += 1
+        else:
+            data[index] = byte
+            index += 1
+            
+                       
 # ----------------
 # START OF PROGRAM
 # ----------------
+
+normalBaud = 1000000
 
 ser = serial.Serial()
 
@@ -183,16 +216,16 @@ ports = list_ports.comports()
 
 #Finds which one the Arduino Mega is connected to via reading the 'SER' part of hwid
 for port, desc, hwid in sorted(ports):    
-      if hwid[22:46] == 'SER=859373133373515062A1': 
-         ser.port = port
-         break
-      else: 
-        print('The Arduino Mega does not seem to be connected.')
+    if hwid[22:46] == 'SER=859373133373515062A1': 
+        ser.port = port
+        break
+else: 
+    print('The Arduino Mega does not seem to be connected.')
 
 #Legacy equipment:
 #ser.port = '/dev/ttyACM0'
 
-ser.baudrate = 1000*1000
+ser.baudrate = normalBaud
 ser.timeout = 5
 ser.open()
 if ser.is_open == True:
@@ -200,9 +233,13 @@ if ser.is_open == True:
     print(ser, '\n')
 
 with open("data.csv", "w", newline='') as file:
+    writer = csv.writer(file)
     #Header to the csv data file
-    file.write("Aurdino time, Nitrogen pressure, Line pressure, Chamber pressure, Oxidizer feeding pressure, Load cell, Heating blanket temperature, Not connected, Nozzle temperature, Piping temperature, Plume temperature, Dump valve button status, Heating button status, Ignition button status, N2 Feeding button status, Oxidizer valve button status, Ignition SW state, Valve SW state, Current SW mode, Current SW substate, Message index\n")
-    file.flush()
+    writer.writerow(["ArduinoTime", "NitrogenPressure", "LinePressure", "ChamberPressure", "OxidizerPressure",
+                     "LoadCell", "HeatingBlanketTemperature", "NotConnected", "NozzleTemperature",
+                     "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus",
+                     "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
+                     "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate", "MessageIndex"])
 
     #Init values that aren't received always
     botTemp = 0
@@ -210,159 +247,148 @@ with open("data.csv", "w", newline='') as file:
     pipeT = 0
     IR = 0
 
+    timestamp = 0
+    n2feedP = 0
+    lineP = 0
+    combP = 0
+    n2oFeedP = 0
+    loadC = 0
+    dumpButton = 0
+    heatButton = 0
+    igniButton = 0
+    n2Button = 0
+    oxButton = 0
+    ignStatus = 0
+    valveStatus = 0
+    swMode = 0
+    swSub = 0
+    msgIndex = 0
+
     oldTime = 0
+
+    dataPointCount = 0
+    maxBufferWait = 0
 
     ser.reset_input_buffer()
 
     while True:
-        data = ser.readline()
-        data = data.rstrip(b'\n')
-        data = data.replace(b'\x00',b'')
-        # split on comma and newline
-        data_list = re.split(b',', data) # comma-separated
-        """
-        try:
-            print(data.decode())
-        except Exception as exc:
-            pirnt(exc)
+        bufferWait = ser.inWaiting()
+        if bufferWait >= maxBufferWait:
+            maxBufferWait = bufferWait
+            #print(f'Bytes in Waiting: {ser.inWaiting()} at index {dataPointCount}')
+
+        if bufferWait == 0: maxBufferWait = 0
+
+        data, length = read_message(ser)
+        byteList = list(data)
+
+        #print(byteList)
+        dataPointCount += 1
+        newTime = time.time()
+        if newTime - oldTime > 1:
+            #print(f'Sampling rate:{int(dataPointCount / (newTime - oldTime))}Hz')
+            oldTime = newTime
+            dataPointCount = 0
+
         """
         if data_list[-1] == b' r\n': # Discard restarting lines
             file.write("\n")
             file.flush()
             continue
+        """
 
-        try:
-            values = []
-            #If length not nominal, skip
-            if not (len(data_list) == 5 or len(data_list) == 3):
-                continue
+        if (length == 3) or (length == 12) or (length == 20):
+            data_list = [0, 0, 0, 0, 0]
+
+            #Reset message index to not send same message multiple times
+            msgIndex = 0
+
+
+            if length == 3:
+                data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
+
+            else:
+                data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
+                data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
+                data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
+
+            if length == 20:
+                data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
+                data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
 
             #Excecute unmushing
 
-            timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+            if length == 3:
+                #First 32bits, always received
+                dataBit = int(data_list[0])
 
-            #First 32bits, always received
-            dataBit = int(data_list[1])
-
-            heatButton = dataBit & 1
-            dataBit = dataBit >> 1
-            dumpButton = dataBit & 1
-            dataBit = dataBit >> 1
-            combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-            dataBit = dataBit >> 10
-            lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
-            dataBit = dataBit >> 10
-            n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
-
-            #Second 32bits, always received
-            dataBit = int(data_list[2])
-
-            swSub = dataBit & 7
-            dataBit = dataBit >> 3
-            swMode = dataBit & 7
-            dataBit = dataBit >> 3
-            valveStatus = dataBit & 1
-            dataBit = dataBit >> 1
-            ignStatus = dataBit & 1
-            dataBit = dataBit >> 1
-            oxButton = dataBit & 1
-            dataBit = dataBit >> 1
-            n2Button = dataBit & 1
-            dataBit = dataBit >> 1
-            igniButton = dataBit & 1
-            dataBit = dataBit >> 1
-            loadC = readLoad(dataBit & 1023)
-            dataBit = dataBit >> 10
-            n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
-
-            msgIndex = 0
-
-            if len(data_list) == 5:
-                #Second 32bits, received every ~100ms
-                dataBit = int(data_list[3])
-
-                msgIndex = dataBit & 7
-                dataBit = dataBit >> 3  #First part of the msgIndex
-                pipeT = readTemp(dataBit & 16383)
-                dataBit = dataBit >> 14
-                nozzT = readTemp(dataBit & 16383)
-
-                #Second 32bits, received every ~100ms
-                dataBit = int(data_list[4])
-
-                IR = readIR(dataBit & 1023)
+                valveStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                ignStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                loadC = readLoad(dataBit & 1023)
                 dataBit = dataBit >> 10
-                msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+
+            else:
+                timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+
+                #First 32bits, always received
+                dataBit = int(data_list[1])
+
+                heatButton = dataBit & 1
+                dataBit = dataBit >> 1
+                dumpButton = dataBit & 1
+                dataBit = dataBit >> 1
+                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+                dataBit = dataBit >> 10
+                lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+                dataBit = dataBit >> 10
+                n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
+
+                #Second 32bits, always received
+                dataBit = int(data_list[2])
+
+                swSub = dataBit & 7
                 dataBit = dataBit >> 3
-                botTemp = readTMP36(dataBit & 1023)
+                swMode = dataBit & 7
+                dataBit = dataBit >> 3
+                valveStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                ignStatus = dataBit & 1
+                dataBit = dataBit >> 1
+                oxButton = dataBit & 1
+                dataBit = dataBit >> 1
+                n2Button = dataBit & 1
+                dataBit = dataBit >> 1
+                igniButton = dataBit & 1
+                dataBit = dataBit >> 1
+                loadC = readLoad(dataBit & 1023)
+                dataBit = dataBit >> 10
+                n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
 
-            #dataBit = dataBit >> 10
-            #IR = readIR(dataBit & 1023)
+                if length == 20:
+                    #Third 32bits, received every ~100ms
+                    dataBit = int(data_list[3])
 
-            """
-            dataBit = int(data_list[4])
-            print("\ndata_list index 4:")
-            print(bin(dataBit))
+                    msgIndex = dataBit & 7
+                    dataBit = dataBit >> 3  #First part of the msgIndex
+                    pipeT = readTemp(dataBit & 16383)
+                    dataBit = dataBit >> 14
+                    nozzT = readTemp(dataBit & 16383)
 
-            print(bin(dataBit & 1023))
-            print(dataBit & 1023)
-            print(readIR(dataBit & 1023))
+                    #Fourth 32bits, received every ~100ms
+                    dataBit = int(data_list[4])
 
-            dataBit = dataBit >> 10
-            print(bin(dataBit & 15))
-            dataBit = dataBit >> 4
-            print(bin(dataBit & 7))
-            dataBit = dataBit >> 3
-            print(bin(dataBit & 7))
-            dataBit = dataBit >> 3
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            dataBit = dataBit >> 1
-            print(bin(dataBit & 1))
-            """
+                    IR = readIR(dataBit & 1023)
+                    dataBit = dataBit >> 10
+                    msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                    dataBit = dataBit >> 3
+                    botTemp = readTMP36(dataBit & 1023)
+
             #Generate the csv line
-
-            fstring = f'{timestamp}'
-            fstring += f',{n2feedP:.2f}'
-            fstring += f',{lineP:.2f}'
-            fstring += f',{combP:.2f}'
-            fstring += f',{n2oFeedP:.2f}'
-            fstring += f',{loadC:.2f}'
-            fstring += f',{botTemp:.2f}'
-            fstring += f',{0}'
-            fstring += f',{nozzT:.2f}'
-            fstring += f',{pipeT:.2f}'
-            fstring += f',{IR:.2f}'
-            fstring += f',{dumpButton}'
-            fstring += f',{heatButton}'
-            fstring += f',{igniButton}'
-            fstring += f',{n2Button}'
-            fstring += f',{oxButton}'
-            fstring += f',{ignStatus}'
-            fstring += f',{valveStatus}'
-            fstring += f',{swMode}'
-            fstring += f',{swSub}'
-            fstring += f',{msgIndex}'
-
-            #if int(msgIndex) != 0: print(msgIndex)
-
-            #print(fstring)
-            #print((timestamp - oldTime))
-            #oldTime = timestamp
-
-            file.write(fstring + "\n")
+            writer.writerow([timestamp, f'{n2feedP:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
+                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}',
+                             dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
+                             swMode, swSub, msgIndex])
             file.flush()
-
-        except Exception as exc:
-            print(exc)
-            #Corrupted data due to reset
-            continue

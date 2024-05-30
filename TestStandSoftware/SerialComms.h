@@ -1,7 +1,7 @@
 /* Filename:      SerialComms.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the SerialComms <<device>> object. 
  *                Contains function definitions.
@@ -63,5 +63,24 @@ void writeValues(values_t* values, statusValues_t statusValues);
  * OUT:           Nothing
  */
 void saveMessage(uint16_t message);
+
+
+/* Function:      Sends a given byte array of given length using
+ *                the Serial.write() interface. Pads the message with
+ *                start, end and masking bytes where neccessary
+ * 
+ * IN:            Pointer to a byte array to be sent
+ *                Length of the array to be sent
+ * OUT:           Nothing
+ */
+void sendByteArray(uint8_t *data, uint8_t length);
+
+
+/* Function:      For switching the BAUD rate on the fly.
+ * 
+ * IN:            The desired baudrate
+ * OUT:           Nothing
+ */
+void switchBaudrate(uint16_t newBaud);
 
 #endif

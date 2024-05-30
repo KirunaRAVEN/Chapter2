@@ -1,7 +1,7 @@
 /* Filename:      TestInOut.cpp
  * Author:        Eemeli Mykrä
  * Date:          17.04.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Responsible for setting up and reading the pins used to start
  *                the software in test mode and test the various actuators.
@@ -47,15 +47,14 @@ void initTestInOut(){
 
 void readTestInput(testInput_t* testInput, bool readAll){
 
-    //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
-    testInput->resetSW = !digitalRead(SW_RESET_PIN);            //Inverted input
-    testInput->MAIN_VALVE_IN = digitalRead(MAIN_VALVE_TEST_PIN);
-    testInput->IGN_SW_IN = digitalRead(IGN_SW_RELAY_TEST_PIN);
+    testInput->MAIN_VALVE_IN = PINC & (1 << MAIN_VALVE_TEST_PIN_PORTC); //digitalRead(MAIN_VALVE_TEST_PIN);
+    testInput->IGN_SW_IN = PINA & (1 << IGN_SW_RELAY_TEST_PIN_PORTA); //digitalRead(IGN_SW_RELAY_TEST_PIN);
 
   if (readAll == true){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH
-    testInput->startTest = !digitalRead(AUTO_TEST_START_PIN);   //Inverted input
-    testInput->repeat = !digitalRead(REPEAT_SEQUENECE_PIN);     //Inverted input
+    testInput->resetSW = !(PINC & (1 << SW_RESET_PIN_PORTC)); //digitalRead(SW_RESET_PIN);            //Inverted input
+    testInput->startTest = !(PINA & (1 << AUTO_TEST_START_PIN_PORTA)); //digitalRead(AUTO_TEST_START_PIN);   //Inverted input
+    testInput->repeat = !(PINC & (1 << REPEAT_SEQUENECE_PIN_PORTC)); //digitalRead(REPEAT_SEQUENECE_PIN);     //Inverted input
 
     //Analog to digital calibration is not included here due to the 
     //error being way less than the margins for this specific value

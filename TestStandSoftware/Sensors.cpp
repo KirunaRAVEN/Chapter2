@@ -1,7 +1,7 @@
 /* Filename:      Sensors.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Parent object that decomposes to «device» objects for the
  *                various sensors and a «cyclic» task for measuring these sensors.
@@ -24,9 +24,9 @@ void initSensors(){
 
 }
 
-void getValuesFromSensors(values_t* values){
+void getValuesFromSensors(values_t* values, mode_t currentMode){
   //Changed to get directly from senseLoop in V1.31
-  senseLoop(values);
+  senseLoop(values, currentMode);
 }
 
 /*

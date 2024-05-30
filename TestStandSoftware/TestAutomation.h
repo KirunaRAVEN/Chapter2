@@ -1,7 +1,7 @@
 /* Filename:      TestAutomation.h
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the TestAutomation <<active>> object. 
  *                Contains function definitions.
@@ -63,9 +63,10 @@ void getCurrentSubstate(substate_t* substate);
  *                Uses the getLatest() interface.
  *  
  * IN:            values_t pointer where the latest measurements will be stored
+ *                substate_t telling the current system substate
  * OUT:           
  */
-void forwardGetLatestValues(values_t* values);
+void forwardGetLatestValues(values_t* values, mode_t currentMode);
 
 
 /* Function:      Intermediate interface for sending the latest values and the
@@ -164,5 +165,12 @@ void callBuzzerUpdate(void);
 void sendToCheck(values_t values);
 
 
+/* Function:      Intermediate interface for switching the baudrate of 
+ *                the Serial interface.
+ *
+ * IN:            uint16_t to set the baudrate to
+ * OUT:           Nothing
+ */
+void setNewBaudRate(uint16_t newBaudrate);
 
 #endif

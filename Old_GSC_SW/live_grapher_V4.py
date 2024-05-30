@@ -94,8 +94,8 @@ messageStrings = [  "",
                     "Please release the oxidizer valve button.\n",
                     "Please release the ignition button.\n",
                     "Please release the heating blanket button.\n",
-                    "->  Passed\n",
-                    "->  Failed\n",
+                    ">>>  PASSED  <<<\n",
+                    ">>>  FAILED  <<<\n",
                     "Ignition 24V relay OFF-state:\n",
                     "Ignition GND relay OFF-state:\n",
                     "Ignition SW relay OFF-state:\n",
@@ -141,8 +141,8 @@ useBlitting = True
 # How long average is used for the info boxes
 infoBoxAverageCount = 50
 
-slowDownFactor = 20 #int((1000/targetFPS)/msPerPoint)
-msPerPoint = 3 * slowDownFactor
+slowDownFactor = 100 #int((1000/targetFPS)/msPerPoint)
+msPerPoint = 0.2 * slowDownFactor
 update_rate = 0 #ms, as fast as possible, timing is done with sleep()
 # Total width of plot in seconds
 #targetFPS = 60
@@ -401,8 +401,11 @@ def update(frame):
             lineNumber += 1
             continue
 
+        if len(row) != csvDataCount:
+            continue
+
         plottedData = (lineNumber % slowDownFactor == 0)
-        plottedData = plottedData or (len(row) == csvDataCount and int(row[-1]) != 0)
+        plottedData = plottedData or int(row[-1]) != 0
         plottedData = plottedData or (int(row[18]) != 3)
 
         if plottedData == True: updated = True
@@ -425,19 +428,22 @@ def update(frame):
         #Else it is a message line --> Print out
         #else
         if plottedData:
-            if len(row) == csvDataCount and int(row[-1]) != 0:
-                messageListUpdated = True
-                
-                if int(row[-1]) != endCountdownIndex:
-                    messageList += [messageStrings[int(row[-1])]]
-                else:
-                    messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
-                    endCountdownTimer += 1
-                    if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
-                        endCountdownTimer = 0
-                        
-                messageList = messageList[-maxMessageCount:]
-                
+            if int(row[-1]) != 0:
+                try:
+                    messageListUpdated = True
+                    
+                    if int(row[-1]) != endCountdownIndex:
+                        messageList += [messageStrings[int(row[-1])]]
+                    else:
+                        messageList += [messageStrings[endCountdownIndex][endCountdownTimer]]
+                        endCountdownTimer += 1
+                        if endCountdownTimer >= len(messageStrings[endCountdownIndex]):
+                            endCountdownTimer = 0
+                            
+                    messageList = messageList[-maxMessageCount:]
+                except Exception as exc:
+                    print(exc)
+                                    
         lineNumber += 1
 
     if updated:

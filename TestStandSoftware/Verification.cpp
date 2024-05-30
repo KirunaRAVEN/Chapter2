@@ -1,7 +1,7 @@
 /* Filename:      Verification.cpp
  * Author:        Eemeli Mykrä
  * Date:          07.06.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Responsible for running the sequence through a verification sequence.
  *                Prompts the control box operator to press buttons at relevant times.
@@ -23,6 +23,8 @@ static bool heatingPassed;
 static bool oxidizerValvePassed;
 static bool allPassed;
 static bool testCompleted;
+
+static bool buttonFaultMessageFlag = false;
 
 static verificationState_t verificationState;
 
@@ -52,15 +54,21 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           setValve(pin_names_t::OXIDIZER_VALVE_PIN, false);
           }
           // Logic to warn the console user which buttons are still pressed before test sequence can continue.
-          else if (buttonValues.oxidizerValveButton == true){
-            sendMessageToSerial(MSG_RELEASE_OX);
+          else if (buttonFaultMessageFlag == false){
+            if (buttonValues.oxidizerValveButton == true){
+              sendMessageToSerial(MSG_RELEASE_OX);
+              buttonFaultMessageFlag = true;
+            }
+            if (buttonValues.ignitionButton == true){
+              sendMessageToSerial(MSG_RELEASE_IGN);
+              buttonFaultMessageFlag = true;
+            }
+            if (buttonValues.heatingBlanketButton == true){
+              sendMessageToSerial(MSG_RELEASE_HEAT);
+              buttonFaultMessageFlag = true;
+            }
           }
-          else if (buttonValues.ignitionButton == true){
-            sendMessageToSerial(MSG_RELEASE_IGN);
-          }
-          else if (buttonValues.heatingBlanketButton == true){
-            sendMessageToSerial(MSG_RELEASE_HEAT);
-          }
+          
         break;
         
       case OFF_STATE_TEST:

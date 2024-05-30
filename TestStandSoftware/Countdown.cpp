@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -23,6 +23,8 @@ void(* resetFunc) (void) = 0;
 
 void initCountdown(){
   // Nothing to initialize there currently
+  pinMode(CAMERA_TRIGGER_PIN, OUTPUT);
+  digitalWrite(CAMERA_TRIGGER_PIN, LOW);
 }
 
 void countdownLoop(){
@@ -65,11 +67,9 @@ void countdownLoop(){
   bool valveState;
   bool ignitionState;
 
-  uint32_t currentTime = 0;
+  bool lastDump = true;
 
-  //In repeat sequence the system reverts back to initial state for repeated testing.
-  //Uses the old repeat sequence functionality, hence the variable naming.
-  bool repeatSequence = false;
+  uint32_t currentTime = 0;
 
   bool verificationDone = true;
 
@@ -77,44 +77,46 @@ void countdownLoop(){
   uint32_t ignitionPressTime = 0;
 
   while (true){
-
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
 
-    callBuzzerUpdate();
-    
-    //Read test pins, read all of them only outside SEQUENCE
+    // Read test pins, read all of them only outside SEQUENCE
+    // If more sampling rate is needed, this could be fully skipped
+    // in certain substates >ALL_OFF and <PURGING
     getTestInput(&testInput, currentMode != SEQUENCE);
 
-    if (testInput.resetSW){
-      //Ability to reset the Arduino through software
-      resetFunc();
-    }
-
     //Perform and fetch latest measurements
-    forwardGetLatestValues(&values);
+    forwardGetLatestValues(&values, currentMode);
 
     //Check latest values for anomalies
     sendToCheck(values);
 
     // The dump valve is within the main loop as it must always be accessible.
     // As of V1.31 the dump is always operable
-    setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+    if (lastDump != values.dumpValveButton){
+      setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
+      lastDump = values.dumpValveButton;
+    }
 
-    //Should we have the ability to control the valves in all modes?
+    // Limit the amount of things done in sequence mode to make the burst mode sampling faster
     if (currentMode != SEQUENCE){
+
+      if (testInput.resetSW){
+        //Ability to reset the Arduino through software
+        resetFunc();
+      }
+
+      callBuzzerUpdate();
+
       setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
       setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
 
-      if (testInput.repeat == true){
-        //The ability to reset the sequence afterwards for repeated testing
-        repeatSequence = true;
-        setNewRepeatIndicator(true);
-      }else{
-        repeatSequence = false;
-        setNewRepeatIndicator(false);
-      }
+      //The ability to reset the sequence afterwards for repeated testing
+      //This updates the LED state
+      setNewRepeatIndicator(testInput.repeat);
+
     }
+
 
     //MODE switch case
     switch(currentMode){
@@ -133,18 +135,15 @@ void countdownLoop(){
       case WAIT:
         // The WAIT mode includes heating. The HEATING mode was removed. 
         if (values.ignitionButton == true){
-          setNewMode(SEQUENCE);
           ignitionPressTime = millis();
+          
+          setNewMode(SEQUENCE);
+          //setNewBaudRate(serialBaudFast);
         }
 
         // If the system returns to WAIT mode for any reason, the flag is reset to its default value.
         ignitionValveStateFlag = false; 
 
-        // In WAIT mode, the operator should have the ability to open and close any controllable valve
-        // Dump valve commented out as it is checked in every single loop regardless of mode
-        // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
-        setValve(pin_names_t::OXIDIZER_VALVE_PIN, values.oxidizerValveButton);
-        setValve(pin_names_t::N2FEEDING_VALVE_PIN, values.n2FeedingButton);
         break;
 
       case SEQUENCE:
@@ -153,28 +152,25 @@ void countdownLoop(){
          * disengaging the ignition relay and opening and closing the main oxidizer
          * valve based on set timing found in the environmental Globals object.
          */
-        currentTime = millis();     
-        //float realN2OPressure = calibrationADC * refADC * (values.N2OFeedingPressure / maxADC);
-        //realN2OPressure = pressureCalibration_K[FEEDING_PRESSURE_OXIDIZER] * realN2OPressure + pressureCalibration_B[FEEDING_PRESSURE_OXIDIZER];
+        currentTime = millis();
 
         switch (currentSubstate){
           case ALL_OFF:
               
             //All actuators off, wait for button to be held for ignitionSafeTime (ms)
             if (values.ignitionButton == false){
+              //setNewBaudRate(serialBaudNormal);
               setNewMode(WAIT);
-            }
-            
-            //We might not want to have a hard pressure limit. Minimum firing 
-            //pressure currently set to 0 bar.
-            //else if ((realN2OPressure > minimumFiringPressure) || repeatSequence == true){
-            if ((currentTime - ignitionPressTime > ignitionSafeTime) && values.dumpValveButton == false && values.n2FeedingButton == false && values.oxidizerValveButton == false){
-              countdownStartTime = currentTime;
-              setNewSubstate(IGNIT_ON);
-              setIgnition(true);
-            }
-            else {
-              if (ignitionValveStateFlag == false){
+              
+            }else{
+              //We might not want to have a hard pressure limit. Minimum firing 
+              //pressure currently set to 0 bar. Fully removed since ~V1.5
+              if ((currentTime - ignitionPressTime > ignitionSafeTime) && !(values.dumpValveButton || values.n2FeedingButton || values.oxidizerValveButton)){
+                countdownStartTime = currentTime;
+                setNewSubstate(IGNIT_ON);
+                setIgnition(true);
+                
+              }else if (ignitionValveStateFlag == false){
                 if (values.dumpValveButton == true){
                   ignitionValveStateFlag = true;
                   sendMessageToSerial(MSG_DUMP_WARNING);
@@ -189,7 +185,7 @@ void countdownLoop(){
                 }
               }
             }
-            //}
+
             break;
 
           case IGNIT_ON:
@@ -202,7 +198,7 @@ void countdownLoop(){
             break;
 
           case VALVE_ON:
-              //Valve has been opened, wait until ignition can be turned on
+              //Valve has been opened, wait until ignition can be turned off
               if (currentTime - countdownStartTime > ignitionOffTime){
                 setNewSubstate(IGNIT_OFF);
                 setIgnition(false);
@@ -226,6 +222,11 @@ void countdownLoop(){
             break;
 
           case PURGING:
+              //Trigger the high speed camera cameraTriggerTime ms after ignition
+              if (currentTime - countdownStartTime > cameraTriggerTime){
+                digitalWrite(CAMERA_TRIGGER_PIN, HIGH);
+              }
+
               //Purging in progress, wait until purging finishes
               if (currentTime - countdownStartTime > purgingTime){
                 setNewSubstate(FINISHED);
@@ -235,6 +236,7 @@ void countdownLoop(){
 
           case FINISHED:
             //Sequence is finished
+            //setNewBaudRate(serialBaudNormal);
             setNewMode(SHUTDOWN);
             break;
         }
@@ -245,6 +247,9 @@ void countdownLoop(){
         /* This mode is entered if the FaultDetection object detects values
          * outside safe limits. 
          */
+        
+        //Set substate to the final one
+        setNewSubstate(FINISHED);
 
         //Turn off ignition
         setIgnition(false);
@@ -254,36 +259,27 @@ void countdownLoop(){
         
       case SHUTDOWN:
         //Testfire over
-        // Dump valve commented out as it is checked in every single loop regardless of mode
-        // setValve(pin_names_t::DUMP_VALVE_PIN, !values.dumpValveButton); //Inverted due to valve being normally open
 
-        //Read test pins, read all of them only in TEST mode
-
-        if (repeatSequence == true){
+        // If repeatSequence is pressed, revert to pre firing state
+        if (testInput.repeat == true){
           setNewSubstate(ALL_OFF);
           setNewMode(WAIT);
         }
+        
         break;
     }
 
-    //Get the valve state using the voltage measurement from TestInOut.
+    //Get the states using the voltage measurement from TestInOut.
     statusValues.valveActive = !testInput.MAIN_VALVE_IN;   //Iverted input
-
-    //getIgnition(&ignitionState);
     statusValues.ignitionEngagedActive = testInput.IGN_SW_IN;
-
+    //Update mode and substate stored in statusValues
     statusValues.mode = currentMode;
     statusValues.subState = currentSubstate;
 
-    //If testing is done, start sending out the normal values.
-    //NOTE: Could possibly forego this clause and just send them always
-    //NOTE: Previous note is now in effect
-    //if (verificationDone){
-    
+    //Send out the data through Serial
     sendValuesToSerial(&values, statusValues);
     
-    //}
-
+    // Limit the sampling rate outside the SEQUENCE mode
     if (currentMode != SEQUENCE){
       delay(1000/limitedSampleRate);
     }

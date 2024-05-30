@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -16,31 +16,80 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-//Pin Enumerators - Add Pins for different functionallities here
+//Pin Enumerators - Add Pins for different functionalities here
 typedef enum {
-  OXIDIZER_VALVE_PIN = 2,
-  DUMP_VALVE_PIN = 3,
-  N2FEEDING_VALVE_PIN = 4,
-  TEST_MODE_LED_PIN = 6,        //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN = 7,  //In V1 the indicator LEDs use the servo connector
-  IGNITION_SENSE_PIN = 8,
-  HEATING_SENSE_PIN = 9,
-  DUMP_VALVE_BUTTON_PIN = 10,
-  IGNITER_CONTROL_PIN = 12,
-  BUZZER_CONTROL_PIN = 19,
-  MAIN_VALVE_BUTTON_PIN = 20,
-  FEEDING_VALVE_BUTTON_PIN = 21,
-  AUTO_TEST_START_PIN = 23,
-  THERMOCOUPLE_CS_PIN0 = 24, 
-  THERMOCOUPLE_CS_PIN1 = 26,
-  IGN_SW_RELAY_TEST_PIN = 27,
-  THERMOCOUPLE_CS_PIN2 = 28, 
-  IGN_GND_RELAY_TEST_DRIVE_PIN = 29,
-  THERMOCOUPLE_CS_PIN3 = 30,
-  MAIN_VALVE_TEST_PIN = 31,
-  REPEAT_SEQUENECE_PIN = 33,
-  SW_RESET_PIN = 35
+  OXIDIZER_VALVE_PIN = 2,             //Port E4
+  DUMP_VALVE_PIN = 3,                 //Port E5
+  N2FEEDING_VALVE_PIN = 4,            //Port G5
+  TEST_MODE_LED_PIN = 6,              //Port H3   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN = 7,        //Port H4   //In V1 the indicator LEDs use the servo connector
+  IGNITION_SENSE_PIN = 8,             //Port H5
+  HEATING_SENSE_PIN = 9,              //Port H6
+  DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
+  IGNITER_CONTROL_PIN = 12,           //Port B6
+  CAMERA_TRIGGER_PIN = 13,            //Port B7
+  BUZZER_CONTROL_PIN = 19,            //Port D2
+  MAIN_VALVE_BUTTON_PIN = 20,         //Port D1
+  FEEDING_VALVE_BUTTON_PIN = 21,      //Port D0
+  AUTO_TEST_START_PIN = 23,           //Port A1
+  THERMOCOUPLE_CS_PIN0 = 24,          //Port A2
+  THERMOCOUPLE_CS_PIN1 = 26,          //Port A4
+  IGN_SW_RELAY_TEST_PIN = 27,         //Port A5
+  THERMOCOUPLE_CS_PIN2 = 28,          //Port A6
+  IGN_GND_RELAY_TEST_DRIVE_PIN = 29,  //Port A7
+  THERMOCOUPLE_CS_PIN3 = 30,          //Port C7
+  MAIN_VALVE_TEST_PIN = 31,           //Port C6
+  REPEAT_SEQUENECE_PIN = 33,          //Port C4
+  SW_RESET_PIN = 35                   //Port C2
 } pin_names_t;
+
+//Pins for port manipulation - For Speeeeeeeed
+typedef enum {
+  AUTO_TEST_START_PIN_PORTA = PORTA1,           //Port A1
+  THERMOCOUPLE_CS_PIN0_PORTA = PORTA2,          //Port A2
+  THERMOCOUPLE_CS_PIN1_PORTA = PORTA4,          //Port A4
+  IGN_SW_RELAY_TEST_PIN_PORTA = PORTA5,         //Port A5
+  THERMOCOUPLE_CS_PIN2_PORTA = PORTA6,          //Port A6
+  IGN_GND_RELAY_TEST_DRIVE_PIN_PORTA = PORTA7   //Port A7
+}portA_t;
+
+typedef enum {
+  DUMP_VALVE_BUTTON_PIN_PORTB = PORTB4,         //Port B4
+  IGNITER_CONTROL_PIN_PORTB = PORTB6,           //Port B6
+  CAMERA_TRIGGER_PIN_PORTB = PORTB7             //Port B7
+}portB_t;
+
+typedef enum {  
+  THERMOCOUPLE_CS_PIN3_PORTC = PORTC7,          //Port C7
+  MAIN_VALVE_TEST_PIN_PORTC = PORTC6,           //Port C6
+  REPEAT_SEQUENECE_PIN_PORTC = PORTC4,          //Port C4
+  SW_RESET_PIN_PORTC = PORTC2                   //Port C2
+}portC_t;
+
+
+typedef enum {
+  BUZZER_CONTROL_PIN_PORTD = PORTD2,            //Port D2
+  MAIN_VALVE_BUTTON_PIN_PORTD = PORTD1,         //Port D1
+  FEEDING_VALVE_BUTTON_PIN_PORTD = PORTD0       //Port D0
+}portD_t;
+
+
+typedef enum {
+  OXIDIZER_VALVE_PIN_PORTE = PORTE4,            //Port E4
+  DUMP_VALVE_PIN_PORTE = PORTE5,                //Port E5
+}portE_t;
+
+
+typedef enum {
+  N2FEEDING_VALVE_PIN_PORTG = PORTG5,           //Port G5
+}portG_t;
+
+typedef enum {
+  TEST_MODE_LED_PIN_PORTH = PORTH3,             //Port H3   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN_PORTH = PORTH4,       //Port H4   //In V1 the indicator LEDs use the servo connector
+  IGNITION_SENSE_PIN_PORTH = PORTH5,            //Port H5
+  HEATING_SENSE_PIN_PORTH = PORTH6,             //Port H6
+}portH_t;
 
 //Pin Enumerators for Analog Pins
 typedef enum {
@@ -199,6 +248,9 @@ const int16_t valveOffTime = valveOnTime + burnTime;
 //How long from sequence start until the start of purging (ms)
 const int16_t oxidiserEmptyTime = valveOffTime + 500;  //Placeholder value
 
+//How long from start of sequence until triggering the high speed camera (ms)
+const int16_t cameraTriggerTime = valveOffTime + 2000;
+
 //How long from sequence start until the end of purging (ms)
 const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value
 
@@ -233,7 +285,8 @@ struct values_t {
   uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
   uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
 
-  bool slowUpdated = false;     //If the less frequently sent values were updated this loop
+  bool slowUpdated = false;     //If the slow frequency values were updated this loop
+  bool mediumUpdated = false;     //If the medium frequency values were updated this loop 
   
   int N2FeedingPressure;        //N2 Feeding line pressure 
   int linePressure;      //Line pressure 
@@ -273,6 +326,9 @@ const int16_t countdownTickDelay = 1;
 //At what rate sensor sampling is done outside the SEQUENCE (Hz)
 const int16_t limitedSampleRate = 50;
 
+//At what rate the certain data is gathered (hz)
+const uint16_t slowSensorRate = 10;
+const uint16_t mediumSensorRate = 100;
 
 /*
  * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
@@ -382,9 +438,6 @@ const float pressureLine_K20mA = maxcombustionPressure0mA / pressureSpan20mA;
 //Zero offset of the calibrated data
 const float pressureLine_B20mA = maxcombustionPressure0mA - pressureLine_K20mA * (pressureSpan20mA + pressureZero20mA);
 
-//At what rate the temperature data is gathered (hz)
-const uint16_t tempSensorRate = 10;
-
 //IR sensor minimum and maximum values
 const int16_t minIR = -50;
 const int16_t maxIR = 1030;
@@ -419,7 +472,7 @@ typedef enum{
   NOT_CONNECTED0 = 0,
   NOT_CONNECTED_1 = 1,
   NOZZLE_TC = 2,
-  AMBIENT_TC = 3
+  PIPING_TC = 3
 }tempSensorNames_t;
 
 /*
@@ -440,8 +493,11 @@ const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 //Buzzer warning length (ms)
 const int16_t buzzerOnTime = 1 * 500;
 
-//Baudrate for serial communications (500kbps)
-const uint32_t serialBaud = 1000000;// * 1000;
+//Baudrate for serial communications
+const uint32_t serialBaudNormal = 1000000;
+
+// Switching baudrate not utilized currently
+//const uint32_t serialBaudFast = 1000000;
 
 //Fault thresholds for initiating an emergency stop
 const int16_t successivePasses = 12; //N successive passes lead to threshold trigger
@@ -493,7 +549,6 @@ typedef enum{
 
 //Maximum length of the message buffer;
 const uint16_t msgBufferSize = 16;
-
 
 
 //Other stuff to come. Add any constants here instead of in each separate file.

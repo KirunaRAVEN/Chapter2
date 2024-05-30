@@ -1,7 +1,7 @@
 /* Filename:      TestStandSoftware.ino
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Main file of the Test Stand Software. First file to be
  *                started when Arduino is powered up. Responsible for starting

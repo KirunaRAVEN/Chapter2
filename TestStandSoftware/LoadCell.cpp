@@ -1,7 +1,7 @@
 /* Filename:      LoadCell.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Responsible for reading the load cell used to measure the 
  *                thrust of the engine.
@@ -20,6 +20,7 @@ void initLoad(){
 int readLoad(){
   
   return analogRead(LOADCELL_INPUT_PIN);
+
   /*
   float sum = 0;
   float sensorValue = 0;

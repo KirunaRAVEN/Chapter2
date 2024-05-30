@@ -1,7 +1,7 @@
 /* Filename:      Temperature.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.5 (16.05.2024)
+ * Version:       V1.52 (28.05.2024)
  *
  * Purpose:       Respnsible for reading the temperature sensors found on the 
  *                test bench.
@@ -80,14 +80,19 @@ int readTemp(uint16_t sensorNum){
 
 
 int readTMP36(){
+  // In V1.51 testing out different ref voltage
+  //analogReference(INTERNAL2V56);
+  uint16_t val = analogRead(TMP36_INPUT_PIN);
+  //Set ref voltage back to default
+  //analogReference(DEFAULT);
 
-  return analogRead(TMP36_INPUT_PIN);
+  return val;
 
   /* Measurement to value explanation:
    * calibration ADC = Ratio of how much the internal voltage is off from 5.00V
    * sensorValue = measured voltage on the pin, within 0...1023
    * maxADC = 1023, since we are using 10-bit analog to digital converter
-   * refADV = expected ADC voltage of 5.00V
+   * refADV = expected ADC voltage of 5.00V. In V1.51 testing out different ref voltage
    * (voltage - 0.5) * 100 = voltage to celsius conversion formula for TMP36 sensors
    * Measurement is repeated TMP36AverageCount times each loop to reduce noise
    */

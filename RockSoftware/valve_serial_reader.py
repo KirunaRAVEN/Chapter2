@@ -1,7 +1,7 @@
 import datetime as dt
 import serial
 import re
-from serial.tools import list_ports
+import serial.tools.list_ports as list_ports
 
 
 ser = serial.Serial()
@@ -12,12 +12,11 @@ ports = list_ports.comports()
 
 #Finds which one the Arduino Uno is connected to via reading the 'SER' part of hwid
 for port, desc, hwid in sorted(ports):    
-      if hwid[22:46] == 'SER=24233323435351912251': 
-         print('Target acquired')
-         ser.port = port
-         break
-      else: 
-        print('Target not acquired')
+    if hwid[22:46] == 'SER=24233323435351912251': 
+        ser.port = port
+        break
+else: 
+    print('The Arduino Uno does not seem to be connected.')
 
 #Legacy equipment:
 #ser.port = '/dev/ttyACM1'
@@ -37,7 +36,7 @@ with open("data_valve.csv", "w", newline='') as file:
           data = data.decode().rstrip()
       except:
           data = ''
-      print(data)
+      #print(data)
       data = data.replace('\x00','')
       data = data.replace('\r', '')
       file.write(data + '\n')
