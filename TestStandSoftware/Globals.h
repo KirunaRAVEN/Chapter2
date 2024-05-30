@@ -27,6 +27,7 @@ typedef enum {
   HEATING_SENSE_PIN = 9,              //Port H6
   DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
   IGNITER_CONTROL_PIN = 12,           //Port B6
+  CAMERA_TRIGGER_PIN = 13,            //Port B7
   BUZZER_CONTROL_PIN = 19,            //Port D2
   MAIN_VALVE_BUTTON_PIN = 20,         //Port D1
   FEEDING_VALVE_BUTTON_PIN = 21,      //Port D0
@@ -54,7 +55,8 @@ typedef enum {
 
 typedef enum {
   DUMP_VALVE_BUTTON_PIN_PORTB = PORTB4,         //Port B4
-  IGNITER_CONTROL_PIN_PORTB = PORTB6            //Port B6
+  IGNITER_CONTROL_PIN_PORTB = PORTB6,           //Port B6
+  CAMERA_TRIGGER_PIN_PORTB = PORTB7             //Port B7
 }portB_t;
 
 typedef enum {  
@@ -245,6 +247,9 @@ const int16_t valveOffTime = valveOnTime + burnTime;
 
 //How long from sequence start until the start of purging (ms)
 const int16_t oxidiserEmptyTime = valveOffTime + 500;  //Placeholder value
+
+//How long from start of sequence until triggering the high speed camera (ms)
+const int16_t cameraTriggerTime = valveOffTime + 2000;
 
 //How long from sequence start until the end of purging (ms)
 const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value

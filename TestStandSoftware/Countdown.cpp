@@ -23,6 +23,8 @@ void(* resetFunc) (void) = 0;
 
 void initCountdown(){
   // Nothing to initialize there currently
+  pinMode(CAMERA_TRIGGER_PIN, OUTPUT);
+  digitalWrite(CAMERA_TRIGGER_PIN, LOW);
 }
 
 void countdownLoop(){
@@ -220,6 +222,11 @@ void countdownLoop(){
             break;
 
           case PURGING:
+              //Trigger the high speed camera cameraTriggerTime ms after ignition
+              if (currentTime - countdownStartTime > cameraTriggerTime){
+                digitalWrite(CAMERA_TRIGGER_PIN, HIGH);
+              }
+
               //Purging in progress, wait until purging finishes
               if (currentTime - countdownStartTime > purgingTime){
                 setNewSubstate(FINISHED);
