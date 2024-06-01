@@ -260,6 +260,9 @@ void countdownLoop(){
       case SHUTDOWN:
         //Testfire over
 
+        //Turn of camera trigger
+        digitalWrite(CAMERA_TRIGGER_PIN, LOW);
+
         // If repeatSequence is pressed, revert to pre firing state
         if (testInput.repeat == true){
           setNewSubstate(ALL_OFF);
