@@ -228,7 +228,7 @@ const int16_t burnTime = 5*1000;
 //How long the igniter burns (ms) Measured from igniter test video
 //Not used anymore since valve opening time is now decided based experiments,
 //But still used to turn off the ignition signal
-const int16_t igniterBurnLength = 150; //Outside the engine burn length was 1920 ms
+const int16_t igniterBurnLength = 900; //Outside the engine burn length was 1920 ms
 
 //How long from ignition signal to igniter igniting (ms) Measured from igniter test videos
 //Not used anymore since valve opening time is now decided based experiments
