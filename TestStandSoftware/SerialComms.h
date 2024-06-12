@@ -1,7 +1,7 @@
 /* Filename:      SerialComms.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.52 (28.05.2024)
+ * Version:       V1.53 (12.06.2024)
  *
  * Purpose:       Header file for the SerialComms <<device>> object. 
  *                Contains function definitions.

@@ -1,7 +1,7 @@
 /* Filename:      Sensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.52 (28.05.2024)
+ * Version:       V1.53 (12.06.2024)
  *
  * Purpose:       This object handles the measurements of the different sensors,
  *                storing them to the LatestValues object and checking them for
