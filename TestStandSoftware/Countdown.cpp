@@ -24,7 +24,13 @@ void(* resetFunc) (void) = 0;
 void initCountdown(){
   // Nothing to initialize there currently
   pinMode(CAMERA_TRIGGER_PIN, OUTPUT);
+
+  //Trigger the camera in case of a reset
+  digitalWrite(CAMERA_TRIGGER_PIN, HIGH);
+  delay(500); //Keep pin high for 500ms
   digitalWrite(CAMERA_TRIGGER_PIN, LOW);
+
+
 }
 
 void countdownLoop(){

@@ -27,7 +27,7 @@ typedef enum {
   HEATING_SENSE_PIN = 9,              //Port H6
   DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
   IGNITER_CONTROL_PIN = 12,           //Port B6
-  CAMERA_TRIGGER_PIN = 13,            //Port B7
+  CAMERA_TRIGGER_PIN = 5,             //Port E3
   BUZZER_CONTROL_PIN = 19,            //Port D2
   MAIN_VALVE_BUTTON_PIN = 20,         //Port D1
   FEEDING_VALVE_BUTTON_PIN = 21,      //Port D0
@@ -55,8 +55,7 @@ typedef enum {
 
 typedef enum {
   DUMP_VALVE_BUTTON_PIN_PORTB = PORTB4,         //Port B4
-  IGNITER_CONTROL_PIN_PORTB = PORTB6,           //Port B6
-  CAMERA_TRIGGER_PIN_PORTB = PORTB7             //Port B7
+  IGNITER_CONTROL_PIN_PORTB = PORTB6           //Port B6
 }portB_t;
 
 typedef enum {  
@@ -75,6 +74,7 @@ typedef enum {
 
 
 typedef enum {
+  CAMERA_TRIGGER_PIN_PORTE = PORTE3,            //Port E3
   OXIDIZER_VALVE_PIN_PORTE = PORTE4,            //Port E4
   DUMP_VALVE_PIN_PORTE = PORTE5,                //Port E5
 }portE_t;
