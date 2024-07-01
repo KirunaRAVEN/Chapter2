@@ -1,7 +1,7 @@
 /* Filename:      Sensors.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.53 (12.06.2024)
+ * Version:       V1.54 (01.07.2024)
  *
  * Purpose:       Header file for the Sensors <<active>> object. 
  *                Contains function definitions.

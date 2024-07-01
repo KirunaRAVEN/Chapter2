@@ -1,7 +1,7 @@
 /* Filename:      TestAutomation.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.53 (12.06.2024)
+ * Version:       V1.54 (01.07.2024)
  *
  * Purpose:       Parent object the decomposes into <<device>> objects
  *                responsible for handling the hardware side of the test.

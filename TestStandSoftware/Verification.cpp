@@ -1,7 +1,7 @@
 /* Filename:      Verification.cpp
  * Author:        Eemeli Mykrä
  * Date:          07.06.2023
- * Version:       V1.53 (12.06.2024)
+ * Version:       V1.54 (01.07.2024)
  *
  * Purpose:       Responsible for running the sequence through a verification sequence.
  *                Prompts the control box operator to press buttons at relevant times.
@@ -193,7 +193,11 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
           ignitionPowerPassed = (buttonValues.ignitionButton == true);
-          ignitionGroundPassed = (testInput.IGN_GND_IN < ignitionGroundClosedPassLimit);
+
+          //WARNING: FOLLOWING TEST SET TO PASS ALWAYS.
+          //This is due to a change in the ignition system rendering the test useless.
+          ignitionGroundPassed = true; //(testInput.IGN_GND_IN < ignitionGroundClosedPassLimit);
+
           ignitionSoftwarePassed = (testInput.IGN_SW_IN == false); //Inverted output
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed;

@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.53 (12.06.2024)
+ * Version:       V1.54 (01.07.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -155,7 +155,7 @@ const int16_t verificationEndCount = 10;
 
 //Which ADC readings counts as a passes for the ignition ground relay tests
 const int16_t ignitionGroundOpenPassLimit = 150; // 150 / 1024 * 5V ~= 0.75V -> Open Relay
-const int16_t ignitionGroundClosedPassLimit = 10; // 10 / 1024 * 5V ~= 0V -> Closed Relay
+const int16_t ignitionGroundClosedPassLimit = 10; // 50 / 1024 * 5V ~= 0.25V -> Closed Relay
 
 //Structure for storing the states of the test pins
 struct testInput_t {

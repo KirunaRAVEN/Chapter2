@@ -1,7 +1,7 @@
 /* Filename:      Verification.h
  * Author:        Eemeli Mykrä
  * Date:          07.06.2023
- * Version:       V1.53 (12.06.2024)
+ * Version:       V1.54 (01.07.2024)
  *
  * Purpose:       Header file for the Verification <<passive>> object. 
  *                Contains function definitions.
