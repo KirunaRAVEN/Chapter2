@@ -163,8 +163,8 @@ struct testInput_t {
   bool repeat;
   bool resetSW;
   uint16_t IGN_GND_IN;
-  bool IGN_SW_IN;
-  bool MAIN_VALVE_IN;
+  bool IGN_VOLTAGE_IN;
+  bool MAIN_VALVE_VOLTAGE_IN;
 };
 
 //How many (non-pullup) test input pins does the system have

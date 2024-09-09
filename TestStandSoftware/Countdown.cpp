@@ -279,8 +279,8 @@ void countdownLoop(){
     }
 
     //Get the states using the voltage measurement from TestInOut.
-    statusValues.valveActive = !testInput.MAIN_VALVE_IN;   //Iverted input
-    statusValues.ignitionEngagedActive = testInput.IGN_SW_IN;
+    statusValues.valveActive = !testInput.MAIN_VALVE_VOLTAGE_IN;   //Iverted input
+    statusValues.ignitionEngagedActive = testInput.IGN_VOLTAGE_IN;
     //Update mode and substate stored in statusValues
     statusValues.mode = currentMode;
     statusValues.subState = currentSubstate;

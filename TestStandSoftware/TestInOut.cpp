@@ -47,8 +47,8 @@ void initTestInOut(){
 
 void readTestInput(testInput_t* testInput, bool readAll){
 
-    testInput->MAIN_VALVE_IN = PINC & (1 << MAIN_VALVE_TEST_PIN_PORTC); //digitalRead(MAIN_VALVE_TEST_PIN);
-    testInput->IGN_SW_IN = PINA & (1 << IGN_SW_RELAY_TEST_PIN_PORTA); //digitalRead(IGN_SW_RELAY_TEST_PIN);
+    testInput->MAIN_VALVE_VOLTAGE_IN = PINC & (1 << MAIN_VALVE_TEST_PIN_PORTC); //digitalRead(MAIN_VALVE_TEST_PIN);
+    testInput->IGN_VOLTAGE_IN = PINA & (1 << IGN_SW_RELAY_TEST_PIN_PORTA); //digitalRead(IGN_SW_RELAY_TEST_PIN);
 
   if (readAll == true){
     //Pullup pins have inverted input, Button pressed -> LOW, Not pressed -> HIGH

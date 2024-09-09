@@ -76,9 +76,9 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
           ignitionPowerPassed = (buttonValues.ignitionButton == false);
           ignitionGroundPassed = (testInput.IGN_GND_IN > ignitionGroundOpenPassLimit);
-          ignitionSoftwarePassed = (testInput.IGN_SW_IN == false);
+          ignitionSoftwarePassed = (testInput.IGN_VOLTAGE_IN == false);
           heatingPassed = (buttonValues.heatingBlanketButton == false);
-          oxidizerValvePassed = (testInput.MAIN_VALVE_IN == true);   //Inverted input
+          oxidizerValvePassed = (testInput.MAIN_VALVE_VOLTAGE_IN == true);   //Inverted input
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed && heatingPassed && oxidizerValvePassed;
 
@@ -154,7 +154,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
       case VALVE_ON_TEST:
         //Enough Time has passed
         if (millis() - testStateChangeTime > actuatorTestSettleTime){
-          oxidizerValvePassed = (testInput.MAIN_VALVE_IN == false);   //Inverted input
+          oxidizerValvePassed = (testInput.MAIN_VALVE_VOLTAGE_IN == false);   //Inverted input
 
           allPassed = allPassed && oxidizerValvePassed;
 
@@ -198,7 +198,7 @@ bool runVerificationStep(values_t buttonValues, testInput_t testInput){
           //This is due to a change in the ignition system rendering the test useless.
           ignitionGroundPassed = true; //(testInput.IGN_GND_IN < ignitionGroundClosedPassLimit);
 
-          ignitionSoftwarePassed = (testInput.IGN_SW_IN == false); //Inverted output
+          ignitionSoftwarePassed = (testInput.IGN_VOLTAGE_IN == false); //Inverted output
 
           allPassed = allPassed && ignitionPowerPassed && ignitionGroundPassed && ignitionSoftwarePassed;
 
