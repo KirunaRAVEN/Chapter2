@@ -1,7 +1,7 @@
 /* Filename:      Countdown.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       This object handles the countdown sequence. It controls the 
  *                mode and substate of the system based on timing or sensor
@@ -39,7 +39,7 @@ void countdownLoop(){
   //Initialize the timing values
   values.timestamp = 0;
   values.msTimestamp = 0;
-  values.lastTimestamp = 0;
+  values.checkTimestamp = 0;
   values.timeOverflowOffset = 0;
 
   //Initialize the sending of slower values

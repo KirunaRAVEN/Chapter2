@@ -1,7 +1,7 @@
 /* Filename:      Sensors.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Parent object that decomposes to «device» objects for the
  *                various sensors and a «cyclic» task for measuring these sensors.

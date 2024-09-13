@@ -1,7 +1,7 @@
 /* Filename:      LatestValues.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Stores the latest set of sensors measurements in a protected
  *                object. These values are then fetched by the countdown object.
@@ -30,7 +30,7 @@ void initLatestValues(){
 
   latestValues.timestamp = 0;
   latestValues.msTimestamp = 0;
-  latestValues.lastTimestamp = 0;
+  latestValues.checkTimestamp = 0;
   latestValues.timeOverflowOffset = 0;
 
   latestValues.slowUpdated = false;

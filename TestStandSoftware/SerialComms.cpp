@@ -1,7 +1,7 @@
 /* Filename:      SerialComms.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Responsible for sending the latest sensor measurements over
  *                the Arduino Serial interface to a Rock 4C+ microcomputer.

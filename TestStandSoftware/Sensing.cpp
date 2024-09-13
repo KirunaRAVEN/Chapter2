@@ -1,7 +1,7 @@
 /* Filename:      Sensing.cpp
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       This object handles the measurements of the different sensors,
  *                storing them to the LatestValues object and checking them for
@@ -35,6 +35,29 @@ void initSensing(){
 }
 
 void senseLoop(values_t* values, mode_t currentMode){
+
+  //Save timestamp
+  uint32_t newTimestamp = micros();
+
+  //Account for 32-bit counter overflow
+  if (newTimestamp < values->checkTimestamp){
+    values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
+  }
+
+  values->checkTimestamp = newTimestamp;
+  newTimestamp += values->timeOverflowOffset;  //Arduino time in us
+
+  //Calculate time since last values
+  uint32_t sampleTimeDiff = newTimestamp - values->lastTimestamp;
+
+  //If not enough time has passed, wait and update timestamp
+  if (sampleTimeDiff < usPerSample){
+    delayMicroseconds(usPerSample - sampleTimeDiff);
+    newTimestamp += usPerSample - sampleTimeDiff;
+  }
+
+  values->lastTimestamp = values->timestamp;
+  values->timestamp = newTimestamp;
 
   // These values are saved in every MODE and SUBSTATE
   values->combustionPressure = readPressure5V(CHAMBER_PRESSURE);          //Chamber pressure 
@@ -73,13 +96,5 @@ void senseLoop(values_t* values, mode_t currentMode){
     values->n2FeedingButton = readN2FeedingValveButton();      //N2 Feeding button status
     values->oxidizerValveButton = readOxidizerValveButton();   //Main oxidizer button status
     
-    //Save timestamp
-    uint32_t newTimestamp = micros();
-    if (newTimestamp < values->lastTimestamp){
-      values->timeOverflowOffset = values->timeOverflowOffset + 4294967295;
-    }
-    
-    values->timestamp = values->timeOverflowOffset + newTimestamp;  //Arduino time in us
-    values->lastTimestamp = newTimestamp;
     }
 }

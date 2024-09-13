@@ -1,7 +1,7 @@
 /* Filename:      Mode.cpp
  * Author:        Eemeli Mykrä
  * Date:          27.01.2023
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Stores the current mode and substate variables in a portected
  *                object. These values can then be fetched from here by other objects.

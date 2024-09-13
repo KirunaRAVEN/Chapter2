@@ -1,7 +1,7 @@
 /* Filename:      TestInOut.cpp
  * Author:        Eemeli Mykrä
  * Date:          17.04.2023
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Responsible for setting up and reading the pins used to start
  *                the software in test mode and test the various actuators.

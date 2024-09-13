@@ -1,7 +1,7 @@
 /* Filename:      Globals.h
  * Author:        Eemeli Mykrä
  * Date:          21.11.2022
- * Version:       V1.54 (01.07.2024)
+ * Version:       V1.55 (13.09.2024)
  *
  * Purpose:       Header file for the Globals <<environmental>> object containing 
  *                global constants and user defined types. 
@@ -281,8 +281,9 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint64_t timestamp;           //Time since Arduino startup in us
+  uint64_t lastTimestamp;       //Time when last sensor values were read
   uint32_t msTimestamp;         //Time since Arduino startup in ms
-  uint64_t lastTimestamp;       //Used to detect overflow of 32bit microsecond timer
+  uint64_t checkTimestamp;      //Used to detect overflow of 32bit microsecond timer
   uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow
 
   bool slowUpdated = false;     //If the slow frequency values were updated this loop
@@ -326,9 +327,14 @@ const int16_t countdownTickDelay = 1;
 //At what rate sensor sampling is done outside the SEQUENCE (Hz)
 const int16_t limitedSampleRate = 50;
 
+//What is the target maximum sampling rate in SEQUENCE (Hz)
+const int16_t targetSampleRate = 5000;
+const int16_t usPerSample = (1000*1000) / targetSampleRate;
+
 //At what rate the certain data is gathered (hz)
 const uint16_t slowSensorRate = 10;
 const uint16_t mediumSensorRate = 100;
+
 
 /*
  * From V1.5 Onwards the conversion from ADC values to sensor data will be performed by the Rock 4C+.
