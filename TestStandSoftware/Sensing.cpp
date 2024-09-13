@@ -50,13 +50,26 @@ void senseLoop(values_t* values, mode_t currentMode){
   //Calculate time since last values
   uint32_t sampleTimeDiff = newTimestamp - values->lastTimestamp;
 
+  //Serial.print(usPerSample);
+  //Serial.print(" ");
+  //Serial.println(sampleTimeDiff);
+  
   //If not enough time has passed, wait and update timestamp
   if (sampleTimeDiff < usPerSample){
     delayMicroseconds(usPerSample - sampleTimeDiff);
-    newTimestamp += usPerSample - sampleTimeDiff;
+    newTimestamp += (usPerSample - sampleTimeDiff);
+    //Serial.print("delayed: ");
+    //Serial.println(usPerSample - sampleTimeDiff);
   }
 
-  values->lastTimestamp = values->timestamp;
+  //Serial.print((uint32_t) (newTimestamp - values->lastTimestamp));
+  //Serial.print(" ");
+  //Serial.print(sampleTimeDiff);
+  //Serial.print(" ");
+  //Serial.println(micros());
+  
+  //Update old and new timestamps
+  values->lastTimestamp = newTimestamp;
   values->timestamp = newTimestamp;
 
   // These values are saved in every MODE and SUBSTATE

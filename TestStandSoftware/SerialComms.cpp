@@ -25,8 +25,11 @@ const uint8_t END_MARKER = 0x7F;
 const uint8_t ESCAPE_BYTE = 0x7D;
 const uint8_t ESCAPE_XOR = 0x20;
 
+uint32_t lastMicros = 0;
+
 void initSerial(){
   Serial.begin(serialBaudNormal);
+  //Serial.begin(115200);
   while (!Serial){}
 
   //Indicate reset of the system
@@ -147,6 +150,9 @@ void writeValues(values_t* values, statusValues_t statusValues){
     
     values->mediumUpdated = false;
   }
+  //uint32_t newMicros = micros();
+  //Serial.println(newMicros - lastMicros);
+  //lastMicros = newMicros;
 
   sendByteArray(byteBuffer, bufferLength);
 }

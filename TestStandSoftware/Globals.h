@@ -328,8 +328,8 @@ const int16_t countdownTickDelay = 1;
 const int16_t limitedSampleRate = 50;
 
 //What is the target maximum sampling rate in SEQUENCE (Hz)
-const int16_t targetSampleRate = 5000;
-const int16_t usPerSample = (1000*1000) / targetSampleRate;
+const int32_t targetSampleRate = 5000;
+const int32_t usPerSample = 1000000 / targetSampleRate;
 
 //At what rate the certain data is gathered (hz)
 const uint16_t slowSensorRate = 10;
