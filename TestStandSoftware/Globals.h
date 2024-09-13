@@ -281,7 +281,7 @@ const int16_t sensorCount = pressureCount5V + pressureCount20mA + tempCount + in
 //Structure for storing measurements with a timestamp
 struct values_t {
   uint64_t timestamp;           //Time since Arduino startup in us
-  uint64_t lastTimestamp;       //Time when last sensor values were read
+  //uint64_t lastTimestamp;       //Time when last sensor values were read
   uint32_t msTimestamp;         //Time since Arduino startup in ms
   uint64_t checkTimestamp;      //Used to detect overflow of 32bit microsecond timer
   uint64_t timeOverflowOffset;  //How many microseconds have been lost to 32bit overflow

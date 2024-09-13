@@ -37,7 +37,7 @@ void initSensing(){
 void senseLoop(values_t* values, mode_t currentMode){
 
   //Save timestamp
-  uint32_t newTimestamp = micros();
+  uint64_t newTimestamp = micros();
 
   //Account for 32-bit counter overflow
   if (newTimestamp < values->checkTimestamp){
@@ -48,7 +48,7 @@ void senseLoop(values_t* values, mode_t currentMode){
   newTimestamp += values->timeOverflowOffset;  //Arduino time in us
 
   //Calculate time since last values
-  uint32_t sampleTimeDiff = newTimestamp - values->lastTimestamp;
+  uint32_t sampleTimeDiff = newTimestamp - values->timestamp;
 
   //Serial.print(usPerSample);
   //Serial.print(" ");
@@ -69,7 +69,6 @@ void senseLoop(values_t* values, mode_t currentMode){
   //Serial.println(micros());
   
   //Update old and new timestamps
-  values->lastTimestamp = newTimestamp;
   values->timestamp = newTimestamp;
 
   // These values are saved in every MODE and SUBSTATE
