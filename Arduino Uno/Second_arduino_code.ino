@@ -1,5 +1,5 @@
-// Authors: Christoffer Brun, Ivar Tylén
-// Date: 11/11/2024
+// Authors: Christoffer Brun, Ivar Tylén, Alexander Bülow
+// Date: 12/11/2024
 // Version: 1.1
 // Purpose: Reads and then sends the values read on analog pins 0-4
 // Todo: 
@@ -26,13 +26,11 @@ void setup() {
 void loop() {
 
   // Read the analog voltage from pin A0-A5
-  float nitrogenPressure = analogRead(A0);
-  float oxyPressure1 =     analogRead(A1);
-  float oxyPressure2 =     analogRead(A2);
-  float blanketTemp1 =     analogRead(A3);
-  float blanketTemp2 =     analogRead(A4);
-  float unknown =          analogRead(A5);
-
+  int32_t nitrogenPressure = analogRead(A0);
+  int32_t blanketTemp1 =     analogRead(A3);
+  int32_t blanketTemp2 =     analogRead(A4);
+  bool    blanketstatus1  =  digitalRead(/*some pin*/);
+  bool    blanketstatus2  =  digitalRead(/*some pin*/);
   /* Convert the analog value to voltage (assuming a 5V reference voltage) 
    * float voltage1 = calVal[0]*(refADC*(nitrogenPressure/maxADC)) + calVal[3];
    * float voltage2 = calVal[1]*(refADC*(oxyPressure1/maxADC)) + calVal[4];
@@ -51,19 +49,20 @@ void loop() {
   Serial.print(nitrogenPressure);
   Serial.print(", ");
 
-//Oxygen 1 pressure
- Serial.print(oxyPressure1);
- Serial.print(", ");
-
-//Oxygen 2 pressure
- Serial.print(oxyPressure2);
- Serial.print(", ");
-
  //Oxygen tank 1 temp
   Serial.print(blanketTemp1);
  Serial.print(", ");
 
  // Oxygen tank 2 temp
- Serial.println(blanketTemp2);
- //Serial.println(", ");
+ Serial.print(blanketTemp2);
+ Serial.print(", ");
+
+  // Oxygen status 1
+ Serial.print(blanketstatus1);
+ Serial.print(", ");
+
+   // Oxygen status 2
+ Serial.println(blanketstatus2);
+
+
 }

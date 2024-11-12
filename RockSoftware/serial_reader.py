@@ -438,11 +438,18 @@ with open("data.csv", "w", newline='') as file:
             #someSensor2 = splitdata[3]
             #print(splitdata)
 
+            timestamp2 = splitdata[0]
+            n2oFeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+            BlankTemp1  = readLM235(splitdata[2])
+            BlankTemp2 = readLM235(splitdata[3])
+            blanketstatus1 = splitdata[4]
+            blanketstatus2 = splitdata[5]
+
 
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
-            writer.writerow([timestamp, f'{n2feedP:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
-                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}',
+            writer.writerow([timestamp, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
+                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', blanketstatus1, blanketstatus2, 
                              dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub] + splitdata + [msgIndex])
             file.flush()
