@@ -154,12 +154,21 @@ def readTMP36(sensorValue):
     * maxADC = 1023, since we are using 10-bit analog to digital converter
     * refADV = expected ADC voltage of 5.00V
     * (voltage - 0.5) * 100 = voltage to celsius conversion formula for TMP36 sensors
-    * Measurement is repeated TMP36AverageCount times each loop to reduce noise
     """
 
     temperature = ((calibrationADC * (sensorValue / maxADC)) * refADC - 0.5) * 100
     return temperature
 
+def readLM235(sensorValue):
+    """
+    * calibration ADC = ratio of how much the internal voltage is off from 5.00V
+    * sensorValue = measured voltage on the pin, within 0...1023
+    * maxADC = TBD, since we are using 10 bit analog to digital converter with a voltage divider in the temp-sens circuit
+    * refADC = expected ADC voltage (5V)
+    * 10mV/Kelvin 
+    """
+
+    temperature2 = ((calibrationADC * (sensorValue / maxADC)) * )
  
 def readTemp(temperature):
     return temperature * 0.25
@@ -251,13 +260,13 @@ if ser.is_open == True & ser1.is_open == True:
 with open("data.csv", "w", newline='') as file:
     writer = csv.writer(file)
     #Header to the csv data file
-    writer.writerow(["ArduinoTime", "NitrogenPressure", "LinePressure", "ChamberPressure", "OxidizerPressure",
+    writer.writerow(["ArduinoTime", "OxLine2Pressure", "OxLine1Pressure", "ChamberPressure", "OxidizerPressure",
                      "LoadCell", "HeatingBlanketTemperature", "NotConnected", "NozzleTemperature",
                      "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus",
                      "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
                      "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate",
-                     "SecondArduinoTime","NitrogenPressure2","OxygenPressure1","OxygenPressure2",
-                     "OxygenTank1Temp","OxygenTank2Temp","MessageIndex"])
+                     "SecondArduinoTime","NitrogenPressure","A1","A2","Oxidizer1Temp","Oxidizer2Temp","A5",
+                     "D1","Blanket2State","OxValve2State", "MessageIndex"])
 
     #Init values that aren't received always
     botTemp = 0
