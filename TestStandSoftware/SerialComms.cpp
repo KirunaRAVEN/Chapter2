@@ -76,6 +76,7 @@ void writeValues(values_t* values, statusValues_t statusValues){
 
   }else{
 
+    //Comment
     bufferLength = 12;
 
     uint32_t sentTimeValue = (uint32_t) (values->timestamp >> 3); // Bitshift by 3 to get 8*72 minutes of runtime without 32bit overflow
