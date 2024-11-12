@@ -168,7 +168,7 @@ def readLM235(sensorValue):
     * 10mV/Kelvin 
     """
 
-    temperature2 = ((calibrationADC * (sensorValue / maxADC)) * )
+    T_in_C = (sensorValue/maxADC)*refADC/k -273.15 + 4.7
  
 def readTemp(temperature):
     return temperature * 0.25
@@ -261,8 +261,8 @@ with open("data.csv", "w", newline='') as file:
     writer = csv.writer(file)
     #Header to the csv data file
     writer.writerow(["ArduinoTime", "OxLine2Pressure", "OxLine1Pressure", "ChamberPressure", "OxidizerPressure",
-                     "LoadCell", "HeatingBlanketTemperature", "NotConnected", "NozzleTemperature",
-                     "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus",
+                     "LoadCell", "HeatingBlanketTemperature THIS IS MOVED", "NotConnected", "NozzleTemperature",
+                     "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus THIS IS MOVED",
                      "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
                      "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate",
                      "SecondArduinoTime","NitrogenPressure","A1","A2","Oxidizer1Temp","Oxidizer2Temp","A5",
