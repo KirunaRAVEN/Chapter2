@@ -16,7 +16,7 @@ FEEDING_PRESSURE_OXIDIZER = 0
 LINE_PRESSURE = 1
 CHAMBER_PRESSURE = 2
 FEEDING_PRESSURE_N2 = 3
-FEEDING_PRESSURE_OXIDIZER1 = 4  
+FEEDING_PRESSURE_OXIDIZER1 = 4  #new N2O pressure sensor on the same pin as the pld N2 pressure sensor. 
 
 #Which thermocouple corresponds to which "location"
 NOT_CONNECTED_0 = 0
@@ -91,7 +91,7 @@ pressureLine_B4 = maxPressure5V_100Bar - pressureLine_K4 * (pressureSpan4 + pres
  
 #Arrays of 5V pressure sensors calibration data
 pressureCalibration_K = [pressureLine_K0, pressureLine_K1, pressureLine_K2, pressureLine_K3, pressureLine_K4]
-pressureCalibration_B = [pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3,pressureLine_B4]
+pressureCalibration_B = [pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3, pressureLine_B4]
  
 #IR sensor minimum and maximum values
 minIR = -50
@@ -280,6 +280,7 @@ with open("data.csv", "w", newline='') as file:
     lineP = 0
     combP = 0
     n2oFeedP = 0
+    n2oFeedP2 = 0
     loadC = 0
     dumpButton = 0
     heatButton = 0
@@ -382,9 +383,7 @@ with open("data.csv", "w", newline='') as file:
                 dataBit = dataBit >> 10
                 lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
                 dataBit = dataBit >> 10
-                n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2) 
-                #Seems like we could just replace this n2 pressure with the other oxidizer,
-                #  would like to replace this and try to avoid changing too much. Checking tomoz
+                n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER1) 
 
                 #Second 32bits, always received
                 dataBit = int(data_list[2])
@@ -448,7 +447,7 @@ with open("data.csv", "w", newline='') as file:
             blanketstatus1 = splitdata[4]
             blanketstatus2 = splitdata[5]
 
-
+            # New oxidizer is called n2oFeedP2, needs to be added to the csv. will check with you later
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
             writer.writerow([timestamp, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
@@ -456,3 +455,4 @@ with open("data.csv", "w", newline='') as file:
                              dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub] + splitdata + [msgIndex])
             file.flush()
+            
