@@ -16,6 +16,7 @@ FEEDING_PRESSURE_OXIDIZER = 0
 LINE_PRESSURE = 1
 CHAMBER_PRESSURE = 2
 FEEDING_PRESSURE_N2 = 3
+FEEDING_PRESSURE_OXIDIZER1 = 4  
 
 #Which thermocouple corresponds to which "location"
 NOT_CONNECTED_0 = 0
@@ -89,8 +90,8 @@ maunalPressureOffset4 = 0                        #How many bars of offset is see
 pressureLine_B4 = maxPressure5V_100Bar - pressureLine_K4 * (pressureSpan4 + pressureZero4) - maunalPressureOffset4
  
 #Arrays of 5V pressure sensors calibration data
-pressureCalibration_K = [pressureLine_K0, pressureLine_K1, pressureLine_K2, pressureLine_K3]
-pressureCalibration_B = [pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3]
+pressureCalibration_K = [pressureLine_K0, pressureLine_K1, pressureLine_K2, pressureLine_K3, pressureLine_K4]
+pressureCalibration_B = [pressureLine_B0, pressureLine_B1, pressureLine_B2, pressureLine_B3,pressureLine_B4]
  
 #IR sensor minimum and maximum values
 minIR = -50
@@ -381,7 +382,9 @@ with open("data.csv", "w", newline='') as file:
                 dataBit = dataBit >> 10
                 lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
                 dataBit = dataBit >> 10
-                n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2)
+                n2feedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_N2) 
+                #Seems like we could just replace this n2 pressure with the other oxidizer,
+                #  would like to replace this and try to avoid changing too much. Checking tomoz
 
                 #Second 32bits, always received
                 dataBit = int(data_list[2])
