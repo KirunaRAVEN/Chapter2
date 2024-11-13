@@ -86,7 +86,7 @@ void writeValues(values_t* values, statusValues_t statusValues){
     byteBuffer[3] = sentTimeValue & 255;
 
     // First 32bit data - sent always
-    uint32_t combinedValue1 = values->N2OFeedingPressure1; //Changed from N2 to the second N2O feeding pressure
+    uint32_t combinedValue1 = values->N2OFeedingPressure2; //Changed from N2 to the second N2O feeding pressure
     combinedValue1 = combinedValue1 << (10) | values->linePressure;
     combinedValue1 = combinedValue1 << (10) | values->combustionPressure;
     combinedValue1 = combinedValue1 << (1) |  values->dumpValveButton;

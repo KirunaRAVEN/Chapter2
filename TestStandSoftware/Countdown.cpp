@@ -46,16 +46,16 @@ void countdownLoop(){
   values.slowUpdated = false;
 
   //Initialize the values after startup
-  values.N2FeedingPressure = 0;      //N2 Feeding pressure 
-  values.linePressure = 0;      //Oxidizer line pressure 
+  values.N2OFeedingPressure2 = 0;     //Second Oxidizer Feeding pressure 
+  values.linePressure = 0;            //Oxidizer line pressure 
   values.combustionPressure = 0;      //Combustion chamber pressure 
   values.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
-  values.loadCell = 0;       //Back of the engine
-  values.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  values.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  values.nozzleTemperature = 0;   //Nozzle temperature
-  values.pipingTemperature = 0;   //Piping temperature
-  values.IR = 0;             //Plume Temperature
+  values.loadCell = 0;                //Back of the engine
+  values.bottleTemperature = 0;       //Bottle temperature - Switched to TMP36 output, uses different pin
+  values.notConnectedTemperature = 0; //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  values.nozzleTemperature = 0;       //Nozzle temperature
+  values.pipingTemperature = 0;       //Piping temperature
+  values.IR = 0;                      //Plume Temperature
 
   values.dumpValveButton = true;        //Dump Valve button status. Initialized true, since new nominal state is dump valve open (inverted afterwards due to normally open valve)
   values.heatingBlanketButton = false;  //Heating button status

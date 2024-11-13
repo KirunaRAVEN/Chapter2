@@ -16,7 +16,7 @@ FEEDING_PRESSURE_OXIDIZER = 0
 LINE_PRESSURE = 1
 CHAMBER_PRESSURE = 2
 FEEDING_PRESSURE_N2 = 3
-FEEDING_PRESSURE_OXIDIZER1 = 4  #new N2O pressure sensor on the same pin as the pld N2 pressure sensor. 
+FEEDING_PRESSURE_OXIDIZER2 = 4  #new N2O pressure sensor on the same pin as the pld N2 pressure sensor. 
 
 #Which thermocouple corresponds to which "location"
 NOT_CONNECTED_0 = 0
@@ -80,7 +80,7 @@ maunalPressureOffset3 = 0                        #How many bars of offset is see
 pressureLine_B3 = maxPressure5V_100Bar - pressureLine_K3 * (pressureSpan3 + pressureZero3) - maunalPressureOffset3
  
 #---NOT ATTACHED---
-#Pressure sensor calibration data for pressure sensor 4 (Serial No: 1086284) OXIDIZER FEEDING BACKUP
+#Pressure sensor calibration data for pressure sensor 4 (Serial No: 1086284) OXIDIZER FEEDING TWO
 pressureZero4 = -0.005                           #Voltage
 pressureSpan4 = 5.035                            #Voltage
 pressureLinearity4 = 0.14196                     #in precentage. Not used for calibration

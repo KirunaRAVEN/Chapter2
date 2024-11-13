@@ -84,7 +84,7 @@ void senseLoop(values_t* values, mode_t currentMode){
     lastMediumTime = newTime;
 
     values->linePressure = readPressure5V(LINE_PRESSURE);                        //Line pressure 
-    values->N2FeedingPressure = readPressure5V(FEEDING_PRESSURE_N2);             //N2 Feeding pressure 
+    values->N2OFeedingPressure2 = readPressure5V(FEEDING_PRESSURE_OXIDIZER2);    //Second Oxidizer Feeding pressure 
     values->N2OFeedingPressure = readPressure5V(FEEDING_PRESSURE_OXIDIZER);      //Oxidizer Feeding Pressure 
 
     updateSlow = newTime - lastSlowTime > 1000/slowSensorRate;

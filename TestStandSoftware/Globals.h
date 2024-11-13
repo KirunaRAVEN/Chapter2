@@ -98,7 +98,8 @@ typedef enum {
   PRESSURE_INPUT_PIN2 = A2,
   LOADCELL_INPUT_PIN = A3,
   TMP36_INPUT_PIN = A4,
-  PRESSURE_INPUT_PIN3 = A5,
+  PRESSURE_INPUT_PIN4 = A5, // Second oxidizer pressure using the N2 used too on the mega.
+  PRESSURE_INPUT_PIN3 = A5, 
   INFRARED_INPUT_PIN = A6,
   IGN_GND_RELAY_TEST_MEASURE_PIN = A15
 }pin_names_analog_t;
@@ -289,7 +290,7 @@ struct values_t {
   bool slowUpdated = false;     //If the slow frequency values were updated this loop
   bool mediumUpdated = false;     //If the medium frequency values were updated this loop 
   
-  int N2FeedingPressure;        //N2 Feeding line pressure 
+  int N2OFeedingPressure2;        //N2 Feeding line pressure 
   int linePressure;      //Line pressure 
   int combustionPressure;      //Combustion chamber pressure 
   int N2OFeedingPressure;      //Oxidizer Feeding pressure 
@@ -371,7 +372,8 @@ typedef enum{
   FEEDING_PRESSURE_OXIDIZER = 0,
   LINE_PRESSURE = 1,
   CHAMBER_PRESSURE = 2,
-  FEEDING_PRESSURE_N2 = 3
+  FEEDING_PRESSURE_N2 = 3,
+  FEEDING_PRESSURE_OXIDIZER2 = 4
 }pressureSensorNames_t;
 
 //Pressure sensor maximum pressure;
@@ -490,7 +492,7 @@ typedef enum{
 const int16_t minimumFiringPressure = -1;  //Set to -1 bar to always allow the firing
 
 //Pressure sensor 0 closing pressure. Not used in current design. Test is timed
-//const int16_t closeN2FeedingPressure = 2;
+//const int16_t closeN2OFeedingPressure2 = 2;
 
 //At what temperature are the heating blankets turned off
 //Software has no ability to control the heating blanket in the current design.

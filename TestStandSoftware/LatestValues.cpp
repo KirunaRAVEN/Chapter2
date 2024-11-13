@@ -17,16 +17,16 @@ static values_t latestValues;
 //static SemaphoreHandle_t latestValueMutex;
 
 void initLatestValues(){
-  latestValues.N2FeedingPressure = 0;      //N2 Feeding pressure 
-  latestValues.linePressure = 0;      //Oxidizer line pressure 
+  latestValues.N2OFeedingPressure2 = 0;     //Second Oxidizer Feeding pressure 
+  latestValues.linePressure = 0;            //Oxidizer line pressure 
   latestValues.combustionPressure = 0;      //Combustion chamber pressure 
   latestValues.N2OFeedingPressure = 0;      //Oxidizer Feeding pressure 
-  latestValues.loadCell = 0;       //Back of the engine
-  latestValues.bottleTemperature = 0;   //Bottle temperature - Switched to TMP36 output, uses different pin
-  latestValues.notConnectedTemperature = 0;   //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
-  latestValues.nozzleTemperature = 0;   //Nozzle temperature
-  latestValues.pipingTemperature = 0;   //Piping temperature
-  latestValues.IR = 0;             //Plume Temperature
+  latestValues.loadCell = 0;                //Back of the engine
+  latestValues.bottleTemperature = 0;       //Bottle temperature - Switched to TMP36 output, uses different pin
+  latestValues.notConnectedTemperature = 0; //Injector temperature - Usually outputs NaN, not used in live_grapher_V3.py
+  latestValues.nozzleTemperature = 0;       //Nozzle temperature
+  latestValues.pipingTemperature = 0;       //Piping temperature
+  latestValues.IR = 0;                      //Plume Temperature
 
   latestValues.timestamp = 0;
   latestValues.msTimestamp = 0;
