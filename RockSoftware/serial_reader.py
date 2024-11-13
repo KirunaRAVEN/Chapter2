@@ -424,6 +424,12 @@ with open("data.csv", "w", newline='') as file:
                     msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
                     dataBit = dataBit >> 3
                     botTemp = readTMP36(dataBit & 1023)
+            
+            
+            #--------------
+            #Second arduino
+            #--------------
+
             data1 = ser1.readline()
             try:
                 data1 = data1.decode().rstrip()
