@@ -383,7 +383,7 @@ with open("data.csv", "w", newline='') as file:
                 dataBit = dataBit >> 10
                 lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
                 dataBit = dataBit >> 10
-                n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER1) 
+                n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER2) 
 
                 #Second 32bits, always received
                 dataBit = int(data_list[2])
@@ -447,18 +447,18 @@ with open("data.csv", "w", newline='') as file:
             #print(splitdata)
 
             timestamp2 = splitdata[0]
-            n2oFeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-            BlankTemp1  = readLM235(splitdata[2])
+            n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+            BlankTemp1  = readTMP36(splitdata[2])
             BlankTemp2 = readLM235(splitdata[3])
             blanketstatus1 = splitdata[4]
             blanketstatus2 = splitdata[5]
 
-            # New oxidizer is called n2oFeedP2, needs to be added to the csv. will check with you later
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
-            writer.writerow([timestamp, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}', f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}',
-                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', blanketstatus1, blanketstatus2, 
+            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}', f'{n2oFeedP2:.2f}',
+                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
                              dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
-                             swMode, swSub] + splitdata + [msgIndex])
+                             swMode, swSub, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
+                             blanketstatus1, blanketstatus2]  + [msgIndex])
             file.flush()
             
