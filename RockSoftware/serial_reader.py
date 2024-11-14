@@ -261,19 +261,18 @@ if ser.is_open == True & ser1.is_open == True:
 with open("data.csv", "w", newline='') as file:
     writer = csv.writer(file)
     #Header to the csv data file
-    writer.writerow(["ArduinoTime", "OxLine2Pressure", "OxLine1Pressure", "ChamberPressure", "OxidizerPressure",
-                     "LoadCell", "HeatingBlanketTemperature THIS IS MOVED", "NotConnected", "NozzleTemperature",
-                     "PipingTemperature", "PlumeTemperature", "DumpValveButtonStatus", "HeatingButtonStatus THIS IS MOVED",
+    writer.writerow(["ArduinoMegaTime", "LinePressure", "CharmberPressure", "N2OFeedingPressure1", "N2OFeedingPressure2",
+                     "LoadCell", "NULL", "NozzleTemperature", "PipingTemperature", "IR sensor", "DumpValveButtonStatus", 
                      "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
                      "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate",
-                     "SecondArduinoTime","NitrogenPressure","A1","A2","Oxidizer1Temp","Oxidizer2Temp","A5",
-                     "D1","Blanket2State","OxValve2State", "MessageIndex"])
+                     "ArduinoUNOTime","NitrogenPressure","BottleTemp1","BottleTemp2","BottleStatus1","BottleStatus2", "MessageIndex"])
 
     #Init values that aren't received always
-    botTemp = 0
     nozzT = 0
     pipeT = 0
     IR = 0
+    BlankTemp1 = 0
+    BlankTemp2 = 0
 
     timestamp = 0
     n2feedP = 0
@@ -456,8 +455,8 @@ with open("data.csv", "w", newline='') as file:
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
             writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}', f'{n2oFeedP2:.2f}',
-                             f'{loadC:.2f}', f'{botTemp:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
-                             dumpButton, heatButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
+                             f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
+                             dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
                              blanketstatus1, blanketstatus2]  + [msgIndex])
             file.flush()
