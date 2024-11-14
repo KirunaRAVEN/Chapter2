@@ -51,7 +51,7 @@ pressureLine_K0 = maxPressure5V_100Bar / pressureSpan0  #Slope of the calibrated
 #Zero offset of the calibrated data
 maunalPressureOffset0 = 0                        #How many bars of offset is seen in experimental data
 pressureLine_B0 = maxPressure5V_100Bar - pressureLine_K0 * (pressureSpan0 + pressureZero0) - maunalPressureOffset0
- 
+
 #Pressure sensor calibration data for pressure sensor 1 (Serial No: 1073014) LINE
 pressureZero1 = 0.01                             #Voltage
 pressureSpan1 = 4.997                            #Voltage

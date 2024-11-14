@@ -21,6 +21,8 @@ void setup() {
   //ADCSRA |= bit (ADPS0) | bit (ADPS2);                 //  32
   //ADCSRA |= bit (ADPS1) | bit (ADPS2);                 //  64
   //ADCSRA |= bit (ADPS0) | bit (ADPS1) | bit (ADPS2);   // 128
+  //init checktimestamp to 0
+  uint64_t checkTimestamp = 0;
 }
  
 void loop() {
@@ -42,7 +44,28 @@ void loop() {
    * value of resistor: 4.66k ohm
    */
 //Print the voltage value to the serial monitor
-  Serial.print(micros());
+
+  //Save timestamp
+  uint64_t newTimestamp = micros();
+  uint64_t timeOverflowOffset;
+  uint64_t timestamp;
+
+  //Account for 32-bit counter overflow
+  if (newTimestamp < checkTimestamp){
+    timeOverflowOffset += 4294967295;
+  }
+
+  checkTimestamp = newTimestamp;
+  newTimestamp += timeOverflowOffset;  //Arduino time in us
+
+  //Calculate time since last values
+  uint32_t sampleTimeDiff = newTimestamp - timestamp;
+
+   //Update old and new timestamps
+  timestamp = newTimestamp;
+
+
+  Serial.print(timestamp);
   Serial.print(", ");
 
 //Nitrogen pressure
