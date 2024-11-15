@@ -31,7 +31,7 @@ void setup() {
 }
  
 void loop() {
-  uint64_t t1= micros();
+  uint64_t t1= millis();
   // Read the analog voltage from pin A0-A5
   int32_t nitrogenPressure = analogRead(A0);
   int32_t blanketTemp1 =     analogRead(A3);
@@ -40,7 +40,7 @@ void loop() {
   bool    blanketstatus2  =  digitalRead(12);
 
   //Save timestamp
-  uint64_t newTimestamp = millis(); //Timestamp at start of loop
+  uint64_t newTimestamp = micros(); //Timestamp at start of loop
 
   //Account for 32-bit counter overflow
   if (newTimestamp < checkTimestamp){
@@ -50,7 +50,7 @@ void loop() {
   checkTimestamp = newTimestamp;
   newTimestamp += timeOverflowOffset;  //Arduino time in us
 
-  uint32_t timestamp = (uint32_t) (timestamp >> 3); 
+  uint32_t timestamp = (uint32_t) (newTimestamp >> 3); 
 
   //Print the voltage value to the serial monitor
     Serial.print(timestamp);
