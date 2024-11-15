@@ -11,18 +11,22 @@
 //float calVal[6] = {1 , 1, 1, 0, 0, 0}; 
 //float nitrogenPressure = 0 , oxyPressure1 = 0, oxyPressure2 = 0, blanketTemp1 = 0, blanketTemp2 =0;  
 
+ uint64_t timeOverflowOffset;
+ uint64_t checkTimestamp;
+
 void setup() {
   // Initialize serial communication at 1000000 baud
   Serial.begin(1000000);
   // Set the Arduino ADC clock prescaler to get faster analogRead()
   ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear prescaler bits
- 
+
   ADCSRA |= bit (ADPS2);                               //  16
   //ADCSRA |= bit (ADPS0) | bit (ADPS2);                 //  32
   //ADCSRA |= bit (ADPS1) | bit (ADPS2);                 //  64
   //ADCSRA |= bit (ADPS0) | bit (ADPS1) | bit (ADPS2);   // 128
   //init checktimestamp to 0
-  uint64_t checkTimestamp = 0;
+  timeOverflowOffset = 0;
+  checkTimestamp = 0;
 }
  
 void loop() {
@@ -47,8 +51,6 @@ void loop() {
 
   //Save timestamp
   uint64_t newTimestamp = micros();
-  uint64_t timeOverflowOffset;
-  uint64_t timestamp;
 
   //Account for 32-bit counter overflow
   if (newTimestamp < checkTimestamp){
@@ -58,17 +60,10 @@ void loop() {
   checkTimestamp = newTimestamp;
   newTimestamp += timeOverflowOffset;  //Arduino time in us
 
-  //Calculate time since last values
-  uint32_t sampleTimeDiff = newTimestamp - timestamp;
 
-   //Update old and new timestamps
-  timestamp = newTimestamp;
+uint32_t timestamp = (uint32_t) (timestamp >> 3);
 
-uint32_t timestampP1 = (timestamp >> 32);
-uint32_t timestampP2 = (uint32_t)timestamp;
-
-  Serial.print(timestampP1);
-  Serial.print(timestampP2);
+  Serial.print(timestamp);
   Serial.print(", ");
 
 //Nitrogen pressure
