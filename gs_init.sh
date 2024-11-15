@@ -2,7 +2,7 @@
 # execute bash script with 'source gs_init.sh'
 
 # navigate to working directory
-cd ~/Documents/ROCK_SOFTWARE/
+cd ~/Documents/GroundStationSoftware/interface/
 echo 'Pinging rock ...'
 
 # ping the rock to check packet loss
@@ -14,7 +14,7 @@ sshpass -p "rock" ssh rock@rock-4c-plus.local "cd scripts; echo 'y' | rm data.cs
 # give time to the rock for creating the new csv
 sleep 1
 
-gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee data.csv 1>/dev/null"  
+gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee data.csv"  
 
 #gnome-terminal -- sh -c "sshpass -p 'rock' ssh rock@rock-4c-plus.local 'tail -f scripts/data.csv' | tee ~/Documents/GroundStationSoftware/interface/data.csv"  
 
