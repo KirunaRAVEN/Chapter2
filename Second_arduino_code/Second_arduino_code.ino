@@ -14,6 +14,7 @@
  uint64_t timeOverflowOffset;
  uint64_t checkTimestamp;
 
+
 void setup() {
   // Initialize serial communication at 1000000 baud
   Serial.begin(1000000);
@@ -30,7 +31,7 @@ void setup() {
 }
  
 void loop() {
-
+  uint64_t t1= micros();
   // Read the analog voltage from pin A0-A5
   int32_t nitrogenPressure = analogRead(A0);
   int32_t blanketTemp1 =     analogRead(A3);
@@ -50,7 +51,7 @@ void loop() {
 //Print the voltage value to the serial monitor
 
   //Save timestamp
-  uint64_t newTimestamp = micros();
+  uint64_t newTimestamp = millis(); //Timestamp at start of loop
 
   //Account for 32-bit counter overflow
   if (newTimestamp < checkTimestamp){
@@ -61,7 +62,7 @@ void loop() {
   newTimestamp += timeOverflowOffset;  //Arduino time in us
 
 
-uint32_t timestamp = (uint32_t) (timestamp >> 3);
+uint32_t timestamp = (uint32_t) (timestamp >> 3); 
 
   Serial.print(timestamp);
   Serial.print(", ");
@@ -85,5 +86,6 @@ uint32_t timestamp = (uint32_t) (timestamp >> 3);
    // Oxygen status 2
  Serial.println(blanketstatus2);
 
-
+uint64_t t2 = millis(); // Timestamp at end of code.
+delay(20 - (t2 - t1)); // ensures we only send data with 20ms intervals. 
 }
