@@ -79,11 +79,11 @@ pressureLine_K3 = maxPressure5V_100Bar / pressureSpan3  #Slope of the calibrated
 maunalPressureOffset3 = 0                        #How many bars of offset is seen in experimental data
 pressureLine_B3 = maxPressure5V_100Bar - pressureLine_K3 * (pressureSpan3 + pressureZero3) - maunalPressureOffset3
  
-#---NOT ATTACHED---
+
 #Pressure sensor calibration data for pressure sensor 4 (Serial No: 1086284) OXIDIZER FEEDING TWO
-pressureZero4 = -0.005                           #Voltage
-pressureSpan4 = 5.035                            #Voltage
-pressureLinearity4 = 0.14196                     #in precentage. Not used for calibration
+pressureZero4 = 0.0091                           #Voltage
+pressureSpan4 = 5.0001                            #Voltage
+pressureLinearity4 = -0.03750                     #in precentage. Not used for calibration
 pressureLine_K4 = maxPressure5V_100Bar / pressureSpan4  #Slope of the calibrated data
 #Zero offset of the calibrated data
 maunalPressureOffset4 = 0                        #How many bars of offset is seen in experimental data
