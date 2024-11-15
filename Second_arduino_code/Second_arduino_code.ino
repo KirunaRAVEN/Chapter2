@@ -38,17 +38,6 @@ void loop() {
   int32_t blanketTemp2 =     analogRead(A4);
   bool    blanketstatus1  =  digitalRead(13);
   bool    blanketstatus2  =  digitalRead(12);
-  /* Convert the analog value to voltage (assuming a 5V reference voltage) 
-   * float voltage1 = calVal[0]*(refADC*(nitrogenPressure/maxADC)) + calVal[3];
-   * float voltage2 = calVal[1]*(refADC*(oxyPressure1/maxADC)) + calVal[4];
-   * float voltage3 = calVal[2]*(refADC*(oxyPressure2/maxADC)) + calVal[5];
-   * float voltage4 = (refADC*(blanketTemp1/maxADC - 0.5)*100);
-   * float voltage5 = (refADC*(blanketTemp2/maxADC - 0.5)*100);
-   * float voltage99 = ((refADC*(blanketTemp2/(maxADC))-0.5)*100);
-   * float voltage98 = (blanketTemp2/maxADC);
-   * value of resistor: 4.66k ohm
-   */
-//Print the voltage value to the serial monitor
 
   //Save timestamp
   uint64_t newTimestamp = millis(); //Timestamp at start of loop
@@ -61,31 +50,31 @@ void loop() {
   checkTimestamp = newTimestamp;
   newTimestamp += timeOverflowOffset;  //Arduino time in us
 
+  uint32_t timestamp = (uint32_t) (timestamp >> 3); 
 
-uint32_t timestamp = (uint32_t) (timestamp >> 3); 
+  //Print the voltage value to the serial monitor
+    Serial.print(timestamp);
+    Serial.print(", ");
 
-  Serial.print(timestamp);
+  //Nitrogen pressure
+    Serial.print(nitrogenPressure);
+    Serial.print(", ");
+
+  //Oxygen tank 1 temp
+    Serial.print(blanketTemp1);
   Serial.print(", ");
 
-//Nitrogen pressure
-  Serial.print(nitrogenPressure);
+  // Oxygen tank 2 temp
+  Serial.print(blanketTemp2);
   Serial.print(", ");
-
- //Oxygen tank 1 temp
-  Serial.print(blanketTemp1);
- Serial.print(", ");
-
- // Oxygen tank 2 temp
- Serial.print(blanketTemp2);
- Serial.print(", ");
 
   // Oxygen status 1
- Serial.print(blanketstatus1);
- Serial.print(", ");
+  Serial.print(blanketstatus1);
+  Serial.print(", ");
 
-   // Oxygen status 2
- Serial.println(blanketstatus2);
+  // Oxygen status 2
+  Serial.println(blanketstatus2);
 
-uint64_t t2 = millis(); // Timestamp at end of code.
-delay(20 - (t2 - t1)); // ensures we only send data with 20ms intervals. 
+  uint64_t t2 = millis(); // Timestamp at end of code.
+  delay(20 - (t2 - t1)); // ensures we only send data with 20ms intervals. 
 }
