@@ -445,7 +445,7 @@ with open("data.csv", "w", newline='') as file:
             #someSensor2 = splitdata[3]
             #print(splitdata)
 
-            timestamp2 = splitdata[0]
+            timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
             n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
             BlankTemp1  = readTMP36(splitdata[2])
             BlankTemp2 = readLM235(splitdata[3])
