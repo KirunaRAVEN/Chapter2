@@ -64,8 +64,11 @@ void loop() {
    //Update old and new timestamps
   timestamp = newTimestamp;
 
+uint32_t timestampP1 = (timestamp >> 32);
+uint32_t timestampP2 = (uint32_t)timestamp;
 
-  Serial.print(timestamp);
+  Serial.print(timestampP1);
+  Serial.print(timestampP2);
   Serial.print(", ");
 
 //Nitrogen pressure
