@@ -31,8 +31,8 @@ void loop() {
   int32_t nitrogenPressure = analogRead(A0);
   int32_t blanketTemp1 =     analogRead(A3);
   int32_t blanketTemp2 =     analogRead(A4);
-  bool    blanketstatus1  =  digitalRead(/*some pin*/);
-  bool    blanketstatus2  =  digitalRead(/*some pin*/);
+  bool    blanketstatus1  =  digitalRead(13);
+  bool    blanketstatus2  =  digitalRead(12);
   /* Convert the analog value to voltage (assuming a 5V reference voltage) 
    * float voltage1 = calVal[0]*(refADC*(nitrogenPressure/maxADC)) + calVal[3];
    * float voltage2 = calVal[1]*(refADC*(oxyPressure1/maxADC)) + calVal[4];
