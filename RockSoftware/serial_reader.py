@@ -432,20 +432,22 @@ with open("data.csv", "w", newline='') as file:
             if InWaiting > 0:
                 data1 = ser1.readline()
                 try:
-                    data1 = data1.decode().rstrip()
-                    data1 = data1.replace('\x00','')
-                    data1 = data1.replace('\r', '')
-                    #takes in full string from second arduino and makes it into an array.
-                    splitdata = data1.split(", ")
-                    splitdata = [int(val) for val in splitdata]
-                    if len(splitdata) == 6:
-                        timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
-                        n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-                        BlankTemp1  = readTMP36(splitdata[2])
-                        BlankTemp2 = readLM235(splitdata[3])
-                        print(BlankTemp1, BlankTemp2)
-                        blanketstatus1 = splitdata[4]
-                        blanketstatus2 = splitdata[5]
+                    if b'\x00' in data1 or b'\r' in data1:
+                        
+                        data1 = data1.decode().rstrip()
+                        data1 = data1.replace('\x00','')
+                        data1 = data1.replace('\r', '')
+                        #takes in full string from second arduino and makes it into an array.
+                        splitdata = data1.split(", ")
+                        splitdata = [int(val) for val in splitdata]
+                        if len(splitdata) == 6:
+                            timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
+                            n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+                            BlankTemp1  = readTMP36(splitdata[2])
+                            BlankTemp2 = readLM235(splitdata[3])
+                            print(BlankTemp1, BlankTemp2)
+                            blanketstatus1 = splitdata[4]
+                            blanketstatus2 = splitdata[5]
                 except:
                     #data1 = ''
                     pass
