@@ -169,7 +169,7 @@ def readLM235(sensorValue):
     * 10mV/Kelvin 
     """
 
-    T_in_C = (sensorValue/maxADC)*refADC/k -273.15 + 4.7
+    T_in_C = (sensorValue/maxADC)*refADC/0.010 -273.15 + 4.7
  
 def readTemp(temperature):
     return temperature * 0.25
