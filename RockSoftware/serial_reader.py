@@ -294,10 +294,12 @@ with open("data.csv", "w", newline='') as file:
 
     oldTime = 0
     #two values for the second arduino
-    secondclock =0
-    secondarduino1 = 0
-    someSensor = 0
-    someSensor2 = 0
+    timestamp2 = 0
+    n2FeedP = 0
+    BlankTemp1  = 0
+    BlankTemp2 = 0
+    blanketstatus1 = 0
+    blanketstatus2 = 0
 
     dataPointCount = 0
     maxBufferWait = 0
@@ -307,19 +309,17 @@ with open("data.csv", "w", newline='') as file:
     ser1.reset_input_buffer()
 
     while True:
-        bufferWait = ser.inWaiting()
+        """bufferWait = ser.inWaiting()
         if bufferWait >= maxBufferWait:
             maxBufferWait = bufferWait
             #print(f'Bytes in Waiting: {ser.inWaiting()} at index {dataPointCount}')
 
         if bufferWait == 0: maxBufferWait = 0
+        """
 
         data, length = read_message(ser)
         byteList = list(data)
         
-    
-
-
         #print(byteList)
         dataPointCount += 1
         newTime = time.time()
@@ -428,29 +428,25 @@ with open("data.csv", "w", newline='') as file:
             #--------------
             #Second arduino
             #--------------
+            InWaiting = ser1.inWaiting()
+            if InWaiting > 0:
+                data1 = ser1.readline()
+                try:
+                    data1 = data1.decode().rstrip()
+                except:
+                    data1 = ''
 
-            data1 = ser1.readline()
-            try:
-                data1 = data1.decode().rstrip()
-            except:
-                data1 = ''
+                data1 = data1.replace('\x00','')
+                data1 = data1.replace('\r', '')
+                #takes in full string from second arduino and makes it into an array.
+                splitdata = data1.split(", ")
 
-            data1 = data1.replace('\x00','')
-            data1 = data1.replace('\r', '')
-            #takes in full string from second arduino and makes it into an array
-            splitdata = data1.split(", ")
-            #secondclock = splitdata[0]
-            #secondarduino1 = splitdata[1]
-            #someSensor = splitdata[2]
-            #someSensor2 = splitdata[3]
-            #print(splitdata)
-
-            timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
-            n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-            BlankTemp1  = readTMP36(splitdata[2])
-            BlankTemp2 = readLM235(splitdata[3])
-            blanketstatus1 = splitdata[4]
-            blanketstatus2 = splitdata[5]
+                timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
+                n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+                BlankTemp1  = readTMP36(splitdata[2])
+                BlankTemp2 = readLM235(splitdata[3])
+                blanketstatus1 = splitdata[4]
+                blanketstatus2 = splitdata[5]
 
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
