@@ -169,7 +169,7 @@ def readLM235(sensorValue):
     * 10mV/Kelvin 
     """
 
-    T_in_C = (sensorValue/maxADC)*refADC/0.010 -273.15 + 4.7
+    return (sensorValue/maxADC)*refADC/0.010 -273.15 + 4.7
  
 def readTemp(temperature):
     return temperature * 0.25
@@ -436,11 +436,11 @@ with open("data.csv", "w", newline='') as file:
                 except:
                     data1 = ''
 
-                data1 = data1.replace('\x00','')
+                data1 = data1.replace('\x00', '')
                 data1 = data1.replace('\r', '')
                 #takes in full string from second arduino and makes it into an array.
                 splitdata = data1.split(", ")
-
+                splitdata = [int(val) for val in splitdata]
                 timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
                 n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
                 BlankTemp1  = readTMP36(splitdata[2])
@@ -455,5 +455,5 @@ with open("data.csv", "w", newline='') as file:
                              dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
                              blanketstatus1, blanketstatus2]  + [msgIndex])
+            ser1.flush()
             file.flush()
-            
