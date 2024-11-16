@@ -248,8 +248,8 @@ for port, desc, hwid in sorted(ports):
 #Legacy equipment:
 #ser.port = '/dev/ttyACM0'
 
-ser.baudrate = ser1.baudrate =  normalBaud
-#ser1.baudrate = 115200
+ser.baudrate =  normalBaud
+ser1.baudrate = 115200
 ser.timeout = ser1.timeout = 5
 ser.open()
 ser1.open()
@@ -422,7 +422,7 @@ with open("data.csv", "w", newline='') as file:
                     dataBit = dataBit >> 10
                     msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
                     dataBit = dataBit >> 3
-                    botTemp = readTMP36(dataBit & 1023)
+                    botTemp = readTMP36(dataBit & 1023) 
             
             
             #--------------
@@ -432,22 +432,39 @@ with open("data.csv", "w", newline='') as file:
             if InWaiting > 0:
                 data1 = ser1.readline()
                 try:
-                    data1 = data1.decode().rstrip()
+                    if b'\x00' in data1 or b'\r' in data1:
+                        
+                        data1 = data1.decode().rstrip()
+                        data1 = data1.replace('\x00','')
+                        data1 = data1.replace('\r', '')
+                        #takes in full string from second arduino and makes it into an array.
+                        splitdata = data1.split(", ")
+                        splitdata = [int(val) for val in splitdata]
+                        if len(splitdata) == 6:
+                            timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
+                            n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+                            BlankTemp1  = readTMP36(splitdata[2])
+                            BlankTemp2 = readLM235(splitdata[3])
+                            blanketstatus1 = splitdata[4]
+                            blanketstatus2 = splitdata[5]
                 except:
-                    data1 = ''
-
-                data1 = data1.replace('\x00', '')
+                    #data1 = ''
+                    pass
+                """
+                data1 = data1.replace('\x00','')
                 data1 = data1.replace('\r', '')
                 #takes in full string from second arduino and makes it into an array.
                 splitdata = data1.split(", ")
                 splitdata = [int(val) for val in splitdata]
-                timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
-                n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-                BlankTemp1  = readTMP36(splitdata[2])
-                BlankTemp2 = readLM235(splitdata[3])
-                blanketstatus1 = splitdata[4]
-                blanketstatus2 = splitdata[5]
-
+                if len(splitdata) == 6:
+                    timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
+                    n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
+                    BlankTemp1  = readTMP36(splitdata[2])
+                    BlankTemp2 = readLM235(splitdata[3])
+                    print(BlankTemp1, BlankTemp2)
+                    blanketstatus1 = splitdata[4]
+                    blanketstatus2 = splitdata[5]
+                """
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
             writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}', f'{n2oFeedP2:.2f}',
