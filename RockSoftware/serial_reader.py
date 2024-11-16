@@ -445,7 +445,6 @@ with open("data.csv", "w", newline='') as file:
                             n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
                             BlankTemp1  = readTMP36(splitdata[2])
                             BlankTemp2 = readLM235(splitdata[3])
-                            print(BlankTemp1, BlankTemp2)
                             blanketstatus1 = splitdata[4]
                             blanketstatus2 = splitdata[5]
                 except:
