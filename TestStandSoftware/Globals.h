@@ -259,7 +259,7 @@ const int16_t purgingTime = oxidiserEmptyTime + 4*1000;  //Placeholder value
 const int16_t valveCount = 3; 
 
 //How many 5V output pressure sensors does the system have
-const int16_t pressureCount5V = 4;
+const int16_t pressureCount5V = 5;
 
 //How many 20mA output pressure sensors does the system have
 const int16_t pressureCount20mA = 0;
@@ -502,7 +502,7 @@ const int16_t feedingTemperatureLimit = 35;  //Placeholder value
 const int16_t buzzerOnTime = 1 * 500;
 
 //Baudrate for serial communications
-const uint32_t serialBaudNormal = 1000000;
+const uint32_t serialBaudNormal = 115200;
 
 // Switching baudrate not utilized currently
 //const uint32_t serialBaudFast = 1000000;
