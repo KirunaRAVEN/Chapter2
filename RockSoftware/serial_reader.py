@@ -275,7 +275,6 @@ with open("data.csv", "w", newline='') as file:
     BlankTemp2 = 0
 
     timestamp = 0
-    n2feedP = 0
     lineP = 0
     combP = 0
     n2oFeedP = 0
@@ -470,7 +469,7 @@ with open("data.csv", "w", newline='') as file:
             writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}', f'{n2oFeedP2:.2f}',
                              f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
                              dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
-                             swMode, swSub, timestamp2, f'{n2feedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
+                             swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
                              blanketstatus1, blanketstatus2]  + [msgIndex])
             ser1.flush()
             file.flush()
