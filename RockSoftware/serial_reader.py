@@ -261,7 +261,7 @@ if ser.is_open == True & ser1.is_open == True:
 with open("data.csv", "w", newline='') as file:
     writer = csv.writer(file)
     #Header to the csv data file
-    writer.writerow(["ArduinoMegaTime", "LinePressure", "CharmberPressure", "N2OFeedingPressure1", "N2OFeedingPressure2",
+    writer.writerow(["ArduinoMegaTime", "LinePressure", "CharmberPressure", "N2OFeedingPressure2", "N2OFeedingPressure1",
                      "LoadCell", "NULL", "NozzleTemperature", "PipingTemperature", "IR sensor", "DumpValveButtonStatus", 
                      "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
                      "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate",
@@ -466,7 +466,7 @@ with open("data.csv", "w", newline='') as file:
                 """
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
-            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP:.2f}', f'{n2oFeedP2:.2f}',
+            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP2:.2f}', f'{n2oFeedP:.2f}',
                              f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
                              dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
