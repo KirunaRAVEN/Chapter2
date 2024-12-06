@@ -160,16 +160,6 @@ def readTMP36(sensorValue):
     temperature = ((calibrationADC * (sensorValue / maxADC)) * refADC - 0.5) * 100
     return temperature
 
-def readLM235(sensorValue):
-    """
-    * calibration ADC = ratio of how much the internal voltage is off from 5.00V
-    * sensorValue = measured voltage on the pin, within 0...1023
-    * maxADC = TBD, since we are using 10 bit analog to digital converter with a voltage divider in the temp-sens circuit
-    * refADC = expected ADC voltage (5V)
-    * 10mV/Kelvin 
-    """
-
-    return (sensorValue/maxADC)*refADC/0.010 -273.15 + 4.7
  
 def readTemp(temperature):
     return temperature * 0.25
@@ -443,7 +433,7 @@ with open("data.csv", "w", newline='') as file:
                             timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
                             n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
                             BlankTemp1  = readTMP36(splitdata[2])
-                            BlankTemp2 = readLM235(splitdata[3])
+                            BlankTemp2 = readTMP36(splitdata[3])
                             blanketstatus1 = splitdata[4]
                             blanketstatus2 = splitdata[5]
                 except:
