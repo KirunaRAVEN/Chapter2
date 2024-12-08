@@ -17,7 +17,7 @@
 
 void setup() {
   // Initialize serial communication at 1000000 baud
-  Serial.begin(1000000);
+  Serial.begin(115200);
   // Set the Arduino ADC clock prescaler to get faster analogRead()
   ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear prescaler bits
 
@@ -37,7 +37,7 @@ void loop() {
   int32_t blanketTemp1 =     analogRead(A3);
   int32_t blanketTemp2 =     analogRead(A4);
   bool    blanketstatus1  =  digitalRead(13);
-  bool    blanketstatus2  =  digitalRead(12);
+  bool    blanketstatus2  =  digitalRead(8);
 
   //Save timestamp
   uint64_t newTimestamp = micros(); //Timestamp at start of loop
