@@ -436,6 +436,7 @@ with open("data.csv", "w", newline='') as file:
                             BlankTemp2 = readTMP36(splitdata[3])
                             blanketstatus1 = splitdata[4]
                             blanketstatus2 = splitdata[5]
+                        ser1.reset_input_buffer()
                 except:
                     #data1 = ''
                     pass
@@ -461,5 +462,4 @@ with open("data.csv", "w", newline='') as file:
                              dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
                              swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
                              blanketstatus1, blanketstatus2]  + [msgIndex])
-            ser1.flush()
             file.flush()
