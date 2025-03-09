@@ -18,13 +18,13 @@ Author: Aurora Åhs, galaktahs
 Currently, it can read from a single arduino, and it divides the stream into "packets", split by the delimiter. It does *not* have nearly full functionality.
 
 TODO:
-* read the stream of data from second arduino
-* read at the requested baud rate
-* read the stream of data from first arduino
-* break out things into functions
-* read from two arduinos at the same time
-* csv printer (i hardly know 'er)
-* make things more reliable, readable, and pretty (and test the shit out of it)
+[X] read the stream of data from second arduino
+[X] read at the requested baud rate
+[ ] read the stream of data from first arduino
+[ ] break out things into functions
+[ ] read from two arduinos at the same time
+[ ] csv printer (i hardly know 'er)
+[ ] make things more reliable, readable, and pretty (and test the shit out of it)
 
 */
 
@@ -44,8 +44,8 @@ void main() {
 
     tcgetattr(fd, &toptions);
 
-    cfsetispeed(&toptions, B9600); // 9600 Baud
-    cfsetospeed(&toptions, B9600);
+    cfsetispeed(&toptions, B115200); // 115200 Baud
+    cfsetospeed(&toptions, B115200);
 
     // 8N1
     toptions.c_cflag &= ~PARENB;

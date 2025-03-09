@@ -5,3 +5,4 @@ InterfaceSoftware/.vscode/
 InterfaceSoftware/resources/__pycache__/indicatorDefinitions.cpython-311.pyc
 InterfaceSoftware/resources/__pycache__/displayElements.cpython-311.pyc
 InterfaceSoftware/resources/__pycache__/dataDefinitions.cpython-311.pyc
+RockSoftware/serial_reader
