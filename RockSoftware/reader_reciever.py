@@ -6,8 +6,8 @@ import re
 import serial.tools.list_ports as list_ports
 import csv
 import socket
-
-#import time
+import time
+import random
 
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
@@ -205,60 +205,76 @@ def read_message(ser):
             index += 1
             
                        
-# ----------------
-# START OF PROGRAM
-# ----------------
 
 
-normalBaud = 1000000
+def changeSocks(listenSock):
+    # makes the program wait until a connection to the GS-laptop is made:
+    print("listening for new connection ...")
+    dataSock = socket.socket(type=socket.SOCK_STREAM)
+    debugSock, addr = listenSock.accept() # this is the blocking part
+    dataSock.connect((addr[0], 6000))
+    debugSock.send("connected".encode())
+    debugSock.settimeout(0.01) # ooh, i like this hack
+    dataSock.settimeout(0.01)
+    return (debugSock, dataSock)
 
-ser = serial.Serial()
-ser1 = serial.Serial()
+def poll(sock):
+    try:
+        if sock.recv(1) == b'': # times out if connection is alive, but recieves '' if dead
+            return False
+    except TimeoutError:
+        return True
+    except ConnectionResetError:
+        return False
 
-#Ivar's regarded addition: Retrieves information about the Arduinos connected to the USB-ports
-ports = list_ports.comports()
+if __name__ == '__main__':
+    # Set up network communication
+    listenSock = socket.socket(type=socket.SOCK_STREAM)
+    listenSock.bind(("", 5011))
+    listenSock.listen(10)
+    debugSock, dataSock = changeSocks(listenSock) # BLOCKING
+    dataConn = True
+    debugConn = True
 
-#Finds which one the Arduino Mega is connected to via reading the 'SER' part of hwid
-#Now find two
-megaFound = False
-unoFound = False
-for port, desc, hwid in sorted(ports):
-    if megaFound == False:
-        if hwid[22:46] == 'SER=859373133373515062A1':
-            ser.port = port
-            megaFound = True
-            continue
-        else:
-            print("Arduino Mega not found!")
-    if unoFound == False:
-        if hwid[22:46] == 'SER=24233323435351912251':
-            ser1.port = port
-            unoFound = True
-            continue
-        else:
-            print("Arduino Uno not found!")
-
-#Legacy equipment:
-#ser.port = '/dev/ttyACM0'
-
-ser.baudrate =  normalBaud
-ser1.baudrate = 115200
-ser.timeout = ser1.timeout = 5
-ser.open()
-ser1.open()
-
-if ser.is_open == True & ser1.is_open == True:
-    print(f'Serial port {ser.port} and {ser1.port} is open\n')
-    print(ser, '\n')
-
-with open("data.csv", "w", newline='') as file:
-    writer = csv.writer(file)
+    # set up data collection:
+    normalBaud = 1000000
+    ser = serial.Serial()
+    ser1 = serial.Serial()
+    #Ivar's regarded addition: Retrieves information about the Arduinos connected to the USB-ports
+    ports = list_ports.comports()
+    #Finds which one the Arduino Mega is connected to via reading the 'SER' part of hwid
+    #Now find two
+    megaFound = False
+    unoFound = False
+    for port, desc, hwid in sorted(ports):
+        if megaFound == False:
+            if hwid[22:46] == 'SER=859373133373515062A1':
+                ser.port = port
+                megaFound = True
+                continue
+            else:
+                print("Arduino Mega not found!")
+                debugSock.send("Arduino Mega not found!".encode())
+        if unoFound == False:
+            if hwid[22:46] == 'SER=24233323435351912251':
+                ser1.port = port
+                unoFound = True
+                continue
+            else:
+                print("Arduino Uno not found!")
+                debugSock.send("Arduino Uno not found!".encode())
+    ser.baudrate =  normalBaud
+    ser1.baudrate = 115200
+    ser.timeout = ser1.timeout = 5
+    ser.open()
+    ser1.open()
+    if ser.is_open == True & ser1.is_open == True:
+        print(f'Serial port {ser.port} and {ser1.port} is open\n')
+        debugSock.send(f'Serial port {ser.port} and {ser1.port} is open\n'.encode())
+        print(ser, '\n')
+ 
     #Header to the csv data file
-    writer.writerow(["ArduinoMegaTime", "LinePressure", "CharmberPressure", "N2OFeedingPressure2", "N2OFeedingPressure1",
-                     "LoadCell", "NULL", "NozzleTemperature", "PipingTemperature", "IR sensor", "DumpValveButtonStatus", 
-                     "IgnitionButtonStatus", "NitrogenFeedingButtonStatus", "OxidizerValveButtonStatus", 
-                     "IgnitionSwState", "ValveSwSstate", "CurrentSwMode", "CurrentSwSubstate",
-                     "ArduinoUNOTime","NitrogenPressure","BottleTemp1","BottleTemp2","BottleStatus1","BottleStatus2", "MessageIndex"])
+    dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
 
     #Init values that aren't received always
     nozzT = 0
@@ -460,9 +476,18 @@ with open("data.csv", "w", newline='') as file:
                 """
             #Generate the csv line, where splitdata is the second arduino
             # live reader requires msgIndex to be the last row element
-            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP2:.2f}', f'{n2oFeedP:.2f}',
-                             f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
-                             dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
-                             swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
-                             blanketstatus1, blanketstatus2]  + [msgIndex])
-            file.flush()
+#            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP2:.2f}', f'{n2oFeedP:.2f}',
+#                             f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
+#                             dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
+#                             swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
+#                             blanketstatus1, blanketstatus2]  + [msgIndex])
+
+
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
+            try:
+                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}")
+            except:
+                pass
+            if not (debugConn and dataConn):
+                debugSock, dataSock = changeSocks(listenSock) # BLOCKING

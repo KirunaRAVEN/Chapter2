@@ -1,5 +1,11 @@
 #!/bin/bash
 # execute bash script with 'source gs_init.sh'
+cd ~/Documents/GroundStationSoftware/interface/
+python3 writer_reciever.py & python3 interface.py
+
+quit
+# there's only technical debt below
+
 
 # navigate to working directory
 cd ~/Documents/GroundStationSoftware/interface/
