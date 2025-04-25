@@ -212,7 +212,15 @@ def changeSocks(listenSock):
     print("listening for new connection ...")
     dataSock = socket.socket(type=socket.SOCK_STREAM)
     debugSock, addr = listenSock.accept() # this is the blocking part
-    dataSock.connect((addr[0], 6000))
+    print(f"connection recieved, setting up datastream to {addr[0]}:6000")
+    while True:
+        try:
+            dataSock.connect((addr[0], 6000))
+            break
+        except:
+            print(".", end="", flush=True)
+            time.sleep(1)
+    print("connected")
     debugSock.send("connected".encode())
     debugSock.settimeout(0.01) # ooh, i like this hack
     dataSock.settimeout(0.01)
@@ -223,6 +231,8 @@ def poll(sock):
         if sock.recv(1) == b'': # times out if connection is alive, but recieves '' if dead
             return False
     except TimeoutError:
+        return True
+    except socket.timeout: # compatibility with python 3.9
         return True
     except ConnectionResetError:
         return False
@@ -486,8 +496,8 @@ if __name__ == '__main__':
             dataConn = poll(dataSock)
             debugConn = poll(debugSock)
             try:
-                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}")
+                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}".encode())
             except:
                 pass
-            if not (debugConn and dataConn):
+            if not (debugConn and dataConn): # if socks are dead, get new ones
                 debugSock, dataSock = changeSocks(listenSock) # BLOCKING

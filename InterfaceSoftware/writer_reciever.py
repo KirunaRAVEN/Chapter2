@@ -52,5 +52,4 @@ if __name__ == '__main__':
             if msg != True:
                 for m in msg:
                     print(f"[*] {m}")
-                    f.write(f"{m}\n")
-        #time.sleep(0.1)
+            f.flush()
