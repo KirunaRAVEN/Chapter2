@@ -14,6 +14,7 @@
 
 #include "Globals.h"
 
+#include <Servo.h>
 // valvePins:
 // Arduino Pin 2 -> ConnectorPin 1 -> mainValve -> code value 0
 // Arduino Pin 3 -> ConnectorPin 2 -> dumpValve -> code value 1
@@ -29,8 +30,12 @@ void initValves(){
   pinMode(pin_names_t::OXIDIZER_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::OXIDIZER_VALVE_PIN, LOW);
   
-  pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
-  digitalWrite(pin_names_t::DUMP_VALVE_PIN, LOW); // Even though normally open, nominal state is dump valve open
+  //pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
+  DumpValve.attach(pin_names_t::DUMP_VALVE_PIN);
+  //analogWrite(pin_names_t::DUMP_VALVE_PIN, OPENFORPWM); // Even though normally open, nominal state is dump valve open
+  DumpValve.write(90);
+  dumpValveState = LOW;
+
   
   pinMode(pin_names_t::N2FEEDING_VALVE_PIN, OUTPUT);
   digitalWrite(pin_names_t::N2FEEDING_VALVE_PIN, LOW);
@@ -39,9 +44,25 @@ void initValves(){
 }
 
 void setValve(pin_names_t valve_pin, bool state){
-  digitalWrite(valve_pin, state);
+  if (valve_pin != pin_names_t::DUMP_VALVE_PIN){
+    digitalWrite(valve_pin, state);
+  }
+  else{
+    if (state == HIGH){
+      DumpValve.write(180);
+    }
+    else{
+      DumpValve.write(90);
+    }
+    dumpValveState = state;
+  }
 }
 
 void getValve(pin_names_t valve_pin, bool* valveState){
-  *valveState = digitalRead(valve_pin);  
+  if (valve_pin != pin_names_t::DUMP_VALVE_PIN){
+    *valveState = digitalRead(valve_pin);
+  }
+  else{
+    *valveState = dumpValveState;  // Return saved state
+  }
 }
