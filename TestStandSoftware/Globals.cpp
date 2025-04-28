@@ -1,3 +1,4 @@
 #include "Globals.h"
 
-bool dumpValveState;
+bool dumpValveState = LOW;
+Servo DumpValve; 

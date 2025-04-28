@@ -11,13 +11,14 @@
 
 #include <stdint.h>
 #include <Arduino.h>
+#include <Servo.h>
 
 //Prevent multiple definitions with the if statement
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-//Dump valve initial state
-bool dumpValveState = LOW;
+extern bool dumpValveState;
+extern Servo DumpValve;
 
 //Pin Enumerators - Add Pins for different functionalities here
 typedef enum {
