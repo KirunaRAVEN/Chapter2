@@ -23,13 +23,13 @@ extern Servo DumpValve;
 //Pin Enumerators - Add Pins for different functionalities here
 typedef enum {
   OXIDIZER_VALVE_PIN = 2,             //Port E4
-  DUMP_VALVE_PIN = 3,                 //Port E5
+  DUMP_VALVE_PIN = 7,                 //Port H4
   N2FEEDING_VALVE_PIN = 4,            //Port G5
   TEST_MODE_LED_PIN = 6,              //Port H3   //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN = 10,        //Port B4   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN = 3,        //Port E5   //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,             //Port H5
   HEATING_SENSE_PIN = 9,              //Port H6
-  DUMP_VALVE_BUTTON_PIN = 7,         //Port H4
+  DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
   IGNITER_CONTROL_PIN = 12,           //Port B6
   CAMERA_TRIGGER_PIN = 5,             //Port E3
   BUZZER_CONTROL_PIN = 19,            //Port D2
