@@ -45,8 +45,8 @@ void getWarning(bool *warning){
 
 void setRepeatIndicator(bool state){
   //digitalWrite(REPEAT_SEQUENCE_LED_PIN, state);
-  if (state == true){PORTH |=  (1 << REPEAT_SEQUENCE_LED_PIN_PORTH);}
-  else              {PORTH &= ~(1 << REPEAT_SEQUENCE_LED_PIN_PORTH);}
+  if (state == true){PORTE |=  (1 << REPEAT_SEQUENCE_LED_PIN_PORTE);}
+  else              {PORTE &= ~(1 << REPEAT_SEQUENCE_LED_PIN_PORTE);}
 }
 
 void setTestModeIndicator(bool state){

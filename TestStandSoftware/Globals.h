@@ -80,7 +80,7 @@ typedef enum {
 typedef enum {
   CAMERA_TRIGGER_PIN_PORTE = PORTE3,            //Port E3
   OXIDIZER_VALVE_PIN_PORTE = PORTE4,            //Port E4
-  DUMP_VALVE_PIN_PORTE = PORTH3,                //Port H3
+  DUMP_VALVE_PIN_PORTH = PORTH3,                //Port H3
 }portE_t;
 
 
@@ -90,7 +90,7 @@ typedef enum {
 
 typedef enum {
   TEST_MODE_LED_PIN_PORTH = PORTH4,             //Port H4   //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN_PORTH = PORTE5,       //Port E5   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN_PORTE = PORTE5,       //Port E5   //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN_PORTH = PORTH5,            //Port H5
   HEATING_SENSE_PIN_PORTH = PORTH6,             //Port H6
 }portH_t;
