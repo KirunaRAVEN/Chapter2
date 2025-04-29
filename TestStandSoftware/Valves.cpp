@@ -33,8 +33,8 @@ void initValves(){
   //pinMode(pin_names_t::DUMP_VALVE_PIN, OUTPUT);
   DumpValve.attach(pin_names_t::DUMP_VALVE_PIN);
   //analogWrite(pin_names_t::DUMP_VALVE_PIN, OPENFORPWM); // Even though normally open, nominal state is dump valve open
-  DumpValve.write(120);
-  dumpValveState = LOW;
+  DumpValve.write(68); //open
+  dumpValveState = HIGH;
 
   
   pinMode(pin_names_t::N2FEEDING_VALVE_PIN, OUTPUT);
@@ -49,10 +49,10 @@ void setValve(pin_names_t valve_pin, bool state){
   }
   else{
     if (state){
-      DumpValve.write(68);
+      DumpValve.write(120); //closed
     }
     else{
-      DumpValve.write(120);
+      DumpValve.write(68); //open
     }
     dumpValveState = state;
   }
