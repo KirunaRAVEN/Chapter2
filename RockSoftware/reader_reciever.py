@@ -3,7 +3,7 @@ import datetime as dt
 import serial
 import time
 import re
-import serial.tools.list_ports as list_ports
+qimport serial.tools.list_ports as list_ports
 import csv
 import socket
 import time
@@ -222,8 +222,8 @@ def changeSocks(listenSock):
             time.sleep(1)
     print("connected")
     debugSock.send("connected".encode())
-    debugSock.settimeout(0.01) # ooh, i like this hack
-    dataSock.settimeout(0.01)
+    debugSock.settimeout(0.001) # ooh, i like this hack
+    dataSock.settimeout(0.001)
     return (debugSock, dataSock)
 
 def poll(sock):
@@ -496,7 +496,7 @@ if __name__ == '__main__':
             dataConn = poll(dataSock)
             debugConn = poll(debugSock)
             try:
-                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}".encode())
+                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}\n".encode())
             except:
                 pass
             if not (debugConn and dataConn): # if socks are dead, get new ones

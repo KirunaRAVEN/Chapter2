@@ -4,13 +4,20 @@ NAME=RavenGS
 cd ~/Documents/GroundStationSoftware/interface/
 cp data.csv data.csv.old
 echo "" > data.csv
+tmux kill-session -t $NAME
 tmux new -s $NAME -d
 tmux send-keys -t $NAME 'python3 writer_reciever.py' C-m
 tmux split-window -h -t $NAME
 tmux send-keys -t $NAME 'python3 interface.py' C-m
+tmux split-window -v -t $NAME
+tmux send-keys -t $NAME 'tail -f data.csv | python3 prettyprint.py' C-m
+tmux select-pane -t $NAME:0.0
+tmux split-window -v -t $NAME
+tmux send-keys -t $NAME 'tail -f data.csv | python3 leaktest.py' C-m
 tmux attach -t $NAME
 
-# there's only technical debt below
+
+# there's only technical debt below, we shan't linger
 
 
 # navigate to working directory
