@@ -184,6 +184,10 @@ def readIR(sensorValue):
 # ----------------------------------------
 
 def read_message_from_second_arduino(ser):
+    InWaiting = ser.inWaiting()
+    if InWaiting == 0:
+        return None
+
     escapebyte = False
     continuereading = False
 
