@@ -3,7 +3,7 @@ import datetime as dt
 import serial
 import time
 import re
-qimport serial.tools.list_ports as list_ports
+import serial.tools.list_ports as list_ports
 import csv
 import socket
 import time
@@ -179,6 +179,40 @@ def readIR(sensorValue):
     temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR
     return temperature
 
+# ----------------------------------------
+# BYTESREAM READING FOR THE SECOND ARDUINO
+# ----------------------------------------
+
+def read_message_from_second_arduino(ser):
+    escapebyte = False
+    continuereading = False
+
+    while True:
+        byte = ser.read(1)
+        if not byte:
+            return None
+        b = byte[0]
+
+        if b == 0x7E:
+            buffer = bytearray()
+            continuereading = True
+            escapebyte = False
+            continue
+        elif b == 0x7D:
+            escapebyte = True
+            continue 
+
+        if escapebyte:
+            buffer.append(b ^ 0x20)
+            escapebyte = False
+
+        if b == 0x7F and continuereading:
+            return buffer
+        elif continuereading:
+            buffer.append(b)
+
+
+
 
 # -----------------
 # BYTESREAM READING
@@ -275,7 +309,8 @@ if __name__ == '__main__':
                 debugSock.send("Arduino Uno not found!".encode())
     ser.baudrate =  normalBaud
     ser1.baudrate = 115200
-    ser.timeout = ser1.timeout = 5
+    ser.timeout = 5 
+    ser1.timeout = 0.005 #only 5ms to ensure we dont get stuck by reading the second arduino
     ser.open()
     ser1.open()
     if ser.is_open == True & ser1.is_open == True:
@@ -446,6 +481,16 @@ if __name__ == '__main__':
             #--------------
             #Second arduino
             #--------------
+            binarypack = read_message_from_second_arduino(ser1)
+            if len(binarypack) == 12:
+                timestamp2 = int.from_bytes(binarypack[0:4], byteorder='little') << 3
+                n2FeedP = int.from_bytes(binarypack[4:6], byteorder='little')
+                BlankTemp1 = int.from_bytes(binarypack[6:8], byteorder='little')
+                BlankTemp2 = int.from_bytes(binarypack[8:10], byteorder='little')
+                blanketstatus1 = int.from_bytes(binarypack[10:11], byteorder='little')
+                blanketstatus2 = int.from_bytes(binarypack[11:12], byteorder='little')
+
+            """
             InWaiting = ser1.inWaiting()
             if InWaiting > 0:
                 data1 = ser1.readline()
@@ -469,7 +514,7 @@ if __name__ == '__main__':
                 except:
                     #data1 = ''
                     pass
-                """
+                
                 data1 = data1.replace('\x00','')
                 data1 = data1.replace('\r', '')
                 #takes in full string from second arduino and makes it into an array.
