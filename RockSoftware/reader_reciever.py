@@ -182,38 +182,30 @@ def readIR(sensorValue):
 # ----------------------------------------
 # BYTESREAM READING FOR THE SECOND ARDUINO
 # ----------------------------------------
-
 def read_message_from_second_arduino(ser):
-    InWaiting = ser.inWaiting()
-    if InWaiting == 0:
+    if ser.in_waiting == 0:
         return None
-
+    buffersecondarduino = bytearray()
+    receiving = False 
     escapebyte = False
-    continuereading = False
-
-    while True:
-        byte = ser.read(1)
-        if not byte:
-            return None
-        b = byte[0]
-
-        if b == 0x7E:
-            buffer = bytearray()
-            continuereading = True
+    while ser.in_waiting > 0:
+        b = ser.read(1)[0]
+        if not receiving:
+            if b == 0x7E:
+                receiving = True
+                escapebyte = False 
+            continue
+        if escapebyte: 
+            buffersecondarduino.append(b ^ 0x20)
             escapebyte = False
             continue
-        elif b == 0x7D:
+        
+        if b == 0x7D: #escape byte
             escapebyte = True
-            continue 
-
-        if escapebyte:
-            buffer.append(b ^ 0x20)
-            escapebyte = False
-
-        if b == 0x7F and continuereading:
-            return buffer
-        elif continuereading:
-            buffer.append(b)
+        elif b == 0x7F:
+            return buffersecondarduino
+        else:
+            buffersecondarduino.append(b)
 
 
 
