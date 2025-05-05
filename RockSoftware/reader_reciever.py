@@ -185,27 +185,33 @@ def readIR(sensorValue):
 def read_message_from_second_arduino(ser):
     if ser.in_waiting == 0:
         return None
+    bytes = ser.read(ser.in_waiting)
     buffersecondarduino = bytearray()
     receiving = False 
     escapebyte = False
-    while ser.in_waiting > 0:
-        b = ser.read(1)[0]
+    for b in bytes:
         if not receiving:
             if b == 0x7E:
                 receiving = True
                 escapebyte = False 
             continue
+
         if escapebyte: 
             buffersecondarduino.append(b ^ 0x20)
             escapebyte = False
             continue
         
-        if b == 0x7D: #escape byte
+        if escapebyte:
+            buffersecondarduino.append(b ^ 0x20)
+            escapebyte = False
+        elif b == 0x7D:  # escape byte
             escapebyte = True
-        elif b == 0x7F:
+        elif b == 0x7F:  # end byte
             return buffersecondarduino
         else:
             buffersecondarduino.append(b)
+    
+    return None
 
 
 
