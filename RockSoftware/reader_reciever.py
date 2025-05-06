@@ -378,8 +378,8 @@ if __name__ == '__main__':
         if bufferWait == 0: maxBufferWait = 0
         """
 
-        packetsfromfirstard = readbytesfromard1.read_messages_from_second_arduino(ser)
-        for packet in packetsfromfirstard:
+        packetsMega = readbytesMega.read_message(ser)
+        for packet in packetsMega:
             byteList = list(packet) 
             length = len(packet)
 
@@ -492,8 +492,8 @@ if __name__ == '__main__':
             #--------------
             #Second arduino
             #--------------
-            packetsfromard2 = readbytesfromard2.read_messages_from_second_arduino(ser1)
-            for packet in packetsfromard2:
+            packetsUno = readbytesUno.read_message(ser1)
+            for packet in packetsUno:
                 if len(packet) == 12:
                     timestamp2 = int.from_bytes(packet[0:4], byteorder='little') << 3
                     n2FeedP = int.from_bytes(packet[4:6], byteorder='little')
