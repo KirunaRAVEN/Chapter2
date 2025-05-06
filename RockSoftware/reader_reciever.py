@@ -8,6 +8,9 @@ import csv
 import socket
 import time
 import random
+import queue
+import threading
+
 
 # ------------------------------------------
 # CONSTANTS USED FOR ADC TO VALUE CONVERSION
@@ -277,6 +280,27 @@ def poll(sock):
     except ConnectionResetError:
         return False
 
+#holds packets from the uno and mega
+megaQueue = queue.Queue()
+unoQueue = queue.Queue()
+
+#byte readers for the uno and mega
+readbytesMega = ByteReader()
+readbytesUno = ByteReader()
+
+#thread for the mega
+def mega_reader_thread(ser, byte_reader, q):
+    while True:
+        packets =   byte_reader.read_message(ser)
+        for packet in packets:
+            q.put(packet)
+#thread for the uno
+def uno_reader_thread(ser1, byte_reader, q):
+    while True:
+        packets = byte_reader.read_message(ser1)
+        for packet in packets:
+            q.put(packet)
+
 if __name__ == '__main__':
     # Set up network communication
     listenSock = socket.socket(type=socket.SOCK_STREAM)
@@ -319,11 +343,14 @@ if __name__ == '__main__':
     ser1.timeout = 5 
     ser.open()
     ser1.open()
-    if ser.is_open == True & ser1.is_open == True:
+    if ser.is_open and ser1.is_open:
         print(f'Serial port {ser.port} and {ser1.port} is open\n')
         debugSock.send(f'Serial port {ser.port} and {ser1.port} is open\n'.encode())
         print(ser, '\n')
- 
+    
+    threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega, megaQueue), daemon=True).start()
+    threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno, unoQueue), daemon=True).start()
+
     #Header to the csv data file
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
 
@@ -367,8 +394,6 @@ if __name__ == '__main__':
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
-    readbytesMega = ByteReader()
-    readbytesUno = ByteReader()
     while True:
         """bufferWait = ser.inWaiting()
         if bufferWait >= maxBufferWait:
@@ -378,8 +403,8 @@ if __name__ == '__main__':
         if bufferWait == 0: maxBufferWait = 0
         """
 
-        packetsMega = readbytesMega.read_message(ser)
-        for packet in packetsMega:
+        while not megaQueue.empty():
+            packet = megaQueue.get()
             byteList = list(packet) 
             length = len(packet)
 
@@ -492,8 +517,8 @@ if __name__ == '__main__':
             #--------------
             #Second arduino
             #--------------
-            packetsUno = readbytesUno.read_message(ser1)
-            for packet in packetsUno:
+            while not unoQueue.empty():
+                packet = unoQueue.get()
                 if len(packet) == 12:
                     timestamp2 = int.from_bytes(packet[0:4], byteorder='little') << 3
                     n2FeedP = int.from_bytes(packet[4:6], byteorder='little')

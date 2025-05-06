@@ -83,8 +83,7 @@ void countdownLoop(){
   uint32_t ignitionPressTime = 0;
 
   while (true){
-    delay(3);
-
+    
     getCurrentMode(&currentMode);
     getCurrentSubstate(&currentSubstate);
 
