@@ -182,37 +182,40 @@ def readIR(sensorValue):
 # ----------------------------------------
 # BYTESREAM READING FOR THE SECOND ARDUINO
 # ----------------------------------------
-class ByteReader2ard:
+class ByteReader:
     def __init__(self):
         self.buffer = bytearray()
         self.receiving = False
         self.escapebyte = False
-    
-    def read_messages_from_second_arduino(self, ser): 
-        packets = []
-        while ser.in_waiting > 0:
+        self.packets = []
+    def dataprocessing(self, data): 
+        for byte in data:
+            if byte == 0x7E: #start byte allows us to reset the buffer and all variables at start
+                self.buffer = bytearray()
+                self.receiving = True
+                self.escapebyte = False
+                continue
+            if not self.receiving:  
+                continue
+            if byte == 0x7F: #end byte
+                self.receiving = False
+                self.packets.append(bytes(self.buffer))
+                self.buffer = bytearray() #reset buffer for safety
+                continue
+            if self.escapebyte:
+                self.buffer.append(byte ^ 0x20)
+                self.escapebyte = False
+            elif byte == 0x7D:
+                self.escapebyte = True
+            else:
+                self.buffer.append(byte)
+    def read_message(self, ser):
+        if ser.in_waiting:
             data = ser.read(ser.in_waiting)
-            for byte in data:
-                if byte == 0x7E: #start byte allows us to reset the buffer and all variables at start
-                    self.buffer = bytearray()
-                    self.receiving = True
-                    self.escapebyte = False
-                    continue
-                if not self.receiving:  
-                    continue
-                if byte == 0x7F: #end byte
-                    self.receiving = False
-                    packets.append(self.buffer)
-                    self.buffer = bytearray() #reset buffer for safety
-                    continue
-                if self.escapebyte:
-                    self.buffer.append(byte ^ 0x20)
-                    self.escapebyte = False
-                elif byte == 0x7D:
-                    self.escapebyte = True
-                else:
-                    self.buffer.append(byte)
-        return packets 
+            self.dataprocessing(data)
+        packets, self.packets = self.packets, []
+        return packets
+        
 
 
 
@@ -364,8 +367,8 @@ if __name__ == '__main__':
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
-    readbytesfromard1 = ByteReader2ard()
-    readbytesfromard2 = ByteReader2ard()
+    readbytesMega = ByteReader()
+    readbytesUno = ByteReader()
     while True:
         """bufferWait = ser.inWaiting()
         if bufferWait >= maxBufferWait:
