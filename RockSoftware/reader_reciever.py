@@ -188,7 +188,8 @@ class ByteReader2ard:
         self.receiving = False
         self.escapebyte = False
     
-    def read_message_from_second_arduino(self, ser): 
+    def read_messages_from_second_arduino(self, ser): 
+        packets = []
         while ser.in_waiting > 0:
             data = ser.read(ser.in_waiting)
             for byte in data:
@@ -201,7 +202,9 @@ class ByteReader2ard:
                     continue
                 if byte == 0x7F: #end byte
                     self.receiving = False
-                    return self.buffer
+                    packets.append(self.buffer)
+                    self.buffer = bytearray() #reset buffer for safety
+                    continue
                 if self.escapebyte:
                     self.buffer.append(byte ^ 0x20)
                     self.escapebyte = False
@@ -209,7 +212,7 @@ class ByteReader2ard:
                     self.escapebyte = True
                 else:
                     self.buffer.append(byte)
-        return None #incomplete packet
+        return packets 
 
 
 
@@ -482,14 +485,15 @@ if __name__ == '__main__':
             #--------------
             #Second arduino
             #--------------
-            msgfromard2 = readbytesfromard2.read_message_from_second_arduino(ser1)
-            if (msgfromard2 is not None) and (len(msgfromard2) == 12):
-                timestamp2 = int.from_bytes(msgfromard2[0:4], byteorder='little') << 3
-                n2FeedP = int.from_bytes(msgfromard2[4:6], byteorder='little')
-                BlankTemp1 = int.from_bytes(msgfromard2[6:8], byteorder='little')
-                BlankTemp2 = int.from_bytes(msgfromard2[8:10], byteorder='little')
-                blanketstatus1 = msgfromard2[10]
-                blanketstatus2 = msgfromard2[11]
+            packetsfromard2 = readbytesfromard2.read_messages_from_second_arduino(ser1)
+            for packet in packetsfromard2:
+                if len(packet) == 12:
+                    timestamp2 = int.from_bytes(packet[0:4], byteorder='little') << 3
+                    n2FeedP = int.from_bytes(packet[4:6], byteorder='little')
+                    BlankTemp1 = int.from_bytes(packet[6:8], byteorder='little')
+                    BlankTemp2 = int.from_bytes(packet[8:10], byteorder='little')
+                    blanketstatus1 = packet[10]
+                    blanketstatus2 = packet[11]
 
             """
             InWaiting = ser1.inWaiting()
