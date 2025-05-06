@@ -78,7 +78,7 @@ void loop() {
 
   // writes the struct via serial in sequences of 8 bits
   sendData((uint8_t*)&Packet, sizeof(Packet));
-  Serial.flush();
+
   // makes sure we have a update frequency of 50 Hz or less
   uint32_t elapsed = millis() - loopStart;
 

@@ -182,36 +182,33 @@ def readIR(sensorValue):
 # ----------------------------------------
 # BYTESREAM READING FOR THE SECOND ARDUINO
 # ----------------------------------------
-def read_message_from_second_arduino(ser):
-    if ser.in_waiting == 0:
-        return None
-    bytes = ser.read(ser.in_waiting)
-    buffersecondarduino = bytearray()
-    receiving = False 
-    escapebyte = False
-    for b in bytes:
-        if not receiving:
-            if b == 0x7E:
-                receiving = True
-                escapebyte = False 
-            continue
-
-        if escapebyte: 
-            buffersecondarduino.append(b ^ 0x20)
-            escapebyte = False
-            continue
-        
-        if escapebyte:
-            buffersecondarduino.append(b ^ 0x20)
-            escapebyte = False
-        elif b == 0x7D:  # escape byte
-            escapebyte = True
-        elif b == 0x7F:  # end byte
-            return buffersecondarduino
-        else:
-            buffersecondarduino.append(b)
+class ByteReader2ard:
+    def __init__(self):
+        self.buffer = bytearray()
+        self.receiving = False
+        self.escapebyte = False
     
-    return None
+    def read_message_from_second_arduino(self, ser): 
+        while ser.in_waiting > 0:
+            byte = ser.read(1)[0]
+            if byte == 0x7E: #start byte allows us to reset the buffer and all variables at start
+                self.buffer = bytearray()
+                self.receiving = True
+                self.escapebyte = False
+                continue
+            if not self.receiving:  
+                continue
+            if byte == 0x7F: #end byte
+                self.receiving = False
+                return self.buffer
+            if self.escapebyte:
+                self.buffer.append(byte ^ 0x20)
+                self.escapebyte = False
+            elif byte == 0x7D:
+                self.escapebyte = True
+            else:
+                self.buffer.append(byte)
+        return None #incomplete packet
 
 
 
@@ -363,6 +360,7 @@ if __name__ == '__main__':
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
+    readbytesfromard2 = ByteReader2ard()
     while True:
         """bufferWait = ser.inWaiting()
         if bufferWait >= maxBufferWait:
@@ -483,14 +481,14 @@ if __name__ == '__main__':
             #--------------
             #Second arduino
             #--------------
-            binarypack = read_message_from_second_arduino(ser1)
-            if len(binarypack) == 12:
-                timestamp2 = int.from_bytes(binarypack[0:4], byteorder='little') << 3
-                n2FeedP = int.from_bytes(binarypack[4:6], byteorder='little')
-                BlankTemp1 = int.from_bytes(binarypack[6:8], byteorder='little')
-                BlankTemp2 = int.from_bytes(binarypack[8:10], byteorder='little')
-                blanketstatus1 = int.from_bytes(binarypack[10:11], byteorder='little')
-                blanketstatus2 = int.from_bytes(binarypack[11:12], byteorder='little')
+            msgfromard2 = readbytesfromard2.read_message_from_second_arduino(ser1)
+            if msgfromard2 and len(msgfromard2)==12:
+                timestamp2 = int.from_bytes(msgfromard2[0:4], byteorder='little') << 3
+                n2FeedP = int.from_bytes(msgfromard2[4:6], byteorder='little')
+                BlankTemp1 = int.from_bytes(msgfromard2[6:8], byteorder='little')
+                BlankTemp2 = int.from_bytes(msgfromard2[8:10], byteorder='little')
+                blanketstatus1 = msgfromard2[10]
+                blanketstatus2 = msgfromard2[11]
 
             """
             InWaiting = ser1.inWaiting()

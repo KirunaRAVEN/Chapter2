@@ -63,14 +63,14 @@ if __name__ == '__main__':
         while True:
             msg = pollRecieve(dataSock)
             if msg == False:
-                printf("[!] connection dead, reset reciever")
+                print("[!] connection dead, reset reciever")
             if msg != True:
                 for m in msg:
                     print(f"[+] {m}")
                     f.write(f"{m}\n")
             msg = pollRecieve(debugSock)
             if msg == False:
-                printf("[!] connection dead, reset reciever")
+                print("[!] connection dead, reset reciever")
             if msg != True:
                 for m in msg:
                     print(f"[*] {m}")
