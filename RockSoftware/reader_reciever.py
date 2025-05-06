@@ -309,7 +309,7 @@ if __name__ == '__main__':
     ser.baudrate =  normalBaud
     ser1.baudrate = 115200
     ser.timeout = 5 
-    ser1.timeout = 0.005 #only 5ms to ensure we dont get stuck by reading the second arduino
+    ser1.timeout = 5 
     ser.open()
     ser1.open()
     if ser.is_open == True & ser1.is_open == True:
@@ -482,7 +482,7 @@ if __name__ == '__main__':
             #Second arduino
             #--------------
             msgfromard2 = readbytesfromard2.read_message_from_second_arduino(ser1)
-            if msgfromard2 and len(msgfromard2)==12:
+            if (msgfromard2 is not None) and (len(msgfromard2) == 12):
                 timestamp2 = int.from_bytes(msgfromard2[0:4], byteorder='little') << 3
                 n2FeedP = int.from_bytes(msgfromard2[4:6], byteorder='little')
                 BlankTemp1 = int.from_bytes(msgfromard2[6:8], byteorder='little')
