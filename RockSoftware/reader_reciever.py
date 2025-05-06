@@ -364,6 +364,7 @@ if __name__ == '__main__':
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
+    readbytesfromard1 = ByteReader2ard()
     readbytesfromard2 = ByteReader2ard()
     while True:
         """bufferWait = ser.inWaiting()
@@ -374,112 +375,115 @@ if __name__ == '__main__':
         if bufferWait == 0: maxBufferWait = 0
         """
 
-        data, length = read_message(ser)
-        byteList = list(data)
+        packetsfromfirstard = readbytesfromard1.read_messages_from_second_arduino(ser)
+        for packet in packetsfromfirstard:
+            byteList = list(packet) 
+            length = len(packet)
+
         
-        #print(byteList)
-        dataPointCount += 1
-        newTime = time.time()
-        if newTime - oldTime > 1:
-            #print(f'Sampling rate:{int(dataPointCount / (newTime - oldTime))}Hz')
-            oldTime = newTime
-            dataPointCount = 0
+            #print(byteList)
+            dataPointCount += 1
+            newTime = time.time()
+            if newTime - oldTime > 1:
+                #print(f'Sampling rate:{int(dataPointCount / (newTime - oldTime))}Hz')
+                oldTime = newTime
+                dataPointCount = 0
 
-        """
-        if data_list[-1] == b' r\n': # Discard restarting lines
-            file.write("\n")
-            file.flush()
-            continue
-        """
+            """
+            if data_list[-1] == b' r\n': # Discard restarting lines
+                file.write("\n")
+                file.flush()
+                continue
+            """
 
-        if (length == 3) or (length == 12) or (length == 20):
-            data_list = [0, 0, 0, 0, 0]
+            if (length == 3) or (length == 12) or (length == 20):
+                data_list = [0, 0, 0, 0, 0]
 
-            #Reset message index to not send same message multiple times
-            msgIndex = 0
+                #Reset message index to not send same message multiple times
+                msgIndex = 0
 
 
-            if length == 3:
-                data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
+                if length == 3:
+                    data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
 
-            else:
-                data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
-                data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
-                data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
-
-            if length == 20:
-                data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
-                data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
-
-            #Excecute unmushing
-
-            if length == 3:
-                #First 32bits, always received
-                dataBit = int(data_list[0])
-
-                valveStatus = dataBit & 1
-                dataBit = dataBit >> 1
-                ignStatus = dataBit & 1
-                dataBit = dataBit >> 1
-                loadC = readLoad(dataBit & 1023)
-                dataBit = dataBit >> 10
-                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-
-            else:
-                timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
-
-                #First 32bits, always received
-                dataBit = int(data_list[1])
-
-                heatButton = dataBit & 1
-                dataBit = dataBit >> 1
-                dumpButton = dataBit & 1
-                dataBit = dataBit >> 1
-                combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-                dataBit = dataBit >> 10
-                lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
-                dataBit = dataBit >> 10
-                n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER2) 
-
-                #Second 32bits, always received
-                dataBit = int(data_list[2])
-
-                swSub = dataBit & 7
-                dataBit = dataBit >> 3
-                swMode = dataBit & 7
-                dataBit = dataBit >> 3
-                valveStatus = dataBit & 1
-                dataBit = dataBit >> 1
-                ignStatus = dataBit & 1
-                dataBit = dataBit >> 1
-                oxButton = dataBit & 1
-                dataBit = dataBit >> 1
-                n2Button = dataBit & 1
-                dataBit = dataBit >> 1
-                igniButton = dataBit & 1
-                dataBit = dataBit >> 1
-                loadC = readLoad(dataBit & 1023)
-                dataBit = dataBit >> 10
-                n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
+                else:
+                    data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
+                    data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
+                    data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
 
                 if length == 20:
-                    #Third 32bits, received every ~100ms
-                    dataBit = int(data_list[3])
+                    data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
+                    data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
 
-                    msgIndex = dataBit & 7
-                    dataBit = dataBit >> 3  #First part of the msgIndex
-                    pipeT = readTemp(dataBit & 16383)
-                    dataBit = dataBit >> 14
-                    nozzT = readTemp(dataBit & 16383)
+                #Excecute unmushing
 
-                    #Fourth 32bits, received every ~100ms
-                    dataBit = int(data_list[4])
+                if length == 3:
+                    #First 32bits, always received
+                    dataBit = int(data_list[0])
 
-                    IR = readIR(dataBit & 1023)
+                    valveStatus = dataBit & 1
+                    dataBit = dataBit >> 1
+                    ignStatus = dataBit & 1
+                    dataBit = dataBit >> 1
+                    loadC = readLoad(dataBit & 1023)
                     dataBit = dataBit >> 10
-                    msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                    combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+
+                else:
+                    timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+
+                    #First 32bits, always received
+                    dataBit = int(data_list[1])
+
+                    heatButton = dataBit & 1
+                    dataBit = dataBit >> 1
+                    dumpButton = dataBit & 1
+                    dataBit = dataBit >> 1
+                    combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+                    dataBit = dataBit >> 10
+                    lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+                    dataBit = dataBit >> 10
+                    n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER2) 
+
+                    #Second 32bits, always received
+                    dataBit = int(data_list[2])
+
+                    swSub = dataBit & 7
                     dataBit = dataBit >> 3
-                    botTemp = readTMP36(dataBit & 1023) 
+                    swMode = dataBit & 7
+                    dataBit = dataBit >> 3
+                    valveStatus = dataBit & 1
+                    dataBit = dataBit >> 1
+                    ignStatus = dataBit & 1
+                    dataBit = dataBit >> 1
+                    oxButton = dataBit & 1
+                    dataBit = dataBit >> 1
+                    n2Button = dataBit & 1
+                    dataBit = dataBit >> 1
+                    igniButton = dataBit & 1
+                    dataBit = dataBit >> 1
+                    loadC = readLoad(dataBit & 1023)
+                    dataBit = dataBit >> 10
+                    n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
+
+                    if length == 20:
+                        #Third 32bits, received every ~100ms
+                        dataBit = int(data_list[3])
+
+                        msgIndex = dataBit & 7
+                        dataBit = dataBit >> 3  #First part of the msgIndex
+                        pipeT = readTemp(dataBit & 16383)
+                        dataBit = dataBit >> 14
+                        nozzT = readTemp(dataBit & 16383)
+
+                        #Fourth 32bits, received every ~100ms
+                        dataBit = int(data_list[4])
+
+                        IR = readIR(dataBit & 1023)
+                        dataBit = dataBit >> 10
+                        msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
+                        dataBit = dataBit >> 3
+                        botTemp = readTMP36(dataBit & 1023) 
             
             
             #--------------
