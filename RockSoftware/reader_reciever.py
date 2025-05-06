@@ -10,6 +10,7 @@ import time
 import random
 import queue
 import threading
+import struct
 
 
 # ------------------------------------------
@@ -301,6 +302,13 @@ def uno_reader_thread(ser1, byte_reader, q):
         for packet in packets:
             q.put(packet)
 
+#parse_uno_packets
+def parse_uno_packets(packet):
+    if len(packet) != 12:
+        return None 
+    timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = struct.unpack("<IHHHBB", packet)  
+    return timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2
+
 if __name__ == '__main__':
     # Set up network communication
     listenSock = socket.socket(type=socket.SOCK_STREAM)
@@ -519,13 +527,9 @@ if __name__ == '__main__':
             #--------------
             while not unoQueue.empty():
                 packet = unoQueue.get()
-                if len(packet) == 12:
-                    timestamp2 = int.from_bytes(packet[0:4], byteorder='little') << 3
-                    n2FeedP = int.from_bytes(packet[4:6], byteorder='little')
-                    BlankTemp1 = int.from_bytes(packet[6:8], byteorder='little')
-                    BlankTemp2 = int.from_bytes(packet[8:10], byteorder='little')
-                    blanketstatus1 = packet[10]
-                    blanketstatus2 = packet[11]
+                prased = parse_uno_packets(packet)
+                if prased:
+                    timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = prased
 
             """
             InWaiting = ser1.inWaiting()
