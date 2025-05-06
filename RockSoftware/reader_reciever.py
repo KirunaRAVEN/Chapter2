@@ -190,24 +190,25 @@ class ByteReader2ard:
     
     def read_message_from_second_arduino(self, ser): 
         while ser.in_waiting > 0:
-            byte = ser.read(1)[0]
-            if byte == 0x7E: #start byte allows us to reset the buffer and all variables at start
-                self.buffer = bytearray()
-                self.receiving = True
-                self.escapebyte = False
-                continue
-            if not self.receiving:  
-                continue
-            if byte == 0x7F: #end byte
-                self.receiving = False
-                return self.buffer
-            if self.escapebyte:
-                self.buffer.append(byte ^ 0x20)
-                self.escapebyte = False
-            elif byte == 0x7D:
-                self.escapebyte = True
-            else:
-                self.buffer.append(byte)
+            data = ser.read(ser.in_waiting)
+            for byte in data:
+                if byte == 0x7E: #start byte allows us to reset the buffer and all variables at start
+                    self.buffer = bytearray()
+                    self.receiving = True
+                    self.escapebyte = False
+                    continue
+                if not self.receiving:  
+                    continue
+                if byte == 0x7F: #end byte
+                    self.receiving = False
+                    return self.buffer
+                if self.escapebyte:
+                    self.buffer.append(byte ^ 0x20)
+                    self.escapebyte = False
+                elif byte == 0x7D:
+                    self.escapebyte = True
+                else:
+                    self.buffer.append(byte)
         return None #incomplete packet
 
 
