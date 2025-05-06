@@ -183,9 +183,9 @@ def readIR(sensorValue):
     temperature = calibrationADC * (sensorValue / maxADC) * (maxIR - minIR) + minIR
     return temperature
 
-# ----------------------------------------
-# BYTESREAM READING FOR THE SECOND ARDUINO
-# ----------------------------------------
+# -----------------------------------
+# BYTESREAM READING FOR BOTH ARDUINOS
+# -----------------------------------
 class ByteReader:
     def __init__(self):
         self.buffer = bytearray()
@@ -219,38 +219,6 @@ class ByteReader:
             self.dataprocessing(data)
         packets, self.packets = self.packets, []
         return packets
-        
-
-
-
-
-# -----------------
-# BYTESREAM READING
-# -----------------
-#old and unused
-"""
-END_MARKER = 0x7F
-ESCAPE_BYTE = 0x7D
-ESCAPE_XOR = 0x20
-
-def read_message(ser):
-    data = bytearray(20)
-    index = 0
-    while True:
-        byte = ser.read(1)[0]
-        if byte == END_MARKER or index == 20:
-            if index == 0: return [], 0
-            else: return bytes(data), index
-        elif byte == ESCAPE_BYTE:
-            next_byte = ser.read(1)[0]
-            data[index] = next_byte ^ ESCAPE_XOR
-            index += 1
-        else:
-            data[index] = byte
-            index += 1
-            """
-                       
-
 
 def changeSocks(listenSock):
     # makes the program wait until a connection to the GS-laptop is made:
@@ -283,25 +251,33 @@ def poll(sock):
         return False
 
 #holds packets from the uno and mega
-megaQueue = queue.Queue()
-unoQueue = queue.Queue()
+combined_data_queue = queue.Queue()
 
 #byte readers for the uno and mega
 readbytesMega = ByteReader()
 readbytesUno = ByteReader()
 
 #thread for the mega
-def mega_reader_thread(ser, byte_reader, q):
+def mega_reader_thread(ser, byte_reader):
     while True:
         packets =   byte_reader.read_message(ser)
         for packet in packets:
-            q.put(packet)
+            prased = parse_mega_packets(packet)
+            if prased:
+                with mega_data_LOCKED:
+                    mega_data.update(prased)
+
+
+
 #thread for the uno
-def uno_reader_thread(ser1, byte_reader, q):
+def uno_reader_thread(ser1, byte_reader):
     while True:
         packets = byte_reader.read_message(ser1)
         for packet in packets:
-            q.put(packet)
+            prased = parse_uno_packets(packet)
+            if prased:
+                with uno_data_LOCKED:
+                    uno_data.update(prased)
 
 #parse_uno_packets
 def parse_uno_packets(packet):
@@ -309,6 +285,62 @@ def parse_uno_packets(packet):
         return None 
     timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = struct.unpack("<IHHHBB", packet)  
     return timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2
+
+#thread for combining the data sent from the uno and mega
+def combined_data_thread():
+    while True: 
+        with mega_data_LOCKED:
+            copy_mega_data = mega_data.copy()
+        with uno_data_LOCKED:
+            copy_uno_data = uno_data.copy()
+        CombinedData = (
+            copy_mega_data['timestamp'],
+            copy_mega_data['lineP'],
+            copy_mega_data['combP'],
+            copy_mega_data['n2oFeedP2'],
+            copy_mega_data['n2oFeedP'],
+            copy_mega_data['loadC'],
+            copy_mega_data['nozzT'],
+            copy_mega_data['pipeT'],
+            copy_mega_data['IR'],
+            copy_mega_data['dumpButton'],
+            copy_mega_data['igniButton'],
+            copy_mega_data['n2Button'],
+            copy_mega_data['oxButton'],
+            copy_mega_data['ignStatus'],
+            copy_mega_data['valveStatus'],
+            copy_mega_data['swMode'],
+            copy_mega_data['swSub'],
+            copy_uno_data['timestamp2'],
+            copy_uno_data['n2FeedP'],
+            copy_uno_data['BlankTemp1'],
+            copy_uno_data['BlankTemp2'],
+            copy_uno_data['blanketstatus1'],
+            copy_uno_data['blanketstatus2'],
+            copy_mega_data['msgIndex']
+        )
+        combined_data_queue.put(CombinedData)
+
+#thread for socket  
+def socket_thread():
+    #defining format beforehand to increase speeds
+    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
+    global dataConn
+    global debugConn
+    while True:
+        if not (dataConn and debugConn):
+            debugSock, dataSock = changeSocks(listenSock)
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
+            continue
+        try:
+            combined_data = combined_data_queue.get(timeout=0.001)
+            dataSock.send((format_string % combined_data).encode())
+        except queue.Empty:
+            continue
+        except:
+            dataConn = False
+            debugConn = False
 
 #unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
 def parse_mega_packets(packet):
@@ -346,7 +378,7 @@ def parse_mega_packets(packet):
         result['nozzT'] = readTemp((value1 >> 17) & 16383)
         result['IR'] = readIR(value2 & 1023)
         result['msgIndex'] += ((value2>>10) & 7) << 3
-        result['botTemp'] = readTMP36((value2>>13) & 1023) 
+        #result['botTemp'] = readTMP36((value2>>13) & 1023) 
     
     return result if result else None
 
@@ -397,9 +429,6 @@ if __name__ == '__main__':
         debugSock.send(f'Serial port {ser.port} and {ser1.port} is open\n'.encode())
         print(ser, '\n')
     
-    threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega, megaQueue), daemon=True).start()
-    threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno, unoQueue), daemon=True).start()
-
     #Header to the csv data file
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
 
@@ -424,243 +453,24 @@ if __name__ == '__main__':
     'pipeT': 0.0,
     'nozzT': 0.0,
     'IR': 0.0,
-    'botTemp': 0.0
+    #'botTemp': 0.0
     }
-    nozzT = 0
-    pipeT = 0
-    IR = 0
-    BlankTemp1 = 0
-    BlankTemp2 = 0
-
-    timestamp = 0
-    lineP = 0
-    combP = 0
-    n2oFeedP = 0
-    n2oFeedP2 = 0
-    loadC = 0
-    dumpButton = 0
-    heatButton = 0
-    igniButton = 0
-    n2Button = 0
-    oxButton = 0
-    ignStatus = 0
-    valveStatus = 0
-    swMode = 0
-    swSub = 0
-    msgIndex = 0
-
-    oldTime = 0
-    #two values for the second arduino
-    timestamp2 = 0
-    n2FeedP = 0
-    BlankTemp1  = 0
-    BlankTemp2 = 0
-    blanketstatus1 = 0
-    blanketstatus2 = 0
-
-    dataPointCount = 0
-    maxBufferWait = 0
+    mega_data_LOCKED = threading.Lock()
+    uno_data= {
+        'timestamp2':0,
+        'n2FeedP':0,
+        'BlankTemp1':0,
+        'BlankTemp2':0,
+        'blanketstatus1':0, 
+        'blanketstatus2':0
+    }
+    uno_data_LOCKED = threading.Lock()
 
     ser.reset_input_buffer()
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
-    #defining format beforehand to increase speeds
-    format_string = (
-    "%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
-
-
-    while True:
-        """bufferWait = ser.inWaiting()
-        if bufferWait >= maxBufferWait:
-            maxBufferWait = bufferWait
-            #print(f'Bytes in Waiting: {ser.inWaiting()} at index {dataPointCount}')
-
-        if bufferWait == 0: maxBufferWait = 0
-        
-
-
-
-            byteList = list(packet) 
-            length = len(packet)
-
-        
-            #print(byteList)
-            dataPointCount += 1
-            newTime = time.time()
-            if newTime - oldTime > 1:
-                #print(f'Sampling rate:{int(dataPointCount / (newTime - oldTime))}Hz')
-                oldTime = newTime
-                dataPointCount = 0
-
-            
-            if data_list[-1] == b' r\n': # Discard restarting lines
-                file.write("\n")
-                file.flush()
-                continue
-            
-
-            if (length == 3) or (length == 12) or (length == 20):
-                data_list = [0, 0, 0, 0, 0]
-
-                #Reset message index to not send same message multiple times
-                msgIndex = 0
-
-
-                if length == 3:
-                    data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
-
-                else:
-                    data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
-                    data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
-                    data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
-
-                if length == 20:
-                    data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
-                    data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
-
-                #Excecute unmushing
-
-                if length == 3:
-                    #First 32bits, always received
-                    dataBit = int(data_list[0])
-
-                    valveStatus = dataBit & 1
-                    dataBit = dataBit >> 1
-                    ignStatus = dataBit & 1
-                    dataBit = dataBit >> 1
-                    loadC = readLoad(dataBit & 1023)
-                    dataBit = dataBit >> 10
-                    combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-
-                else:
-                    timestamp = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
-
-                    #First 32bits, always received
-                    dataBit = int(data_list[1])
-
-                    heatButton = dataBit & 1
-                    dataBit = dataBit >> 1
-                    dumpButton = dataBit & 1
-                    dataBit = dataBit >> 1
-                    combP = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
-                    dataBit = dataBit >> 10
-                    lineP = readPressure5V(dataBit & 1023, LINE_PRESSURE)
-                    dataBit = dataBit >> 10
-                    n2oFeedP2 = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER2) 
-
-                    #Second 32bits, always received
-                    dataBit = int(data_list[2])
-
-                    swSub = dataBit & 7
-                    dataBit = dataBit >> 3
-                    swMode = dataBit & 7
-                    dataBit = dataBit >> 3
-                    valveStatus = dataBit & 1
-                    dataBit = dataBit >> 1
-                    ignStatus = dataBit & 1
-                    dataBit = dataBit >> 1
-                    oxButton = dataBit & 1
-                    dataBit = dataBit >> 1
-                    n2Button = dataBit & 1
-                    dataBit = dataBit >> 1
-                    igniButton = dataBit & 1
-                    dataBit = dataBit >> 1
-                    loadC = readLoad(dataBit & 1023)
-                    dataBit = dataBit >> 10
-                    n2oFeedP = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
-
-                    if length == 20:
-                        #Third 32bits, received every ~100ms
-                        dataBit = int(data_list[3])
-
-                        msgIndex = dataBit & 7
-                        dataBit = dataBit >> 3  #First part of the msgIndex
-                        pipeT = readTemp(dataBit & 16383)
-                        dataBit = dataBit >> 14
-                        nozzT = readTemp(dataBit & 16383)
-
-                        #Fourth 32bits, received every ~100ms
-                        dataBit = int(data_list[4])
-
-                        IR = readIR(dataBit & 1023)
-                        dataBit = dataBit >> 10
-                        msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
-                        dataBit = dataBit >> 3
-                        botTemp = readTMP36(dataBit & 1023) """
-        #-----------
-        #Mega update
-        #-----------
-        while not megaQueue.empty():
-            packet = megaQueue.get()
-            parsed = parse_mega_packets(packet)
-            if parsed:
-                mega_data.update(parsed)   
-            
-            #--------------
-            #Second arduino
-            #--------------
-        while not unoQueue.empty():
-            packet = unoQueue.get()
-            prased = parse_uno_packets(packet)
-            if prased:
-                timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = prased
-
-            """
-            InWaiting = ser1.inWaiting()
-            if InWaiting > 0:
-                data1 = ser1.readline()
-                try:
-                    if b'\x00' in data1 or b'\r' in data1:
-                        
-                        data1 = data1.decode().rstrip()
-                        data1 = data1.replace('\x00','')
-                        data1 = data1.replace('\r', '')
-                        #takes in full string from second arduino and makes it into an array.
-                        splitdata = data1.split(", ")
-                        splitdata = [int(val) for val in splitdata]
-                        if len(splitdata) == 6:
-                            timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
-                            n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-                            BlankTemp1  = readTMP36(splitdata[2])
-                            BlankTemp2 = readTMP36(splitdata[3])
-                            blanketstatus1 = splitdata[4]
-                            blanketstatus2 = splitdata[5]
-                        ser1.reset_input_buffer()
-                except:
-                    #data1 = ''
-                    pass
-                
-                data1 = data1.replace('\x00','')
-                data1 = data1.replace('\r', '')
-                #takes in full string from second arduino and makes it into an array.
-                splitdata = data1.split(", ")
-                splitdata = [int(val) for val in splitdata]
-                if len(splitdata) == 6:
-                    timestamp2 = (splitdata[0] << 3) #resolution is +- 8us
-                    n2FeedP = readPressure5V(splitdata[1], FEEDING_PRESSURE_N2)
-                    BlankTemp1  = readTMP36(splitdata[2])
-                    BlankTemp2 = readLM235(splitdata[3])
-                    print(BlankTemp1, BlankTemp2)
-                    blanketstatus1 = splitdata[4]
-                    blanketstatus2 = splitdata[5]
-                """
-            #Generate the csv line, where splitdata is the second arduino
-            # live reader requires msgIndex to be the last row element
-#            writer.writerow([timestamp, f'{lineP:.2f}', f'{combP:.2f}', f'{n2oFeedP2:.2f}', f'{n2oFeedP:.2f}',
-#                             f'{loadC:.2f}', 0, f'{nozzT:.2f}', f'{pipeT:.2f}', f'{IR:.2f}', 
-#                             dumpButton, igniButton, n2Button, oxButton, ignStatus, valveStatus, 
-#                             swMode, swSub, timestamp2, f'{n2FeedP:.2f}', f'{BlankTemp1:.2f}', f'{BlankTemp2:.2f}',
-#                             blanketstatus1, blanketstatus2]  + [msgIndex])
-
-
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
-            #combining data for the predefined format
-            CombinedData = (mega_data['timestamp'], mega_data['lineP'], mega_data['combP'],mega_data['n2oFeedP2'], mega_data['n2oFeedP'], mega_data['loadC'],mega_data['nozzT'], mega_data['pipeT'], mega_data['IR'],mega_data['dumpButton'], mega_data['igniButton'], mega_data['n2Button'], mega_data['oxButton'],mega_data['ignStatus'], mega_data['valveStatus'], mega_data['swMode'], mega_data['swSub'],timestamp2, n2FeedP, BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2, mega_data['msgIndex'])
-            try:
-                dataSock.send((format_string % CombinedData).encode())
-            except:
-                pass
-            if not (debugConn and dataConn): # if socks are dead, get new ones
-                debugSock, dataSock = changeSocks(listenSock) # BLOCKING
+    threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
+    threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
+    threading.Thread(target=combined_data_thread, daemon=True).start()
+    threading.Thread(target=socket_thread,daemon=True).start()
