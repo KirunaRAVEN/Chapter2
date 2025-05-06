@@ -227,7 +227,8 @@ class ByteReader:
 # -----------------
 # BYTESREAM READING
 # -----------------
-
+#old and unused
+"""
 END_MARKER = 0x7F
 ESCAPE_BYTE = 0x7D
 ESCAPE_XOR = 0x20
@@ -247,7 +248,7 @@ def read_message(ser):
         else:
             data[index] = byte
             index += 1
-            
+            """
                        
 
 
@@ -309,6 +310,46 @@ def parse_uno_packets(packet):
     timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = struct.unpack("<IHHHBB", packet)  
     return timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2
 
+#unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
+def parse_mega_packets(packet):
+    length = len(packet)
+    result = {}
+    if length == 3:
+        value = int.from_bytes(packet, 'big')
+        result['valveStatus'] = value & 1
+        result['ignStatus'] = (value >> 1) & 1
+        result['loadC'] = readLoad((value >> 2) & 1023)
+        result['combP'] = readPressure5V((value >> 12) & 1023, CHAMBER_PRESSURE)
+    if length == 12:
+        timestamp, value1, value2 = struct.unpack(">III", packet)
+        result['timestamp'] = timestamp << 3
+
+        result['heatButton'] = value1 & 1
+        result['dumpButton'] = (value1 >> 1) & 1
+        result['combP'] = readPressure5V((value1 >> 2) & 1023, CHAMBER_PRESSURE)
+        result['lineP'] = readPressure5V((value1 >> 12) & 1023, LINE_PRESSURE)
+        result['n2oFeedP2'] = readPressure5V((value1 >> 22) & 1023, FEEDING_PRESSURE_OXIDIZER2) 
+
+        result['swSub'] = value2 & 7
+        result['swMode'] = (value2 >> 3) & 7
+        result['valveStatus'] = (value2 >> 6) & 1
+        result['ignStatus'] = (value2 >> 7) & 1
+        result['oxButton'] = (value2 >> 8) & 1
+        result['n2Button'] = (value2 >> 9) & 1
+        result['igniButton'] = (value2 >> 10) & 1
+        result['loadC'] = readLoad((value2 >> 11) & 1023)
+        result['n2oFeedP'] = readPressure5V((value2 >> 21) & 1023, FEEDING_PRESSURE_OXIDIZER)
+    if length == 20: 
+        value1, value2 = struct.unpack(">II", packet)
+        result['msgIndex'] = value1 & 7 
+        result['pipeT'] = readTemp((value1>>3) & 16383)
+        result['nozzT'] = readTemp((value1 >> 17) & 16383)
+        result['IR'] = readIR(value2 & 1023)
+        result['msgIndex'] += ((value2>>10) & 7) << 3
+        result['botTemp'] = readTMP36((value2>>13) & 1023) 
+    
+    return result if result else None
+
 if __name__ == '__main__':
     # Set up network communication
     listenSock = socket.socket(type=socket.SOCK_STREAM)
@@ -363,6 +404,28 @@ if __name__ == '__main__':
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
 
     #Init values that aren't received always
+    mega_data = {
+    'timestamp': 0,
+    'lineP': 0.0,
+    'combP': 0.0,
+    'n2oFeedP': 0.0,
+    'n2oFeedP2': 0.0,
+    'loadC': 0.0,
+    'dumpButton': 0,
+    'heatButton': 0,
+    'igniButton': 0,
+    'n2Button': 0,
+    'oxButton': 0,
+    'ignStatus': 0,
+    'valveStatus': 0,
+    'swMode': 0,
+    'swSub': 0,
+    'msgIndex': 0,
+    'pipeT': 0.0,
+    'nozzT': 0.0,
+    'IR': 0.0,
+    'botTemp': 0.0
+    }
     nozzT = 0
     pipeT = 0
     IR = 0
@@ -402,6 +465,11 @@ if __name__ == '__main__':
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
 
+    #defining format beforehand to increase speeds
+    format_string = (
+    "%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
+
+
     while True:
         """bufferWait = ser.inWaiting()
         if bufferWait >= maxBufferWait:
@@ -409,10 +477,10 @@ if __name__ == '__main__':
             #print(f'Bytes in Waiting: {ser.inWaiting()} at index {dataPointCount}')
 
         if bufferWait == 0: maxBufferWait = 0
-        """
+        
 
-        while not megaQueue.empty():
-            packet = megaQueue.get()
+
+
             byteList = list(packet) 
             length = len(packet)
 
@@ -425,12 +493,12 @@ if __name__ == '__main__':
                 oldTime = newTime
                 dataPointCount = 0
 
-            """
+            
             if data_list[-1] == b' r\n': # Discard restarting lines
                 file.write("\n")
                 file.flush()
                 continue
-            """
+            
 
             if (length == 3) or (length == 12) or (length == 20):
                 data_list = [0, 0, 0, 0, 0]
@@ -519,17 +587,24 @@ if __name__ == '__main__':
                         dataBit = dataBit >> 10
                         msgIndex += (dataBit & 7) << 3 #Second part of the msgIndex
                         dataBit = dataBit >> 3
-                        botTemp = readTMP36(dataBit & 1023) 
-            
+                        botTemp = readTMP36(dataBit & 1023) """
+        #-----------
+        #Mega update
+        #-----------
+        while not megaQueue.empty():
+            packet = megaQueue.get()
+            parsed = parse_mega_packets(packet)
+            if parsed:
+                mega_data.update(parsed)   
             
             #--------------
             #Second arduino
             #--------------
-            while not unoQueue.empty():
-                packet = unoQueue.get()
-                prased = parse_uno_packets(packet)
-                if prased:
-                    timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = prased
+        while not unoQueue.empty():
+            packet = unoQueue.get()
+            prased = parse_uno_packets(packet)
+            if prased:
+                timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = prased
 
             """
             InWaiting = ser1.inWaiting()
@@ -581,8 +656,10 @@ if __name__ == '__main__':
 
             dataConn = poll(dataSock)
             debugConn = poll(debugSock)
+            #combining data for the predefined format
+            CombinedData = (mega_data['timestamp'], mega_data['lineP'], mega_data['combP'],mega_data['n2oFeedP2'], mega_data['n2oFeedP'], mega_data['loadC'],mega_data['nozzT'], mega_data['pipeT'], mega_data['IR'],mega_data['dumpButton'], mega_data['igniButton'], mega_data['n2Button'], mega_data['oxButton'],mega_data['ignStatus'], mega_data['valveStatus'], mega_data['swMode'], mega_data['swSub'],timestamp2, n2FeedP, BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2, mega_data['msgIndex'])
             try:
-                dataSock.send(f"{timestamp},{lineP:.2f},{combP:.2f},{n2oFeedP2:.2f},{n2oFeedP:.2f},{loadC:.2f},0,{nozzT:.2f},{pipeT:.2f},{IR:.2f},{dumpButton},{igniButton},{n2Button},{oxButton},{ignStatus},{valveStatus},{swMode},{swSub},{timestamp2},{n2FeedP:.2f},{BlankTemp1:.2f},{BlankTemp2:.2f},{blanketstatus1},{blanketstatus2},{msgIndex}\n".encode())
+                dataSock.send((format_string % CombinedData).encode())
             except:
                 pass
             if not (debugConn and dataConn): # if socks are dead, get new ones
