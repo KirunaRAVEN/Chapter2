@@ -11,18 +11,22 @@
 
 #include <stdint.h>
 #include <Arduino.h>
+#include <Servo.h>
 
 //Prevent multiple definitions with the if statement
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+extern bool dumpValveState;
+extern Servo DumpValve;
+
 //Pin Enumerators - Add Pins for different functionalities here
 typedef enum {
   OXIDIZER_VALVE_PIN = 2,             //Port E4
-  DUMP_VALVE_PIN = 3,                 //Port E5
+  DUMP_VALVE_PIN = 6,                 //Port H3
   N2FEEDING_VALVE_PIN = 4,            //Port G5
-  TEST_MODE_LED_PIN = 6,              //Port H3   //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN = 7,        //Port H4   //In V1 the indicator LEDs use the servo connector
+  TEST_MODE_LED_PIN = 7,              //Port H4   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN = 3,        //Port E5   //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN = 8,             //Port H5
   HEATING_SENSE_PIN = 9,              //Port H6
   DUMP_VALVE_BUTTON_PIN = 10,         //Port B4
@@ -76,7 +80,7 @@ typedef enum {
 typedef enum {
   CAMERA_TRIGGER_PIN_PORTE = PORTE3,            //Port E3
   OXIDIZER_VALVE_PIN_PORTE = PORTE4,            //Port E4
-  DUMP_VALVE_PIN_PORTE = PORTE5,                //Port E5
+  DUMP_VALVE_PIN_PORTH = PORTH3,                //Port H3
 }portE_t;
 
 
@@ -85,8 +89,8 @@ typedef enum {
 }portG_t;
 
 typedef enum {
-  TEST_MODE_LED_PIN_PORTH = PORTH3,             //Port H3   //In V1 the indicator LEDs use the servo connector
-  REPEAT_SEQUENCE_LED_PIN_PORTH = PORTH4,       //Port H4   //In V1 the indicator LEDs use the servo connector
+  TEST_MODE_LED_PIN_PORTH = PORTH4,             //Port H4   //In V1 the indicator LEDs use the servo connector
+  REPEAT_SEQUENCE_LED_PIN_PORTE = PORTE5,       //Port E5   //In V1 the indicator LEDs use the servo connector
   IGNITION_SENSE_PIN_PORTH = PORTH5,            //Port H5
   HEATING_SENSE_PIN_PORTH = PORTH6,             //Port H6
 }portH_t;
