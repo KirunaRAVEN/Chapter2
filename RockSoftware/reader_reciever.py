@@ -349,20 +349,19 @@ def socket_thread():
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     global dataConn
     global debugConn
-    while True: 
+    while True:
+        dataConn = poll(dataSock)
+        debugConn = poll(debugSock)
         try: 
             combined_data = combined_data_queue.get()
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
             pass
         except:
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
+            pass
 
         if not (debugConn and dataConn): # if socks are dead, get new ones
             debugSock, dataSock = changeSocks(listenSock) # BLOCKING
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
 
 #unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
 def parse_mega_packets(packet):
