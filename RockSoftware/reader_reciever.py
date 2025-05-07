@@ -555,13 +555,14 @@ if __name__ == '__main__':
     threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
-
     #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
+    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     while True:
         dataConn = poll(dataSock)
         debugConn = poll(debugSock)
         try:
             combined_data = combined_data_queue.get_nowait()
+            dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
             continue
         except:
