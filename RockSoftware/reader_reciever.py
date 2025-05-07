@@ -368,41 +368,98 @@ def socket_thread():
 
 #unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
 def parse_mega_packets(packet):
-    length = len(packet)
     result = {}
-    if length == 3:
-        value = int.from_bytes(packet, 'big')
-        result['valveStatus'] = value & 1
-        result['ignStatus'] = (value >> 1) & 1
-        result['loadC'] = readLoad((value >> 2) & 1023)
-        result['combP'] = readPressure5V((value >> 12) & 1023, CHAMBER_PRESSURE)
-    if length == 12:
-        timestamp, value1, value2 = struct.unpack(">III", packet)
-        result['timestamp'] = timestamp << 3
+    byteList = list(packet) 
+    length = len(packet)
 
-        result['heatButton'] = value1 & 1
-        result['dumpButton'] = (value1 >> 1) & 1
-        result['combP'] = readPressure5V((value1 >> 2) & 1023, CHAMBER_PRESSURE)
-        result['lineP'] = readPressure5V((value1 >> 12) & 1023, LINE_PRESSURE)
-        result['n2oFeedP2'] = readPressure5V((value1 >> 22) & 1023, FEEDING_PRESSURE_OXIDIZER2) 
+    if (length == 3) or (length == 12) or (length == 20):
+        data_list = [0, 0, 0, 0, 0]
 
-        result['swSub'] = value2 & 7
-        result['swMode'] = (value2 >> 3) & 7
-        result['valveStatus'] = (value2 >> 6) & 1
-        result['ignStatus'] = (value2 >> 7) & 1
-        result['oxButton'] = (value2 >> 8) & 1
-        result['n2Button'] = (value2 >> 9) & 1
-        result['igniButton'] = (value2 >> 10) & 1
-        result['loadC'] = readLoad((value2 >> 11) & 1023)
-        result['n2oFeedP'] = readPressure5V((value2 >> 21) & 1023, FEEDING_PRESSURE_OXIDIZER)
-    if length == 20: 
-        value1, value2 = struct.unpack(">II", packet)
-        result['msgIndex'] = value1 & 7 
-        result['pipeT'] = readTemp((value1>>3) & 16383)
-        result['nozzT'] = readTemp((value1 >> 17) & 16383)
-        result['IR'] = readIR(value2 & 1023)
-        result['msgIndex'] += ((value2>>10) & 7) << 3
-        #result['botTemp'] = readTMP36((value2>>13) & 1023) 
+        #Reset message index to not send same message multiple times
+        msgIndex = 0
+
+
+        if length == 3:
+            data_list[0] = byteList[0] << 16 | byteList[1] << 8 | byteList[2]
+
+        else:
+            data_list[0] = byteList[0] << 24 | byteList[1] << 16 | byteList[2] << 8 | byteList[3]
+            data_list[1] = byteList[4] << 24 | byteList[5] << 16 | byteList[6] << 8 | byteList[7]
+            data_list[2] = byteList[8] << 24 | byteList[9] << 16 | byteList[10] << 8 | byteList[11]
+
+        if length == 20:
+            data_list[3] = byteList[12] << 24 | byteList[13] << 16 | byteList[14] << 8 | byteList[15]
+            data_list[4] = byteList[16] << 24 | byteList[17] << 16 | byteList[18] << 8 | byteList[19]
+
+        #Excecute unmushing
+
+        if length == 3:
+            #First 32bits, always received
+            dataBit = int(data_list[0])
+
+            result['valveStatus'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['ignStatus'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['loadC'] = readLoad(dataBit & 1023)
+            dataBit = dataBit >> 10
+            result['combP'] = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+
+        else:
+            result['timestamp'] = int(data_list[0]) << 3 #timestamp is bitshifted >> 3 in TSSW
+
+            #First 32bits, always received
+            dataBit = int(data_list[1])
+
+            result['heatButton'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['dumpButton'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['combP'] = readPressure5V(dataBit & 1023, CHAMBER_PRESSURE)
+            dataBit = dataBit >> 10
+            result['lineP'] = readPressure5V(dataBit & 1023, LINE_PRESSURE)
+            dataBit = dataBit >> 10
+            result['n2oFeedP2'] = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER2) 
+
+            #Second 32bits, always received
+            dataBit = int(data_list[2])
+
+            result['swSub'] = dataBit & 7
+            dataBit = dataBit >> 3
+            result['swMode'] = dataBit & 7
+            dataBit = dataBit >> 3
+            result['valveStatus'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['ignStatus'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['oxButton'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['n2Button'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['igniButton'] = dataBit & 1
+            dataBit = dataBit >> 1
+            result['loadC'] = readLoad(dataBit & 1023)
+            dataBit = dataBit >> 10
+            result['n2oFeedP'] = readPressure5V(dataBit & 1023, FEEDING_PRESSURE_OXIDIZER)
+
+            if length == 20:
+                #Third 32bits, received every ~100ms
+                dataBit = int(data_list[3])
+
+                result['msgIndex'] = dataBit & 7
+                dataBit = dataBit >> 3  #First part of the msgIndex
+                result['pipeT'] = readTemp(dataBit & 16383)
+                dataBit = dataBit >> 14
+                result['nozzT'] = readTemp(dataBit & 16383)
+
+                #Fourth 32bits, received every ~100ms
+                dataBit = int(data_list[4])
+
+                result['IR'] = readIR(dataBit & 1023)
+                dataBit = dataBit >> 10
+                result['msgIndex'] += (dataBit & 7) << 3 #Second part of the msgIndex
+                dataBit = dataBit >> 3
+                result['botTemp'] = readTMP36(dataBit & 1023) 
     
     return result if result else None
 
@@ -477,7 +534,7 @@ if __name__ == '__main__':
     'pipeT': 0.0,
     'nozzT': 0.0,
     'IR': 0.0,
-    #'botTemp': 0.0
+    'botTemp': 0.0
     }
     mega_data_LOCKED = threading.Lock()
     uno_data= {
