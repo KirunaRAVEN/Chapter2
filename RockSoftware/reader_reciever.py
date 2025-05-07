@@ -376,7 +376,7 @@ def parse_mega_packets(packet):
         data_list = [0, 0, 0, 0, 0]
 
         #Reset message index to not send same message multiple times
-        msgIndex = 0
+        result['msgIndex'] = 0
 
 
         if length == 3:
