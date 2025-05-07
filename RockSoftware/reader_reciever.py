@@ -481,12 +481,14 @@ if __name__ == '__main__':
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
     #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
-
     while True:
-            combined_data = combined_data_queue.get(timeout=0.001)
 
             dataConn = poll(dataSock)
             debugConn = poll(debugSock)
+            try: 
+                combined_data = combined_data_queue.get()
+            except:
+                pass
             try:
                 dataSock.send((format_string % combined_data).encode())
             except:
