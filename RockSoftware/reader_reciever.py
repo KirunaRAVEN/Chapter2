@@ -357,7 +357,9 @@ def socket_thread():
             dataConn = poll(dataSock)
             debugConn = poll(debugSock)
         try:
-            combined_data = combined_data_queue.get(timeout=0.1)
+
+            combined_data = combined_data_queue.get()
+
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
             pass
@@ -553,4 +555,16 @@ if __name__ == '__main__':
     threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
-    threading.Thread(target=socket_thread,daemon=True).start()
+
+    #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
+    while True:
+        dataConn = poll(dataSock)
+        debugConn = poll(debugSock)
+        try:
+            combined_data = combined_data_queue.get_nowait()
+        except queue.Empty:
+            continue
+        except:
+            pass
+        if not (debugConn and dataConn): # if socks are dead, get new ones
+            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
