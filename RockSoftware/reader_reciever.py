@@ -284,7 +284,14 @@ def parse_uno_packets(packet):
     if len(packet) != 12:
         return None 
     timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2 = struct.unpack("<IHHHBB", packet)  
-    return timestamp2, n2FeedP , BlankTemp1, BlankTemp2, blanketstatus1, blanketstatus2
+    return {
+        'timestamp2': timestamp2,
+        'n2FeedP': readPressure5V(n2FeedP, FEEDING_PRESSURE_N2),
+        'BlankTemp1': readTMP36(BlankTemp1),
+        'BlankTemp2': readTMP36(BlankTemp2),
+        'blanketstatus1': blanketstatus1,
+        'blanketstatus2': blanketstatus2
+    }
 
 #thread for combining the data sent from the uno and mega
 def combined_data_thread():
