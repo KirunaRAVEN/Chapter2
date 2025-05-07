@@ -309,7 +309,6 @@ def combined_data_thread():
                     uno_data.update(parsed)
                 uno_updated = True
         if not (mega_updated or uno_updated):
-            time.sleep(0.001)
             continue
         with mega_data_LOCKED:
             copy_mega_data = mega_data.copy()
@@ -343,7 +342,6 @@ def combined_data_thread():
             copy_mega_data['msgIndex']
         )
         combined_data_queue.put(CombinedData)
-        time.sleep(0.001)
 
 #thread for socket  
 def socket_thread():
@@ -351,20 +349,20 @@ def socket_thread():
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     global dataConn
     global debugConn
-    while True:
-        if not (dataConn and debugConn):
-            debugSock, dataSock = changeSocks(listenSock)
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
-            continue
-        try:
-            combined_data = combined_data_queue.get(timeout=0.001)
+    while True: 
+        try: 
+            combined_data = combined_data_queue.get()
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
-            continue
+            pass
         except:
-            dataConn = False
-            debugConn = False
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
+
+        if not (debugConn and dataConn): # if socks are dead, get new ones
+            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
 
 #unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
 def parse_mega_packets(packet):
@@ -554,18 +552,4 @@ if __name__ == '__main__':
     threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
-    #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
-    while True:
-        dataConn = poll(dataSock)
-        debugConn = poll(debugSock)
-        try: 
-            combined_data = combined_data_queue.get(timeout=0.1)
-            dataSock.send((format_string % combined_data).encode())
-        except queue.Empty:
-            pass
-        except:
-            pass
-
-        if not (debugConn and dataConn): # if socks are dead, get new ones
-            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
-        time.sleep(0.001)
+    threading.Thread(target=socket_thread,daemon=True).start()
