@@ -290,6 +290,8 @@ def parse_uno_packets(packet):
 
 #thread for combining the data sent from the uno and mega
 def combined_data_thread():
+    mega_updated = False
+    uno_updated = False
     while True:
         if not megaQueue.empty():
             packet = megaQueue.get()
@@ -297,6 +299,7 @@ def combined_data_thread():
             if parsed:
                 with mega_data_LOCKED:
                     mega_data.update(parsed)
+                mega_updated = True
 
         if not unoQueue.empty():
             packet = unoQueue.get()
@@ -304,7 +307,10 @@ def combined_data_thread():
             if parsed:
                 with uno_data_LOCKED:
                     uno_data.update(parsed)
-        
+                uno_updated = True
+        if not (mega_updated or uno_updated):
+            time.sleep(0.001)
+            continue
         with mega_data_LOCKED:
             copy_mega_data = mega_data.copy()
         with uno_data_LOCKED:
@@ -337,6 +343,7 @@ def combined_data_thread():
             copy_mega_data['msgIndex']
         )
         combined_data_queue.put(CombinedData)
+        time.sleep(0.001)
 
 #thread for socket  
 def socket_thread():
