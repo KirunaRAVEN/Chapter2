@@ -469,8 +469,20 @@ if __name__ == '__main__':
     ser.reset_input_buffer()
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()
-
+    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
-    threading.Thread(target=socket_thread,daemon=True).start()
+    #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
+
+    while True:
+            combined_data = combined_data_queue.get(timeout=0.001)
+
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
+            try:
+                dataSock.send((format_string % combined_data).encode())
+            except:
+                pass
+            if not (debugConn and dataConn): # if socks are dead, get new ones
+                debugSock, dataSock = changeSocks(listenSock) # BLOCKING
