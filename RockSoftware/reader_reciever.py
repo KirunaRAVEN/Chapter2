@@ -252,7 +252,8 @@ def poll(sock):
 
 #holds packets from the uno and mega
 combined_data_queue = queue.Queue()
-
+megaQueue = queue.Queue()
+unoQueue = queue.Queue()
 #byte readers for the uno and mega
 readbytesMega = ByteReader()
 readbytesUno = ByteReader()
@@ -260,12 +261,9 @@ readbytesUno = ByteReader()
 #thread for the mega
 def mega_reader_thread(ser, byte_reader):
     while True:
-        packets =   byte_reader.read_message(ser)
+        packets = byte_reader.read_message(ser)
         for packet in packets:
-            prased = parse_mega_packets(packet)
-            if prased:
-                with mega_data_LOCKED:
-                    mega_data.update(prased)
+            megaQueue.put(packet)
 
 
 
@@ -274,10 +272,7 @@ def uno_reader_thread(ser1, byte_reader):
     while True:
         packets = byte_reader.read_message(ser1)
         for packet in packets:
-            prased = parse_uno_packets(packet)
-            if prased:
-                with uno_data_LOCKED:
-                    uno_data.update(prased)
+            unoQueue.put(packet)
 
 #parse_uno_packets
 def parse_uno_packets(packet):
@@ -295,11 +290,26 @@ def parse_uno_packets(packet):
 
 #thread for combining the data sent from the uno and mega
 def combined_data_thread():
-    while True: 
+    while True:
+        if not megaQueue.empty():
+            packet = megaQueue.get()
+            parsed = parse_mega_packets(packet)
+            if parsed:
+                with mega_data_LOCKED:
+                    mega_data.update(parsed)
+
+        if not unoQueue.empty():
+            packet = unoQueue.get()
+            parsed = parse_uno_packets(packet)
+            if parsed:
+                with uno_data_LOCKED:
+                    uno_data.update(parsed)
+        
         with mega_data_LOCKED:
             copy_mega_data = mega_data.copy()
         with uno_data_LOCKED:
             copy_uno_data = uno_data.copy()
+
         CombinedData = (
             copy_mega_data['timestamp'],
             copy_mega_data['lineP'],
@@ -475,23 +485,23 @@ if __name__ == '__main__':
 
     ser.reset_input_buffer()
     #no data processing for second arduno yet, just a simple grab
-    ser1.reset_input_buffer()
+    ser1.reset_input_buffer()   
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
     threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
     threading.Thread(target=combined_data_thread, daemon=True).start()
     #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
     while True:
+        dataConn = poll(dataSock)
+        debugConn = poll(debugSock)
+        try: 
+            combined_data = combined_data_queue.get(timeout=0.1)
+            dataSock.send((format_string % combined_data).encode())
+        except queue.Empty:
+            pass
+        except:
+            pass
 
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
-            try: 
-                combined_data = combined_data_queue.get()
-            except:
-                pass
-            try:
-                dataSock.send((format_string % combined_data).encode())
-            except:
-                pass
-            if not (debugConn and dataConn): # if socks are dead, get new ones
-                debugSock, dataSock = changeSocks(listenSock) # BLOCKING
+        if not (debugConn and dataConn): # if socks are dead, get new ones
+            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
+        time.sleep(0.001)
