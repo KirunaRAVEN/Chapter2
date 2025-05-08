@@ -6,6 +6,7 @@ import socket
 import queue
 import threading
 import struct
+import sys
 
 
 # ------------------------------------------
@@ -217,21 +218,21 @@ class ByteReader:
 
 def changeSocks(listenSock):
     # makes the program wait until a connection to the GS-laptop is made:
-    print("listening for new connection ...")
+    sys.stderr.write("listening for new connection ...\n")
     dataSock = socket.socket(type=socket.SOCK_STREAM)
     debugSock, addr = listenSock.accept() # this is the blocking part
-    print(f"connection recieved, setting up datastream to {addr[0]}:6000")
+    sys.stderr.write(f"connection recieved, setting up datastream to {addr[0]}:6000\n")
     while True:
         try:
             dataSock.connect((addr[0], 6000))
             break
         except:
-            print(".", end="", flush=True)
+            sys.stderr.write(".", end="", flush=True)
             time.sleep(1)
-    print("connected")
+    sys.stderr.write("connected\n")
     debugSock.send("connected".encode())
-    debugSock.settimeout(0.001) # ooh, i like this hack
-    dataSock.settimeout(0.001)
+    debugSock.settimeout(0.0001) # ooh, i like this hack
+    dataSock.settimeout(0.0001)
     return (debugSock, dataSock)
 
 def poll(sock):
@@ -446,7 +447,7 @@ if __name__ == '__main__':
                 megaFound = True
                 continue
             else:
-                print("Arduino Mega not found!")
+                sys.stderr.write("Arduino Mega not found!\n")
                 debugSock.send("Arduino Mega not found!".encode())
         if unoFound == False:
             if hwid[22:46] == 'SER=24233323435351912251':
@@ -454,7 +455,7 @@ if __name__ == '__main__':
                 unoFound = True
                 continue
             else:
-                print("Arduino Uno not found!")
+                sys.stderr.write("Arduino Uno not found\n")
                 debugSock.send("Arduino Uno not found!".encode())
     ser.baudrate =  normalBaud
     ser1.baudrate = 115200
@@ -463,9 +464,9 @@ if __name__ == '__main__':
     ser.open()
     ser1.open()
     if ser.is_open and ser1.is_open:
-        print(f'Serial port {ser.port} and {ser1.port} is open\n')
+        sys.stderr.write(f'Serial port {ser.port} and {ser1.port} is open\n')
         debugSock.send(f'Serial port {ser.port} and {ser1.port} is open\n'.encode())
-        print(ser, '\n')
+        sys.stderr.write(ser, '\n')
     
     #Header to the csv data file
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
@@ -493,12 +494,13 @@ if __name__ == '__main__':
     while True:
         dataConn = poll(dataSock)
         debugConn = poll(debugSock)
+        if not (debugConn and dataConn): # if socks are dead, get new ones
+            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
         try:
             combined_data = combined_data_queue.get_nowait()
+            print(f'{(format_string % combined_data)}\n')
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
             continue
         except:
             pass
-        if not (debugConn and dataConn): # if socks are dead, get new ones
-            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
