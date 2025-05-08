@@ -492,10 +492,6 @@ if __name__ == '__main__':
     t2.start()
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     while True:
-        dataConn = poll(dataSock)
-        debugConn = poll(debugSock)
-        if not (debugConn and dataConn): # if socks are dead, get new ones
-            debugSock, dataSock = changeSocks(listenSock) # BLOCKING
         try:
             combined_data = combined_data_queue.get_nowait()
             print(f'{(format_string % combined_data)}\n')
@@ -503,4 +499,8 @@ if __name__ == '__main__':
         except queue.Empty:
             continue
         except:
+            dataConn = poll(dataSock)
+            debugConn = poll(debugSock)
+            if not (debugConn and dataConn): # if socks are dead, get new ones
+                debugSock, dataSock = changeSocks(listenSock) # BLOCKING
             pass
