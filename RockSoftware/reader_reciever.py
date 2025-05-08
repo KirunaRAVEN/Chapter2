@@ -276,7 +276,7 @@ def mega_reader_combiner_thread(ser, byte_reader, combined_data_queue, uno_data,
                         last_mega.get('n2oFeedP2', 0.0),
                         last_mega.get('n2oFeedP', 0.0),
                         last_mega.get('loadC', 0.0),
-                        0,
+                        0.0,
                         last_mega.get('nozzT', 0.0),
                         last_mega.get('pipeT', 0.0),
                         last_mega.get('IR', 0.0),
@@ -491,7 +491,7 @@ if __name__ == '__main__':
     t2 = threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno, uno_data, uno_data_LOCKED), daemon=True)
     t1.start()
     t2.start()
-    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
+    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     while True:
         try:
             combined_data = combined_data_queue.get_nowait()
