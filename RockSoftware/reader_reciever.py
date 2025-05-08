@@ -1,13 +1,8 @@
 #!/bin/python3
-import datetime as dt
 import serial
 import time
-import re
 import serial.tools.list_ports as list_ports
-import csv
 import socket
-import time
-import random
 import queue
 import threading
 import struct
@@ -259,20 +254,60 @@ readbytesMega = ByteReader()
 readbytesUno = ByteReader()
 
 #thread for the mega
-def mega_reader_thread(ser, byte_reader):
+def mega_reader_combiner_thread(ser, byte_reader, combined_data_queue, uno_data, uno_data_LOCKED):
+    last_uno = {}
+    last_mega = {}
     while True:
         packets = byte_reader.read_message(ser)
-        for packet in packets:
-            megaQueue.put(packet)
+        if packets:
+            for packet in packets:
+                parsed = parse_mega_packets(packet)
+                if parsed:
+                    last_mega.update(parsed)  # Persist fields across incomplete packets
+
+                    with uno_data_LOCKED:
+                        last_uno = uno_data.copy()
+
+                    combined = (
+                        last_mega.get('timestamp', 0),
+                        last_mega.get('lineP', 0.0),
+                        last_mega.get('combP', 0.0),
+                        last_mega.get('n2oFeedP2', 0.0),
+                        last_mega.get('n2oFeedP', 0.0),
+                        last_mega.get('loadC', 0.0),
+                        last_mega.get('nozzT', 0.0),
+                        last_mega.get('pipeT', 0.0),
+                        last_mega.get('IR', 0.0),
+                        last_mega.get('dumpButton', 0),
+                        last_mega.get('igniButton', 0),
+                        last_mega.get('n2Button', 0),
+                        last_mega.get('oxButton', 0),
+                        last_mega.get('ignStatus', 0),
+                        last_mega.get('valveStatus', 0),
+                        last_mega.get('swMode', 0),
+                        last_mega.get('swSub', 0),
+                        last_uno.get('timestamp2', 0),
+                        last_uno.get('n2FeedP', 0),
+                        last_uno.get('BlankTemp1', 0),
+                        last_uno.get('BlankTemp2', 0),
+                        last_uno.get('blanketstatus1', 0),
+                        last_uno.get('blanketstatus2', 0),
+                        last_mega.get('msgIndex', 0)
+                        )
+                    combined_data_queue.put(combined)
 
 
 
 #thread for the uno
-def uno_reader_thread(ser1, byte_reader):
+def uno_reader_thread(ser1, byte_reader, uno_data, uno_data_LOCKED):
     while True:
         packets = byte_reader.read_message(ser1)
-        for packet in packets:
-            unoQueue.put(packet)
+        if packets:
+            for packet in packets:
+                parsed = parse_uno_packets(packet)
+                if parsed:
+                    with uno_data_LOCKED:
+                        uno_data.update(parsed)
 
 #parse_uno_packets
 def parse_uno_packets(packet):
@@ -287,86 +322,6 @@ def parse_uno_packets(packet):
         'blanketstatus1': blanketstatus1,
         'blanketstatus2': blanketstatus2
     }
-
-#thread for combining the data sent from the uno and mega
-def combined_data_thread():
-    mega_updated = False
-    uno_updated = False
-    while True:
-        if not megaQueue.empty():
-            packet = megaQueue.get()
-            parsed = parse_mega_packets(packet)
-            if parsed:
-                with mega_data_LOCKED:
-                    mega_data.update(parsed)
-                mega_updated = True
-
-        if not unoQueue.empty():
-            packet = unoQueue.get()
-            parsed = parse_uno_packets(packet)
-            if parsed:
-                with uno_data_LOCKED:
-                    uno_data.update(parsed)
-                uno_updated = True
-        if not (mega_updated or uno_updated):
-            continue
-        with mega_data_LOCKED:
-            copy_mega_data = mega_data.copy()
-        with uno_data_LOCKED:
-            copy_uno_data = uno_data.copy()
-
-        CombinedData = (
-            copy_mega_data['timestamp'],
-            copy_mega_data['lineP'],
-            copy_mega_data['combP'],
-            copy_mega_data['n2oFeedP2'],
-            copy_mega_data['n2oFeedP'],
-            copy_mega_data['loadC'],
-            copy_mega_data['nozzT'],
-            copy_mega_data['pipeT'],
-            copy_mega_data['IR'],
-            copy_mega_data['dumpButton'],
-            copy_mega_data['igniButton'],
-            copy_mega_data['n2Button'],
-            copy_mega_data['oxButton'],
-            copy_mega_data['ignStatus'],
-            copy_mega_data['valveStatus'],
-            copy_mega_data['swMode'],
-            copy_mega_data['swSub'],
-            copy_uno_data['timestamp2'],
-            copy_uno_data['n2FeedP'],
-            copy_uno_data['BlankTemp1'],
-            copy_uno_data['BlankTemp2'],
-            copy_uno_data['blanketstatus1'],
-            copy_uno_data['blanketstatus2'],
-            copy_mega_data['msgIndex']
-        )
-        combined_data_queue.put(CombinedData)
-
-#thread for socket  
-def socket_thread():
-    #defining format beforehand to increase speeds
-    format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
-    global debugSock, dataSock
-    global dataConn, debugConn
-    while True:
-        dataConn = poll(dataSock)
-        debugConn = poll(debugSock)
-        if not (dataConn and debugConn): # if socks are dead, get new ones
-            debugSock, dataSock = changeSocks(listenSock)# BLOCKING
-            dataConn = poll(dataSock)
-            debugConn = poll(debugSock)
-        try:
-
-            combined_data = combined_data_queue.get()
-
-            dataSock.send((format_string % combined_data).encode())
-        except queue.Empty:
-            pass
-        except:
-            # You may want to log this if debugging
-            dataConn = False
-            debugConn = False
 
 #unpacks all the data the same way as before but does it quicker due to the use of struct.unpack
 def parse_mega_packets(packet):
@@ -515,30 +470,7 @@ if __name__ == '__main__':
     #Header to the csv data file
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
 
-    #Init values that aren't received always
-    mega_data = {
-    'timestamp': 0,
-    'lineP': 0.0,
-    'combP': 0.0,
-    'n2oFeedP': 0.0,
-    'n2oFeedP2': 0.0,
-    'loadC': 0.0,
-    'dumpButton': 0,
-    'heatButton': 0,
-    'igniButton': 0,
-    'n2Button': 0,
-    'oxButton': 0,
-    'ignStatus': 0,
-    'valveStatus': 0,
-    'swMode': 0,
-    'swSub': 0,
-    'msgIndex': 0,
-    'pipeT': 0.0,
-    'nozzT': 0.0,
-    'IR': 0.0,
-    'botTemp': 0.0
-    }
-    mega_data_LOCKED = threading.Lock()
+    #Init the uno_data struct
     uno_data= {
         'timestamp2':0,
         'n2FeedP':0,
@@ -552,10 +484,11 @@ if __name__ == '__main__':
     ser.reset_input_buffer()
     #no data processing for second arduno yet, just a simple grab
     ser1.reset_input_buffer()   
-    threading.Thread(target=mega_reader_thread, args=(ser, readbytesMega), daemon=True).start()
-    threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno), daemon=True).start()
-    threading.Thread(target=combined_data_thread, daemon=True).start()
-    #threading.Thread(target=socket_thread,daemon=True).start() just for debuging
+    #starting the threads
+    t1 = threading.Thread(target=mega_reader_combiner_thread, args=(ser, readbytesMega, combined_data_queue, uno_data, uno_data_LOCKED), daemon=True)
+    t2 = threading.Thread(target=uno_reader_thread, args=(ser1, readbytesUno, uno_data, uno_data_LOCKED), daemon=True)
+    t1.start()
+    t2.start()
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,0,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     while True:
         dataConn = poll(dataSock)
