@@ -231,8 +231,8 @@ def changeSocks(listenSock):
             time.sleep(1)
     sys.stderr.write("connected\n")
     debugSock.send("connected".encode())
-    debugSock.settimeout(0.0001) # ooh, i like this hack
-    dataSock.settimeout(0.0001)
+    debugSock.settimeout(0.001) # ooh, i like this hack
+    dataSock.settimeout(0.001)
     return (debugSock, dataSock)
 
 def poll(sock):
@@ -276,6 +276,7 @@ def mega_reader_combiner_thread(ser, byte_reader, combined_data_queue, uno_data,
                         last_mega.get('n2oFeedP2', 0.0),
                         last_mega.get('n2oFeedP', 0.0),
                         last_mega.get('loadC', 0.0),
+                        0,
                         last_mega.get('nozzT', 0.0),
                         last_mega.get('pipeT', 0.0),
                         last_mega.get('IR', 0.0),
@@ -466,7 +467,7 @@ if __name__ == '__main__':
     if ser.is_open and ser1.is_open:
         sys.stderr.write(f'Serial port {ser.port} and {ser1.port} is open\n')
         debugSock.send(f'Serial port {ser.port} and {ser1.port} is open\n'.encode())
-        sys.stderr.write(ser, '\n')
+        sys.stderr.write(f'{ser}\n')
     
     #Header to the csv data file
     dataSock.send("ArduinoMegaTime,LinePressure,CharmberPressure,N2OFeedingPressure2, N2OFeedingPressure1,LoadCell,NULL,NozzleTemperature,PipingTemperature,IR sensor,DumpValveButtonStatus, IgnitionButtonStatus,NitrogenFeedingButtonStatus,OxidizerValveButtonStatus,IgnitionSwState,ValveSwSstate,CurrentSwMode,CurrentSwSubstate,ArduinoUNOTime,NitrogenPressure,BottleTemp1,BottleTemp2,BottleStatus1,BottleStatus2,MessageIndex".encode())
@@ -494,7 +495,7 @@ if __name__ == '__main__':
     while True:
         try:
             combined_data = combined_data_queue.get_nowait()
-            print(f'{(format_string % combined_data)}\n')
+            print(format_string % combined_data, end="")
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
             continue
