@@ -494,7 +494,7 @@ if __name__ == '__main__':
     format_string = ("%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%.2f,%.2f,%.2f,%d,%d,%d\n")
     while True:
         try:
-            combined_data = combined_data_queue.get_nowait()
+            combined_data = combined_data_queue.get(timeout=0.1)
             print(format_string % combined_data, end="")
             dataSock.send((format_string % combined_data).encode())
         except queue.Empty:
