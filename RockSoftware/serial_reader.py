@@ -63,8 +63,8 @@ pressureLine_B1 = maxPressure5V_100Bar - pressureLine_K1 * (pressureSpan1 + pres
  
 #Pressure sensor calibration data for pressure sensor 2 (Serial No: 1040112) CHAMBER
 pressureZero2 = 0.000                            #Voltage
-pressureSpan2 = 4.996                            #Voltage
-pressureLinearity2 = 0.03146                     #in precentage. Not used for calibration
+pressureSpan2 = 4.999                            #Voltage
+pressureLinearity2 = 0.03144                     #in precentage. Not used for calibration
 pressureLine_K2 = maxPressure5V_25Bar / pressureSpan2  #Slope of the calibrated data
 #Zero offset of the calibrated data
 maunalPressureOffset2 = 0                        #How many bars of offset is seen in experimental data
