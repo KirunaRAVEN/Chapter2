@@ -242,7 +242,7 @@ const int16_t igniterDelay = 50;
 //How long from sequence start until opening valves (ms)
 // The value of 150 ms was decided on 2024.05.10 based on experimental results
 // They consists of valve opening delays and igniter temperature curves
-const int16_t valveOnTime = 100;
+const int16_t valveOnTime = 150;
 
 //How long from sequence start to turning ignition off (ms)
 const int16_t ignitionOffTime = igniterBurnLength;
