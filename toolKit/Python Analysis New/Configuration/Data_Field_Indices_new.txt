@@ -1,0 +1,25 @@
+Arduino Mega time in us.	0       
+Line pressure.			1
+Chamber Pressure.		2
+N2O feeding pressure 1.		3
+N2O feeding pressure 2.		4
+Load Cell.			5
+NULL.				6
+Nozzle Temperature.		7
+Piping Temperature.		8
+IR sensor.			9
+Dump Button.			10
+Ignition button.		11
+N2 button.			12
+Oxidizer button.		13
+Ignition status.		14
+Valve status.			15
+Current SW mode.		16
+Current SW substate.		17
+Arduino Uno time in us.		18
+N2 feeding pressure.		19
+Bottle Temperature 1.		20
+Bottle Temperature 2.		21
+Bottle status 1.		22
+Bottle status 2.		23
+msgIndex (always pushed to end by serial_readerpy). 24
