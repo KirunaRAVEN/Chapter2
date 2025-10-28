@@ -1,7 +1,7 @@
 /* Filename:        ControlBoxTX.h
  * Author:          Diego Almendro Wieczorek
  * Date:            15.10.2025
- * Version:         V1.00 (15.10.2025)
+ * Version:         V1.01 (28.10.2025)
  *
  * Purpose:         Header file for ControlBoxTX class, This class handles reading the state of buttons
  *                  and switches on a control box as well as sending their states via UART.
@@ -26,7 +26,7 @@ enum ControlBoxButton {
     BUTTON_COUNT
 };
 
-static const uint8_t CONTROL_BOX_PINS[] = { 2, 3, 4, 5, 6, 7, 8 };
+const uint8_t CONTROL_BOX_PINS[] = { 4,5,6,7,8,9,10 };
 
 // State of Control-Box buttons and switches
 union ControlBoxStateMessage {
@@ -65,7 +65,7 @@ public:
     *  IN:          Nothing
     *  OUT:         Nothing
     */
-    void sendState() { Serial.write(_message.allButtons); }
+    void sendState() {Serial.write(_message.allButtons);}
 
 private:
     int8_t _counter[BUTTON_COUNT];

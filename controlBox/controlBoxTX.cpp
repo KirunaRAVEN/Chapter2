@@ -1,7 +1,7 @@
 /* Filename:        ControlBoxTX.cpp
  * Author:          Diego Almendro Wieczorek
  * Date:            15.10.2025
- * Version:         V1.00 (15.10.2025)
+ * Version:         V1.01 (28.10.2025)
  *
  * Purpose:         Source file for ControlBoxTX class, This class handles reading the state of buttons.
  *
@@ -17,7 +17,12 @@ void ControlBoxTX::begin() {
         _counter[i] = 0;    // Reset counters
     }
 
-    _message.allButtons = 0x00;
+    _message.allButtons = 0x01;
+
+    for (int i = 0; i<20; i++) {
+        updateState();
+        delay(10);
+    }
 }
 
 void ControlBoxTX::updateState() {
@@ -25,8 +30,8 @@ void ControlBoxTX::updateState() {
 
     for (int i = 0; i < BUTTON_COUNT; i++) {
         _counter[i] += (digitalRead(CONTROL_BOX_PINS[i]) == LOW) ? 1 : -1;  // Read each pin and sum or subtract from the counter.
-        _counter[i] = constrain(_counter[i], 0, 100);                       // Constrain the counter to be between 0 and 100.
-        if (_counter[i] > 80) {                                             // If the counter is greater than a threshold, the button is considered pressed.
+        _counter[i] = constrain(_counter[i], 0, 25);                       // Constrain the counter to be between 0 and 100.
+        if (_counter[i] > 20) {                                             // If the counter is greater than a threshold, the button is considered pressed.
             bitSet(_message.allButtons, i);
         }
         else {
