@@ -1,4 +1,4 @@
-#import pyduinocli
+
 import git
 import os
 import subprocess
@@ -16,6 +16,35 @@ if __name__ == '__main__':
     else:
         out = subprocess.DEVNULL
 
+    #connection to arduino stuff
+    # TODO
+
+    #network stuff
+    print("[+] trying connection ...")
+    pingCommand = ["ping", "-c", "1", "-W", "0.1", "github.com"]
+    while True:
+        rv = subprocess.call(pingCommand, stdout=out, stderr=out)
+        if not rv:
+            print("[+] connection successfull")
+            break #connection successfull
+        print("[!] Connection unsuccessfull. ([s]kip/[r]etry/[c]onnect)?")
+        userInput = ""
+        while(userInput not in ["s", "r", "c"]):
+            userInput = input()
+        match userInput:
+            case "s":
+                print("[!] skipping network connection")
+                break
+            case "r":
+                print("[+] retrying connection ...")
+                continue
+            case "c":
+                print("[+] connecting to Wi-Fi")
+                subprocess.call(["nmcli", "device","wifi","connect","LTU"])
+                print("[+] openin browser for login")
+                subprocess.call(["firefox", "https://github.com"])
+            case _:
+                print("[!] unknown")
 
     # set up git backend and check that everything is up to date
     r = git.Repo(".", search_parent_directories=True)
@@ -28,32 +57,20 @@ if __name__ == '__main__':
 
     print("[+] pulling the most recent commit")
     fetchInfos = r.remotes.origin.pull()
-    parsedFetchInfos = [(x.commit.committed_date, x.commit.author.email, x.commit.message) for x in fetchInfos]
-
-    print("most recent pushes:")
+    parsedFetchInfos = [(x.commit.committed_date, x.commit.author.name, x.commit.message, x.remote_ref_path) for x in fetchInfos]
+    print("[+] most recent push:")
     for i in parsedFetchInfos:
-        print(f"On {time.asctime(time.localtime(i[0]))}, by {i[1]} with message {i[2]}")
-    """
-    localCommit = r.head.object
-    remoteCommit = r.remote().refs[-1].commit #has fixed offset, make it find it dynamically. TODO
-    if localCommit.hexsha != remoteCommit.hexsha:
-        print("[!] on outdated commit")
-        # TODO: pull the most recent commit
-    else:
-        print("[+] everything is up to date")
-
-    """
+        if i[3].strip() == BRANCH_NAME.strip():
+            print(f"   [*] [{time.asctime(time.localtime(i[0]))}] ({i[1]}): '{i[2].strip()}'")
 
     # check that burnTime is correct
     with open("TestStandSoftware/Globals.h") as f:
         globalConstants = f.readlines()
-
     for line in globalConstants:
         if "const int16_t burnTime" in line:
             line = line.rstrip("\n")
             print(f"[+] current burn time: {line.split(' ')[-1].rstrip(';')} ms")
         # TODO: Update BurnTime from here?
-
 
     # flash the arduino
     compileCommand = ["arduino-cli", "compile", "--fqbn", "arduino:mbed_portenta:envie_m7", "TestStandSoftware/TestStandSoftware.ino"]
