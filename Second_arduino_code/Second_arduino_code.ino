@@ -1,80 +1,92 @@
-// Authors: Christoffer Brun, Ivar Tylén, Alexander Bülow
-// Date: 12/11/2024
-// Version: 1.1
+// Authors: Alexander Bülow
+// Date: 30/10/2025
+// Version: 1.0
 // Purpose: Reads and then sends the values read on analog pins 0-4
-// Todo: 
 
-//float refADC = 5; //assuming 5v reference, can change based on measurements
-//float maxADC = 1023; // 1023, maximum value for a 10bit digital converter.
-// calibration values for the pressure sensors 
-// in the order nitrogen k, k2, k3, nitrogen b, b2, b3, placeholders currently. 
-//float calVal[6] = {1 , 1, 1, 0, 0, 0}; 
-//float nitrogenPressure = 0 , oxyPressure1 = 0, oxyPressure2 = 0, blanketTemp1 = 0, blanketTemp2 =0;  
+#include <Wire.h>
+#include <multi_channel_relay.h>
 
- uint64_t timeOverflowOffset;
- uint64_t checkTimestamp;
+Multi_Channel_Relay relay;
 
+static uint64_t micros_epoch = 0;   // counts 2^32-microsecond epochs
+static uint32_t last_micros = 0;
+const uint8_t PIN_BTN_1   = 2; //Button for heating relay 1
+const uint8_t PIN_BTN_2   = 3; //Button for heating relay 1
+const uint8_t PIN_STAT_1 = 13; //Status from relay 1
+const uint8_t PIN_STAT_2 = 8; //Status from relay 2
 
 void setup() {
   // Initialize serial communication at 1000000 baud
   Serial.begin(115200);
   // Set the Arduino ADC clock prescaler to get faster analogRead()
-  ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear prescaler bits
+  #if defined(ADCSRA)
+    ADCSRA &= ~(bit(ADPS0) | bit(ADPS1) | bit(ADPS2)); // clear prescaler
+    ADCSRA |= bit(ADPS2);                               // prescaler = 16
+  #endif
 
-  ADCSRA |= bit (ADPS2);                               //  16
-  //ADCSRA |= bit (ADPS0) | bit (ADPS2);                 //  32
-  //ADCSRA |= bit (ADPS1) | bit (ADPS2);                 //  64
-  //ADCSRA |= bit (ADPS0) | bit (ADPS1) | bit (ADPS2);   // 128
-  //init checktimestamp to 0
-  timeOverflowOffset = 0;
-  checkTimestamp = 0;
+  pinMode(PIN_BTN_1, INPUT); //Button input
+  pinMode(PIN_BTN_2, INPUT); //Button input
+  pinMode(PIN_STAT_1, INPUT); //Status input
+  pinMode(PIN_STAT_2, INPUT); //Status input
+
+  Wire.begin();
+  // Set I2C address and start relay
+  relay.begin(0x11);
+  // Ensures we are in a off position to start with (A bit redundant but it is fine)
+  relay.turn_off_channel(1);
+  relay.turn_off_channel(4);
 }
  
 void loop() {
-  uint64_t t1= millis();
-  // Read the analog voltage from pin A0-A5
+  uint32_t t1 = millis();
+  // Analog reads 
   int32_t nitrogenPressure = analogRead(A0);
-  int32_t blanketTemp1 =     analogRead(A3);
-  int32_t blanketTemp2 =     analogRead(A4);
-  bool    blanketstatus1  =  digitalRead(13);
-  bool    blanketstatus2  =  digitalRead(8);
+  int32_t blanketTemp1     = analogRead(A2);
+  int32_t blanketTemp2     = analogRead(A3);
 
-  //Save timestamp
-  uint64_t newTimestamp = micros(); //Timestamp at start of loop
+  // Digital reads 
+  bool Heating_blanket_button_1 = (digitalRead(PIN_BTN_1) == HIGH);
+  bool Heating_blanket_button_2 = (digitalRead(PIN_BTN_2) == HIGH);
+  bool blanketstatus1 = digitalRead(PIN_STAT_1);
+  bool blanketstatus2 = digitalRead(PIN_STAT_2);
 
-  //Account for 32-bit counter overflow
-  if (newTimestamp < checkTimestamp){
-    timeOverflowOffset += 4294967295;
+  // Switches relay on or off depending on button input
+  if (Heating_blanket_button_1) {
+    relay.turn_on_channel(1);
+  } else {
+    relay.turn_off_channel(1);
   }
 
-  checkTimestamp = newTimestamp;
-  newTimestamp += timeOverflowOffset;  //Arduino time in us
+  if (Heating_blanket_button_2) {
+    relay.turn_on_channel(4);
+  } else {
+    relay.turn_off_channel(4);
+  }
 
-  uint32_t timestamp = (uint32_t) (newTimestamp >> 3); 
+  //Account for 32-bit counter overflow
+  uint32_t now = micros();
+  if (now < last_micros) {
+    // micros() wrapped (every 71.6 minutes)
+    micros_epoch += (1ULL << 32);
+  }
+  last_micros = now;
+  uint64_t ts_us = micros_epoch + now;
 
-  //Print the voltage value to the serial monitor
-    Serial.print(timestamp);
-    Serial.print(", ");
+  uint32_t timestamp = (uint32_t)(ts_us >> 3);
 
-  //Nitrogen pressure
-    Serial.print(nitrogenPressure);
-    Serial.print(", ");
+  static uint32_t next_due = 0;
+  uint32_t now_ms = millis();
 
-  //Oxygen tank 1 temp
-    Serial.print(blanketTemp1);
-  Serial.print(", ");
+  if ((int32_t)(now_ms - next_due) >= 0) {
+    // Output once every 20 ms
+    Serial.print(timestamp);        Serial.print(", ");
+    Serial.print(nitrogenPressure); Serial.print(", ");
+    Serial.print(blanketTemp1);     Serial.print(", ");
+    Serial.print(blanketTemp2);     Serial.print(", ");
+    Serial.print(blanketstatus1);   Serial.print(", ");
+    Serial.println(blanketstatus2);
 
-  // Oxygen tank 2 temp
-  Serial.print(blanketTemp2);
-  Serial.print(", ");
-
-  // Oxygen status 1
-  Serial.print(blanketstatus1);
-  Serial.print(", ");
-
-  // Oxygen status 2
-  Serial.println(blanketstatus2);
-
-  uint64_t t2 = millis(); // Timestamp at end of code.
-  delay(20 - (t2 - t1)); // ensures we only send data with 20ms intervals. 
+    next_due = now_ms + 20;
+  }
+  delay(1);
 }
