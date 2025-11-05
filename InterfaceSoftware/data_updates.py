@@ -79,7 +79,7 @@ class TelemetryReader:
     # Reads one CSV row at a time, parses into MegaData, and caches per frame
     def __init__(self, filename, index_map, message_strings):
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        self.filename = os.path.join(base_dir, filename) # ensuring we have a relative path to the file
+        self.filename = os.path.join("~/Documents/Chapter2/GroundStationSoftware/interface/", filename) # ensuring we have a relative path to the file
         self.INDEX = index_map
         self.messageStrings = message_strings
         self.last_file_position = 0
