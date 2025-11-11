@@ -10,7 +10,7 @@
 #include "ControlBoxTX.h"
 
 void ControlBoxTX::begin() {
-    Serial.begin(CONTROL_BOX_BAUDRATE);
+    Serial1.begin(CONTROL_BOX_BAUDRATE);
 
     for (int i = 0; i < BUTTON_COUNT; i++) {
         pinMode(CONTROL_BOX_PINS[i], INPUT_PULLUP);

@@ -44,7 +44,7 @@ ControlBoxRX controlBoxRX;
 
 void setup() {
     Serial.begin(115200);
-    controlBoxRX.begin(&Serial2); // RX=P4 in ESPWROOM32
+    controlBoxRX.begin(&Serial); // RX=P4 in ESPWROOM32 SUBSTITUTE THE PORTENTA ONE
 }
 
 unsigned long lastReceiveTime = 0;

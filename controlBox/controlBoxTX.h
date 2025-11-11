@@ -65,7 +65,7 @@ public:
     *  IN:          Nothing
     *  OUT:         Nothing
     */
-    void sendState() {Serial.write(_message.allButtons);}
+    void sendState() {Serial1.write(_message.allButtons);}
 
 private:
     int8_t _counter[BUTTON_COUNT];
