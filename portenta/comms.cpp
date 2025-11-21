@@ -1,26 +1,40 @@
-#include <Ethernet.h>
-#include <PortentaEthernet.h>
 #include "comms.h"
-#include "globals.h"
 
-EthernetClient initComms() {
+
+uint8_t *pPacketBuffer;
+size_t bufferPtr;
+EthernetClient g_client;
+
+int initComms() {
     /*
-    Initialize communications between the test bench and the portenta
+    Initialize communications between the test bench and the portenta.
+    returns 0 on success and 1 on any failure
     */
-    EthernetClient client;
-    if(0 == Ethernet.begin(MAC, IP)) {
-        return client; // TODO: return error state
-    }
 
-    if(0 == client.connect(TARGETIP, PORT)) {
-        return client;
+    if(0 == Ethernet.begin(MAC, IP)) {
+        return 1;
     }
-    return client;
+    if(false == g_client.connect(TARGETIP, PORT)) {
+        return 2;
+    }
+    if(NULL == (pPacketBuffer = (uint8_t *) malloc(BUFFERMEMORYSIZE*sizeof(uint8_t)))) {
+        return 3;
+    }
+    return 0;
 }
 
-int sendTelemetry(EthernetClient client, void * buf, size_t size) {
+int sendTelemetry(void *buf, size_t size) {
     /*
-    Send a single packet of telemetry to the ground station. unbuffered at the moment.
+    Send a single packet of telemetry to the ground station.
+    Output is currently buffered, so one call does not necessarily send packets.
+    returns 0 on sent packet, and 1 if no packet was sent
     */
-    client.write((uint8_t *) buf, size);
+    memcpy((void *) (pPacketBuffer+bufferPtr), buf, size);
+    bufferPtr += size;
+    if(BUFFERSIZE <= bufferPtr) {
+        g_client.write(pPacketBuffer, bufferPtr);
+        bufferPtr = 0;
+        return 0;
+    }
+    return 1;
 }

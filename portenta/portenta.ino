@@ -1,12 +1,9 @@
-#include <Ethernet.h>
-#include <PortentaEthernet.h>
-#include <SPI.h>
 #include "globals.h"
 
-#define PACKETLEN 10
-
-EthernetClient g_client;
+#define PACKETLEN 40
+/* global vars */
 char g_packet[PACKETLEN];
+
 
 void setup() {
     Serial.begin(9600);
@@ -15,12 +12,29 @@ void setup() {
         ; // TODO: remove this from prod code, this forces Serial connection to boot
     }
 
-    g_client = initComms();
+    Serial.println("initializing");
     for(int i = 0; i<PACKETLEN; i++) {
         g_packet[i] = 'A';
     }
+    int retVal = initComms();
+    while(!retVal) {
+        //TODO: discuss this with team, as this will block 'proper' boot until connected to the GS.
+        switch(retVal) {
+            case 1:
+                Serial.println("Ethernet Error");
+                break;
+            case 2:
+                Serial.println("TCP Error");
+                break;
+            case 3:
+                Serial.println("Memory Error");
+                break;
+        }
+        retVal = initComms();
+    }
+    Serial.println("initialized");
 }
 
 void loop () {
-    sendTelemetry(g_client, (void *) g_packet, PACKETLEN*sizeof(char));
+    sendTelemetry((void *) g_packet, PACKETLEN*sizeof(char));
 }
