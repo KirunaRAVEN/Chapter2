@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 from ui_common import addDataTable
 
-#function to build the entire fueling interface
+#function to build the entire interface
 def buildInterface(largeFont):
     with dpg.group(tag="Interface", show=True):
         with dpg.group(horizontal=True):
