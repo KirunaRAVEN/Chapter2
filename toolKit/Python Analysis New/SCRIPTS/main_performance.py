@@ -24,7 +24,7 @@ from pathlib import Path
 # ----------------------------------
 
 # ENTER A VALID TEST ID
-test_id = 'HFT19'
+test_id = 'HFT21'
 
 # GET COLUMN NAMES FOR CSV FILE
 # Note that the current file is only for the new test bench format
@@ -35,6 +35,7 @@ with open(config_file, "r", encoding="utf-8") as f:
 
 script_dir = Path(__file__).resolve().parent.parent
 prop_mass = pd.read_excel(script_dir/ "DATA" / "Prop_mass.xlsx")
+n2o_properties = pd.read_csv(script_dir/ "DATA" / "n2o_saturation_properties.csv")
 
 # DATA from csv
 data = helper_functions.read_csv(test_id,column_names,all=False)
@@ -84,7 +85,7 @@ print('Correct a:', correct_a)
 fuel_rate = np.median(analysis_functions.compute_fuel_flow(data,mfuel_i,m_dot_ox,press_index,dfuel,port_i,port_max,length,correct_a)[1])
 
 # Compute performance
-results = analysis_functions.compute_performance(data,column_names,line_index,press_index,mass_change,ox_flow,fuel_rate,burn_time)
+results = analysis_functions.compute_performance(data,column_names,n2o_properties,line_index,press_index,mass_change,ox_flow,fuel_rate,burn_time)
 
 # -------------
 # PRINT RESULTS

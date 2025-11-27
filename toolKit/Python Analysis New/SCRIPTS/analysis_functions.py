@@ -105,7 +105,7 @@ def compute_fuel_flow(data, mfuel_i, m_dot_ox, index_pres, dfuel, port_i, port_m
     return total_fuel, m_dot_fuel
 
 
-def compute_performance(data, column_names, index_line, index_pres, mass_change, ox_rate, fuel_rate, burn_time):
+def compute_performance(data, column_names, n2o_properties, index_line, index_pres, mass_change, ox_rate, fuel_rate, burn_time):
     """
     Computes performance parameters:
       - impulse
@@ -120,6 +120,7 @@ def compute_performance(data, column_names, index_line, index_pres, mass_change,
     Args:
         data (pd.DataFrame): Test dataset
         column_names (list of str): List of column names
+        n2o_properties (pd.DataFrame): Saturation properties of N₂O loaded from CSV
         index_line (list[int]): Indices of ignition/valve events
         index_pres (int): Start index of steady chamber pressure
         mass_change (array): Mass differences [ox, fuel, total]
@@ -164,14 +165,13 @@ def compute_performance(data, column_names, index_line, index_pres, mass_change,
     ox1_pressure = data.iloc[index_line[0]-7000:index_line[0]-5000, N2O_2_col].median()
     ox2_pressure = data.iloc[index_line[0]-7000:index_line[0]-5000, N2O_1_col].median()
 
-    n2o_properties = pd.read_csv('n2o_saturation_properties.csv')
     current_properties = n2o_properties[n2o_properties.iloc[:, 1] == round(ox1_pressure, 0)]
     ox_density = current_properties.iloc[0, 2]
 
     # Cd 
     pressure_drop = data.iloc[index_line[0]:index_line[-1], line_col] - data.iloc[index_line[0]:index_line[-1], chamber_col]
     pressure_drop = pressure_drop.mean()
-    cd = ox_rate / (design_parameters.injector_area * np.sqrt(2 * design_parameters.ox_density * (pressure_drop * 1e5)))
+    cd = ox_rate / (design_parameters.injector_area * np.sqrt(2 * ox_density * (pressure_drop * 1e5)))
     volumetric_flow_rate = ox_rate / ox_density * 1000
 
     return dict(
