@@ -11,10 +11,15 @@ int initComms() {
     returns 0 on success and 1 on any failure
     */
 
-    if(0 == Ethernet.begin(MAC, IP)) {
+    // yes, i know this is ugly. I haven't found any other way to make it work
+    byte mac[] = MAC;
+    byte ip[] = IP;
+    byte targetIP[] = TARGETIP;
+
+    if(0 == Ethernet.begin(mac, ip)) {
         return 1;
     }
-    if(false == g_client.connect(TARGETIP, PORT)) {
+    if(false == g_client.connect(targetIP, PORT)) {
         return 2;
     }
     if(NULL == (pPacketBuffer = (uint8_t *) malloc(BUFFERMEMORYSIZE*sizeof(uint8_t)))) {

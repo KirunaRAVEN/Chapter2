@@ -16,9 +16,9 @@
 
 
 /* Network details */
-#define TARGETIP (const uint8_t[]) {192,168,0,1}
-#define MAC      (const uint8_t[]) {0x00, 0x20, 0x91, 0xDA, 0xBE, 0xEF}
-#define IP       (const uint8_t[]) {192,168,0,2}
+#define TARGETIP {192,168,0,1}
+#define MAC      {0x00, 0x20, 0x91, 0xDA, 0xBE, 0xEF}
+#define IP       {192,168,0,2}
 #define PORT     4000
 
 #define BUFFERSIZE 536

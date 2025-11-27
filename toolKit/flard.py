@@ -1,4 +1,4 @@
-
+#!/bin/python3
 import git
 import os
 import subprocess
@@ -73,8 +73,8 @@ if __name__ == '__main__':
         # TODO: Update BurnTime from here?
 
     # flash the arduino
-    compileCommand = ["arduino-cli", "compile", "--fqbn", "arduino:mbed_portenta:envie_m7", "TestStandSoftware/TestStandSoftware.ino"]
-    flashCommand = ["arduino-cli", "upload", "/dev/ttyACM0", "--fqbn", "arduino:mbed_portenta:envie_m7", "TestStandSoftware/TestStandSoftware.ino"]
+    compileCommand = ["arduino-cli", "compile", "--fqbn", "arduino:mbed_portenta:envie_m7", "portenta/portenta.ino"]
+    flashCommand = ["arduino-cli", "upload", "/dev/ttyACM0", "--fqbn", "arduino:mbed_portenta:envie_m7", "portenta/portenta.ino"]
     if subprocess.call(compileCommand, stdout=out, stderr=out):
         print("[!] compilation failed")
     else:
