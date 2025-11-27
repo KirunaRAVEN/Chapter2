@@ -1,7 +1,7 @@
 import csv
 from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
-from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstrate
+from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstrate
 import os
 
 # Dict of all indices
@@ -182,17 +182,10 @@ PRESSURE_CHANNELS = [
 ]
 
 BUFFER_SIZE_PD = 900
-DROP_OK = -0.33
-DROP_WARN = -1.0 # Everything bellow this point is critical
 pipeTimeBuf = deque(maxlen=BUFFER_SIZE_PD)
 pressureBuffer = defaultdict(lambda: deque(maxlen=BUFFER_SIZE_PD))
 
-def classifyDrop(drop):
-    if drop > DROP_OK:
-        return "ok"
-    if drop < DROP_WARN: 
-        return "warn"
-    return "critical"
+
     
 def updatePipingDiagram(data, t):
     #returning if there is no pressure drop test needs to be fixed before deployment

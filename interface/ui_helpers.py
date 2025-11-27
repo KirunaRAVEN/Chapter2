@@ -132,7 +132,14 @@ def updateLog(tag, newData):
     dpg.set_value(tag, newLog)
 
 
-
+DROP_OK = -0.33
+DROP_WARN = -1.0 # Everything bellow this point is critical
+def classifyDrop(drop):
+    if drop > DROP_OK:
+        return "ok"
+    if drop < DROP_WARN: 
+        return "warn"
+    return "critical"
 
 
 def assumedPressure(tempData):

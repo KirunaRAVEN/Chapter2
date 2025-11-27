@@ -140,21 +140,22 @@ def compute_performance(data, column_names, index_line, index_pres, mass_change,
 
     # Mass flow rates 
     prop_rate = ox_rate + fuel_rate
-    mass_flow_rate = np.array([ox_rate, fuel_rate, prop_rate])
+    # mass_flow_rate = np.array([ox_rate, fuel_rate, prop_rate])
     OF_ratio = ox_rate / fuel_rate
 
     # Impulse & thrust 
-    impulse = np.trapz(data.iloc[index_pres:index_line[-1], load_cell_col],
+    impulse = np.trapz(data.iloc[index_pres:index_line[-1], chamber_col]*design_parameters.factor,
                        data.iloc[index_pres:index_line[-1], time_col])
     thrust = impulse / burn_time
-    rolling_std = data.iloc[index_pres:index_line[-1], load_cell_col].rolling(window=100, center=True).std(ddof=0)
+    rolling_std = data.iloc[index_pres:index_line[-1], chamber_col] * design_parameters.factor
+    rolling_std = rolling_std.rolling(window=100, center=True).std(ddof=0)
     sigma = np.mean(rolling_std)
 
     # Isp 
-    isp = impulse / (mass_change[2] * 9.81)
+    isp = thrust / (mass_change[2] * 9.81)
 
     # C* 
-    chamber_mean = data.iloc[index_pres:index_line[-1], chamber_col].median()
+    chamber_mean = data.iloc[index_pres:index_line[-1], chamber_col].mean()
     cstar = chamber_mean * 1e5 * design_parameters.throat_area / prop_rate
     cf = thrust / (chamber_mean * 1e5 * design_parameters.throat_area)
 
@@ -163,10 +164,15 @@ def compute_performance(data, column_names, index_line, index_pres, mass_change,
     ox1_pressure = data.iloc[index_line[0]-7000:index_line[0]-5000, N2O_2_col].median()
     ox2_pressure = data.iloc[index_line[0]-7000:index_line[0]-5000, N2O_1_col].median()
 
+    n2o_properties = pd.read_csv('n2o_saturation_properties.csv')
+    current_properties = n2o_properties[n2o_properties.iloc[:, 1] == round(ox1_pressure, 0)]
+    ox_density = current_properties.iloc[0, 2]
+
     # Cd 
     pressure_drop = data.iloc[index_line[0]:index_line[-1], line_col] - data.iloc[index_line[0]:index_line[-1], chamber_col]
     pressure_drop = pressure_drop.mean()
     cd = ox_rate / (design_parameters.injector_area * np.sqrt(2 * design_parameters.ox_density * (pressure_drop * 1e5)))
+    volumetric_flow_rate = ox_rate / ox_density * 1000
 
     return dict(
         impulse=impulse,
