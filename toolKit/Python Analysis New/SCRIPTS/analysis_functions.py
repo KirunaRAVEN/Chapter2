@@ -3,7 +3,7 @@ analysis_functions.py
 
 Author: Francesca Ciacci
 Date: October 6, 2025
-Version: 1.0.0
+Version: 1.0
 Description:
     This script provides functions for analyzing hybrid rocket test data.
 """
@@ -105,7 +105,7 @@ def compute_fuel_flow(data, mfuel_i, m_dot_ox, index_pres, dfuel, port_i, port_m
     return total_fuel, m_dot_fuel
 
 
-def compute_performance(data, column_names, n2o_properties, index_line, index_pres, mass_change, ox_rate, fuel_rate, burn_time):
+def compute_performance(data, column_names, n2o_properties, index_line, index_pres, ox_rate, fuel_rate, burn_time):
     """
     Computes performance parameters:
       - impulse
@@ -123,7 +123,6 @@ def compute_performance(data, column_names, n2o_properties, index_line, index_pr
         n2o_properties (pd.DataFrame): Saturation properties of N₂O loaded from CSV
         index_line (list[int]): Indices of ignition/valve events
         index_pres (int): Start index of steady chamber pressure
-        mass_change (array): Mass differences [ox, fuel, total]
         ox_rate (float): Oxidizer mass flow rate [kg/s]
         fuel_rate (float): Fuel mass flow rate [kg/s]
         burn_time (float): Burn duration [s]
@@ -153,7 +152,7 @@ def compute_performance(data, column_names, n2o_properties, index_line, index_pr
     sigma = np.mean(rolling_std)
 
     # Isp 
-    isp = thrust / (mass_change[2] * 9.81)
+    isp = thrust / ((ox_rate + fuel_rate) * 9.81)
 
     # C* 
     chamber_mean = data.iloc[index_pres:index_line[-1], chamber_col].mean()

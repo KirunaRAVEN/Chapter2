@@ -3,7 +3,7 @@ plot_thrust_pressure.py
 
 Author: Francesca Ciacci
 Date: October 6, 2025
-Version: 1.0.0
+Version: 1.0
 Description:
     This script visualizes the measured thrust and chamber pressure 
     for a hybrid rocket engine test.
@@ -22,7 +22,7 @@ import colors
 # -------------
 print_all = False       # If True, shows all data without zoom around ignition
 save_figures = False    # If True, saves the plots
-test_id = 'HFT16'       # Test ID from Prop_mass.xlsx
+test_id = 'HFT21'       # Test ID from Prop_mass.xlsx
 output_folder = None    # If None, saves in the test folder or 'Files/'
 
 # ---------

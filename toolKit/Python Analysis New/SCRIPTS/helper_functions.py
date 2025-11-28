@@ -3,7 +3,7 @@ helper_functions.py
 
 Author: Francesca Ciacci
 Date: October 6, 2025
-Version: 1.0.0
+Version: 1.0
 Description:
     This script contains utility functions used for data preprocessing, 
     file management, and signal analysis in hybrid rocket test data.
@@ -320,7 +320,7 @@ def mass_flow_rate(data, test_id, prop_mass, column_names, valve_idx=None):
 
     # Δp signal 
     # sqrt_dp = np.sqrt(np.maximum(p_line - p_chamber, 0)) avoid negatives
-    sqrt_dp = np.sqrt(p_line - p_chamber)
+    sqrt_dp = np.sqrt(p_line)
 
     # Time
     time_col = get_column_number(column_names, "ArduinoMegaTime")
