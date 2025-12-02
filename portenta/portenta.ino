@@ -3,7 +3,7 @@
 #define PACKETLEN 40
 /* global vars */
 struct normalPacket g_packet;
-long int lastLoopTime = 0
+long int lastLoopTime = 0;
 
 void setup() {
     Serial.begin(9600);
@@ -36,12 +36,13 @@ void setup() {
         }
         retVal = initComms();
     }
+    g_packet.state.mode='*';
     Serial.println("initialized");
 }
 
 void loop () {
     g_packet.data.timestamp = millis();
-    sendTelemetry(NORMAL_PACKET, (void *) g_packet, sizeof(struct normalPacket));
+    sendTelemetry(NORMAL_PACKET, (void *) &g_packet, sizeof(struct normalPacket));
     while (RPC.available()) {
         Serial.write(RPC.read());
     }

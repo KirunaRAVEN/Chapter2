@@ -16,14 +16,8 @@
 #define CAMERA_TRIGGER_TIME (VALVE_OFF_TIME + 2000)
 #define PURGING_TIME        (OXIDIZER_EMPTY_TIME + 4*1000)
 
-/* Normal packet. 44 bytes */
-struct normalPacket {
-    struct datapoint data;
-    struct softwareState state;
-}
-
 /* Main storage struct. 32 bytes */
-struct datapoint {
+struct dataPoint {
     long int timestamp;
 
     // Pressures
@@ -58,6 +52,13 @@ struct softwareState {
     bool valveActive : 1;           //Is the valve opened by the software
     bool ignitionEngagedActive : 1; //Is the ignition activated by the software
 };
+
+/* Normal packet. 44 bytes */
+struct normalPacket {
+    struct dataPoint data;
+    struct softwareState state;
+};
+
 
 
 enum messageIndices {

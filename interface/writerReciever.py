@@ -5,7 +5,7 @@ import struct
 import threading
 
 PORT = 4000
-LEN_NORMAL = 44
+LEN_NORMAL = 48
 LEN_HIGH_SPEED = 4
 
 g_dataQueue = b''
@@ -52,11 +52,11 @@ def parseData():
     datafile = open("data.csv", "a")
     while True:
         if(g_dataQueue):
-            packetType = int.from_bytes(g_dataQueue[0], "little")
+            packetType = g_dataQueue[0]
             match packetType:
                 case 1: #normal packet
                     try:
-                        data = struct.unpack_from(">l8f3i", g_dataQueue, 1)
+                        data = struct.unpack_from("<l8f3i", g_dataQueue, 1)
                         # TODO: make this prettier:
                         timestamp = data[0]
                         N20FeedingPressure1 = data[1]
@@ -73,7 +73,7 @@ def parseData():
                         #TODO: manual byte unpacking or some lib, idk
                         dumpValveButton = 0
                         heatingBlanketButton1 = 0
-                        heatingBlanketButton1 = 0
+                        heatingBlanketButton2 = 0
                         ignitionButton = 0
                         N2ValveButton = 0
                         N20ValveButton = 0
@@ -81,10 +81,13 @@ def parseData():
                         ignitionEngagedActive = 0
 
                         datafile.write(f"{timestamp},{N20FeedingPressure1},{N20FeedingPressure2},{linePressure},{chamberPressure},{N2FeedingPressure},{N2FeedingPressure},{bottleTemperature1},{bottleTemperature2},{engineTemperature},{mode},{subState},{dumpValveButton},{heatingBlanketButton1},{heatingBlanketButton2},{ignitionButton},{N2ValveButton},{valveActive},{ignitionEngagedActive}\n")
-                    except:
-                        pass
+                        datafile.flush()
+                        g_dataQueue = g_dataQueue[(1+LEN_NORMAL):]
+                    except exception as e:
+                        print(f"[!] {e}")
                 case 2: #high-speed packet
                     pass
+            time.sleep(0.1)
 
 
 if __name__ == '__main__':
