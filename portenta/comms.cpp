@@ -28,14 +28,15 @@ int initComms() {
     return 0;
 }
 
-int sendTelemetry(void *buf, size_t size) {
+int sendTelemetry(uint8_t type, void *buf, size_t size) {
     /*
     Send a single packet of telemetry to the ground station.
     Output is currently buffered, so one call does not necessarily send packets.
     returns 0 on sent packet, and 1 if no packet was sent
     */
-    memcpy((void *) (pPacketBuffer+bufferPtr), buf, size);
-    bufferPtr += size;
+    pPacketBuffer[bufferPtr] = type;
+    memcpy((void *) (pPacketBuffer+bufferPtr+1), buf, size);
+    bufferPtr += size + 1;
     if(BUFFERSIZE <= bufferPtr) {
         g_client.write(pPacketBuffer, bufferPtr);
         bufferPtr = 0;

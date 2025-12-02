@@ -1,27 +1,98 @@
 #!/bin/python3
 import socket
 import time
-import subprocess
+import struct
+import threading
 
-def pollRecieve(sock):
-    try:
-        msg = sock.recv(512).decode()
-        if msg == "":
-            return False
-        if '\n' in msg:
-            return msg.split('\n')
-        else:
-            return [msg]
-    except:
-        return True
+PORT = 4000
+LEN_NORMAL = 44
+LEN_HIGH_SPEED = 4
+
+g_dataQueue = b''
+
+
+def reciever(sock):
+    """
+    Recieves data from the socket and puts it into the dataqueue
+    """
+    while True:
+        try:
+            msg = sock.recv(1024)
+            g_dataQueue += msg
+        except:
+            pass
+
+def parseData():
+    """
+    Parses the data recieved and prints it to data.csv
+    """
+    global g_dataQueue
+    print("!")
+
+    ## initialize data
+    timestamp = 0
+    N20FeedingPressure1 = 0.0
+    N20FeedingPressure2 = 0.0
+    linePressure = 0.0
+    chamberPressure = 0.0
+    N2FeedingPressure = 0.0
+    bottleTemperature1 = 0.0
+    bottleTemperature2 = 0.0
+    engineTemperature = 0.0
+    dumpValveButton = 0
+    heatingBlanketButton = 0
+    ignitionButton = 0
+    N2ValveButton = 0
+    N20ValveButton = 0
+    valveActive = 0
+    ignitionEngagedActive = 0
+    mode = 0
+    subState = 0
+
+    datafile = open("data.csv", "a")
+    while True:
+        if(g_dataQueue):
+            packetType = int.from_bytes(g_dataQueue[0], "little")
+            match packetType:
+                case 1: #normal packet
+                    try:
+                        data = struct.unpack_from(">l8f3i", g_dataQueue, 1)
+                        # TODO: make this prettier:
+                        timestamp = data[0]
+                        N20FeedingPressure1 = data[1]
+                        N20FeedingPressure2 = data[2]
+                        linePressure = data[3]
+                        chamberPressure = data[4]
+                        N2FeedingPressure = data[5]
+                        bottleTemperature1 = data[6]
+                        bottleTemperature2 = data[7]
+                        engineTemperature = data[8]
+                        mode = data[9]
+                        subState = data[10]
+
+                        #TODO: manual byte unpacking or some lib, idk
+                        dumpValveButton = 0
+                        heatingBlanketButton1 = 0
+                        heatingBlanketButton1 = 0
+                        ignitionButton = 0
+                        N2ValveButton = 0
+                        N20ValveButton = 0
+                        valveActive = 0
+                        ignitionEngagedActive = 0
+
+                        datafile.write(f"{timestamp},{N20FeedingPressure1},{N20FeedingPressure2},{linePressure},{chamberPressure},{N2FeedingPressure},{N2FeedingPressure},{bottleTemperature1},{bottleTemperature2},{engineTemperature},{mode},{subState},{dumpValveButton},{heatingBlanketButton1},{heatingBlanketButton2},{ignitionButton},{N2ValveButton},{valveActive},{ignitionEngagedActive}\n")
+                    except:
+                        pass
+                case 2: #high-speed packet
+                    pass
+
 
 if __name__ == '__main__':
     listenSock = socket.socket(type=socket.SOCK_STREAM)
-    debugSock = socket.socket(type=socket.SOCK_STREAM)
-    print("[!] setting up incoming connection ", end="", flush=True)
+    print("[+] setting up incoming connection ", end="", flush=True)
     while True:
         try:
-            listenSock.bind(("", 6000))
+            listenSock.bind(("", 4000))
             break
         except:
             print(".", end="", flush=True)
@@ -29,51 +100,12 @@ if __name__ == '__main__':
     print("!")
     listenSock.listen(10)
 
-    print("[!] checking outgoing connection ",end="", flush=True)
-    command = ["ping", "-c", "1", "-W", "0.1", "rock-4c-plus.local"]
-    failcount = 0
+    print("[+] setting up parser ...", end="", flush=True)
+    threading.Thread(target=parseData).start()
+
+
     while True:
-        rv = subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if not rv:
-            break
-        print(".", end="", flush=True)
-        failcount += 1
-        if failcount == 10:
-            print("\n[!] connection is taking long, double check the connection", end="", flush=True)
-            failcount = 0
-        time.sleep(0.5)
-    print("!")
-
-    print("[!] connecting ", end="", flush=True)
-    while True:
-        try:
-            debugSock.connect(("rock-4c-plus.local", 5011))
-            break
-        except:
-            print(".", end="", flush=True)
-            time.sleep(0.5)
-    print("!")
-    print("[!] connected, listening for data conn ... ")
-    dataSock, addr = listenSock.accept()
-    print("[!] connected")
-    debugSock.settimeout(0.01)
-    dataSock.settimeout(0.01)
-
-    with open("data.csv", "a") as f:
-        while True:
-            msg = pollRecieve(dataSock)
-            if msg == False:
-                printf("[!] connection dead, reset reciever")
-            if msg != True:
-                for m in msg:
-                    # TODO: parse data packet, format TBD
-                    print(f"[+] {m}")
-                    f.write(f"{m}\n")
-            msg = pollRecieve(debugSock)
-            if msg == False:
-                printf("[!] connection dead, reset reciever")
-            if msg != True:
-                for m in msg:
-                    print(f"[*] {m}")
-            f.flush()
-
+        print("[+] listening for data conn ... ")
+        dataSock, addr = listenSock.accept()
+        threading.Thread(target=reciever, args=(dataSock,)).start()
+        print("[+] connected")

@@ -4,21 +4,25 @@
 #include <RPC.h>
 
 
-/* Ignition sequence */
-#define IGNITION_SAFE_TIME (1 * 1000)
-#define BURN_TIME          (4 * 1000)
+/* Ignition sequence (times in ms) */
+#define IGNITION_SAFE_TIME  (1 * 1000)
+#define BURN_TIME           (4 * 1000)
 #define IGNITER_BURN_LENGTH (900)
-#define IGNITER_DELAY (50)
-#define VALVE_ON_TIME (100)
-#define IGNITION_OFF_TIME IGNITER_BURN_LENGTH
-#define VALVE_OFF_TIME (IGNITION_OFF_TIME + BURN_TIME)
+#define IGNITER_DELAY       (50)
+#define VALVE_ON_TIME       (100)
+#define IGNITION_OFF_TIME   (IGNITER_BURN_LENGTH)
+#define VALVE_OFF_TIME      (IGNITION_OFF_TIME + BURN_TIME)
 #define OXIDIZER_EMPTY_TIME (VALVE_OFF_TIME + 500)
 #define CAMERA_TRIGGER_TIME (VALVE_OFF_TIME + 2000)
+#define PURGING_TIME        (OXIDIZER_EMPTY_TIME + 4*1000)
 
+/* Normal packet. 44 bytes */
+struct normalPacket {
+    struct datapoint data;
+    struct softwareState state;
+}
 
-
-
-/* Main storage struct */
+/* Main storage struct. 32 bytes */
 struct datapoint {
     long int timestamp;
 
@@ -26,33 +30,33 @@ struct datapoint {
     float N2OFeedingPressure1;      //Oxidizer feeding pressure
     float N2OFeedingPressure2;      //Oxidizer feeding pressure
     float linePressure;             //Line pressure
-    float combustionPressure;       //Combustion chamber pressure
+    float chamberPressure;          //Combustion chamber pressure
     float N2FeedingPressure;        //Nitrogen feeding pressure
 
     // Temperatures
     float bottleTemperature1;       //Bottle temperature
     float bottleTemperature2;       //Nozzle temperature
     float engineTemperature;        //Piping temperature
-
 };
 
-/* Internal software storage struct.
+/* Internal software storage struct. 12 bytes due to padding
 Will always get sent with the datapoint, so no need for a timestamp */
 struct softwareState {
+    // Software modes
+    int mode;                       //What mode is the software in
+    int subState;                   //What substate is the software in
+
     // Button states
     bool dumpValveButton : 1;       //Is dump valve button pressed (normally open)
-    bool heatingBlanketButton : 1;  //Is heating button pressed
+    bool heatingBlanketButton1 : 1; //Is heating button 1 pressed
+    bool heatingBlanketButton2 : 1; //Is heating button 2 pressed
     bool ignitionButton : 1;        //Is ignition button pressed
-    bool n2FeedingButton : 1;       //Is N2 feeding valve button pressed (normally closed)
-    bool oxidizerValveButton : 1;   //Is the oxidizer valve button pressed (normally closed)
+    bool N2ValveButton : 1;         //Is N2 feeding valve button pressed (normally closed)
+    bool N20ValveButton : 1;        //Is the oxidizer valve button pressed (normally closed)
 
     // Software control states
     bool valveActive : 1;           //Is the valve opened by the software
     bool ignitionEngagedActive : 1; //Is the ignition activated by the software
-
-    // Software modes
-    int mode;                       //What mode is the software in
-    int subState;                   //What substate is the software in
 };
 
 

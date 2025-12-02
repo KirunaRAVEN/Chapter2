@@ -40,8 +40,9 @@ if __name__ == '__main__':
                 continue
             case "c":
                 print("[+] connecting to Wi-Fi")
+                subprocess.call(["nmcli", "device","wifi","list","--rescan","yes"])
                 subprocess.call(["nmcli", "device","wifi","connect","LTU"])
-                print("[+] openin browser for login")
+                print("[+] opening browser for login")
                 subprocess.call(["firefox", "https://github.com"])
             case _:
                 print("[!] unknown")

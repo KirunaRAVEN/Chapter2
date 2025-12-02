@@ -2,8 +2,8 @@
 
 #define PACKETLEN 40
 /* global vars */
-char g_packet[PACKETLEN];
-
+struct normalPacket g_packet;
+long int lastLoopTime = 0
 
 void setup() {
     Serial.begin(9600);
@@ -17,9 +17,8 @@ void setup() {
 #endif
     RPC.begin();
     Serial.println("initializing");
-    for(int i = 0; i<PACKETLEN; i++) {
-        g_packet[i] = 'A';
-    }
+
+    Serial.println(sizeof(struct normalPacket));
     int retVal = initComms();
     while(0 != retVal) {
         //TODO: discuss this with team, as this will block 'proper' boot until connected to the GS.
@@ -41,8 +40,14 @@ void setup() {
 }
 
 void loop () {
-    sendTelemetry((void *) g_packet, PACKETLEN*sizeof(char));
+    g_packet.data.timestamp = millis();
+    sendTelemetry(NORMAL_PACKET, (void *) g_packet, sizeof(struct normalPacket));
     while (RPC.available()) {
         Serial.write(RPC.read());
     }
+    //constant time loop
+    while(millis() - lastLoopTime < 100) {
+        ; // TODO: change this
+    }
+    lastLoopTime = millis();
 }
