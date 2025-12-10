@@ -1,7 +1,7 @@
 Guide on how to use python analysis scripts 
 
 FOLDERS LAYOUT:
-DATA --> propellant mass data
+DATA --> propellant mass and n2o data (files need to be up to date, changing every test)
 SCRIPTS --> all the scripts to run the analysis
 Configuration --> txt files with csv configuration (column names)
 

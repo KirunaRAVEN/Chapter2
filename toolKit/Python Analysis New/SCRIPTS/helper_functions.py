@@ -3,7 +3,7 @@ helper_functions.py
 
 Author: Francesca Ciacci
 Date: October 6, 2025
-Version: 1.0.0
+Version: 1.0
 Description:
     This script contains utility functions used for data preprocessing, 
     file management, and signal analysis in hybrid rocket test data.
@@ -170,7 +170,7 @@ def find_indices(data, column_names):
     # Find first valve closing transition 1 → 0 after ignition
     start = 0 if index_ign > len(ign_col) else index_ign
     valve_col = data.iloc[start:, get_column_number(column_names, "ValveSwState")].astype(int)
-    shifted_valve = valve_col.shift(1).fillna(0)
+    shifted_valve = valve_col.shift(1)
     valve_candidates = valve_col[(valve_col == 0) & (shifted_valve == 1)].index
     if valve_candidates.empty:
         index_valve = None  
@@ -247,11 +247,17 @@ def get_pressure_index(data,column_names):
     Returns:
         int: index where chamber pressure starts rising
     """
+    valve_idx = find_indices(data,column_names)[1]
+
     pres_col = get_column_number(column_names,"ChamberPressure")
     pres_diff = np.diff(data.iloc[:, pres_col])
 
-    candidates = np.where((pres_diff > 1) & (data.iloc[:-1, pres_col] > 4))[0]
-    return candidates[0] if candidates.size > 0 else None
+    mask = (pres_diff > 0.8) & (data.iloc[:-1, pres_col] > 4)
+    mask_end = (pres_diff  < -1) & (data.iloc[:-1, pres_col] < data.iloc[valve_idx:valve_idx + 1000, pres_col].mean() / 2)
+
+    first = np.nonzero(mask)[0][0]
+
+    return first
 
 
 def get_line_indices(data, column_names):
@@ -271,13 +277,7 @@ def get_line_indices(data, column_names):
     # Compute absolute difference between consecutive line pressure values
     diff_line = np.abs(np.diff(data.iloc[:, line_col]))
 
-    # Determine threshold using both global max and max after valve
-    max_global = data.iloc[:, line_col].max()
-    max_after_valve = data.iloc[valve_idx:, line_col].max() if valve_idx is not None else max_global
-    threshold = 0.75 * min(max_global, max_after_valve)  # conservative threshold
-
-    # Create mask: significant changes in pressure AND above threshold
-    mask = (diff_line > 0.4) & (data.iloc[:-1, line_col] > threshold)
+    mask = (diff_line > 0.4) & (data.iloc[:-1, line_col] > 0.75*min(data.iloc[valve_idx:, line_col].max(), data.iloc[:, line_col].max()))
     indices = np.where(mask)[0]
 
     if indices.size == 0:
@@ -320,7 +320,7 @@ def mass_flow_rate(data, test_id, prop_mass, column_names, valve_idx=None):
 
     # Δp signal 
     # sqrt_dp = np.sqrt(np.maximum(p_line - p_chamber, 0)) avoid negatives
-    sqrt_dp = np.sqrt(p_line - p_chamber)
+    sqrt_dp = np.sqrt(p_line)
 
     # Time
     time_col = get_column_number(column_names, "ArduinoMegaTime")

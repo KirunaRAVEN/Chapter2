@@ -3,7 +3,7 @@ main_performance.py
 
 Author: Francesca Ciacci
 Date: October 6, 2025
-Version: 1.0.0
+Version: 1.0
 Description:
     Main script for computing hybrid rocket performance parameters.
     It loads test data, computes propellant mass flow rates, 
@@ -24,7 +24,7 @@ from pathlib import Path
 # ----------------------------------
 
 # ENTER A VALID TEST ID
-test_id = 'CFT12-02'
+test_id = 'HFT21'
 
 # GET COLUMN NAMES FOR CSV FILE
 # Note that the current file is only for the new test bench format
@@ -35,6 +35,7 @@ with open(config_file, "r", encoding="utf-8") as f:
 
 script_dir = Path(__file__).resolve().parent.parent
 prop_mass = pd.read_excel(script_dir/ "DATA" / "Prop_mass.xlsx")
+n2o_properties = pd.read_csv(script_dir/ "DATA" / "n2o_saturation_properties.csv")
 
 # DATA from csv
 data = helper_functions.read_csv(test_id,column_names,all=False)
@@ -74,7 +75,6 @@ port_max = d_param.port_max
 length = d_param.length
 
 total_fuel, m_dot_fuel = analysis_functions.compute_fuel_flow(data,mfuel_i,m_dot_ox,press_index,dfuel,port_i,port_max,length)
-print('Total fuel:', total_fuel[-2])
 
 # Correct burn rate coefficient based on actual fuel consumption
 a = d_param.a
@@ -84,7 +84,7 @@ print('Correct a:', correct_a)
 fuel_rate = np.median(analysis_functions.compute_fuel_flow(data,mfuel_i,m_dot_ox,press_index,dfuel,port_i,port_max,length,correct_a)[1])
 
 # Compute performance
-results = analysis_functions.compute_performance(data,column_names,line_index,press_index,mass_change,ox_flow,fuel_rate,burn_time)
+results = analysis_functions.compute_performance(data,column_names,n2o_properties,line_index,press_index,ox_flow,fuel_rate,burn_time)
 
 # -------------
 # PRINT RESULTS
