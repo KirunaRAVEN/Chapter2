@@ -1,14 +1,19 @@
 #include "comms.h"
 
 
-uint8_t *pPacketBuffer;
-size_t bufferPtr;
-EthernetClient g_client;
+static uint8_t *pPacketBuffer;
+static size_t packetBufferPtr;
+static EthernetClient client;
+static uint8_t *pMessageBuffer;
+static size_t messageBufferReadPtr;
+static size_t messageBufferWritePtr;
+
 
 int initComms() {
     /*
     Initialize communications between the test bench and the portenta.
-    returns 0 on success and 1 on any failure
+    returns 0 on success and will retry on any failure
+    BLOCKING.
     */
 
     // yes, i know this is ugly. I haven't found any other way to make it work
@@ -16,14 +21,21 @@ int initComms() {
     byte ip[] = IP;
     byte targetIP[] = TARGETIP;
 
-    if(0 == Ethernet.begin(mac, ip)) {
-        return 1;
+    while(0 == Ethernet.begin(mac, ip)) {
+        Serial.println("[!] Ethernet error");
+        delay(0.1);
     }
-    if(false == g_client.connect(targetIP, PORT)) {
-        return 2;
+    while(false == client.connect(targetIP, PORT)) {
+        Serial.println("[!] TCP error");
+        delay(0.1);
     }
-    if(NULL == (pPacketBuffer = (uint8_t *) malloc(BUFFERMEMORYSIZE*sizeof(uint8_t)))) {
-        return 3;
+    while(NULL == (pPacketBuffer = (uint8_t *) malloc(BUFFERMEMORYSIZE*sizeof(uint8_t)))) {
+        Serial.println("[!] Memory error");
+        delay(0.1);
+    }
+    if(NULL == (pMessageBuffer = (uint8_t *) malloc(MESSAGEBUFFERSIZE*sizeof(uint8_t)))) {
+        Serial.println("[!] Memory error");
+        delay(0.1);
     }
     return 0;
 }
@@ -34,13 +46,36 @@ int sendTelemetry(uint8_t type, void *buf, size_t size) {
     Output is currently buffered, so one call does not necessarily send packets.
     returns 0 on sent packet, and 1 if no packet was sent
     */
-    pPacketBuffer[bufferPtr] = type;
-    memcpy((void *) (pPacketBuffer+bufferPtr+1), buf, size);
-    bufferPtr += size + 1;
-    if(BUFFERSIZE <= bufferPtr) {
-        g_client.write(pPacketBuffer, bufferPtr);
-        bufferPtr = 0;
+    pPacketBuffer[packetBufferPtr] = type;
+    memcpy((void *) (pPacketBuffer+packetBufferPtr+1), buf, size);
+    packetBufferPtr += size + 1;
+    if(BUFFERSIZE <= packetBufferPtr) {
+        client.write(pPacketBuffer, packetBufferPtr);
+        packetBufferPtr = 0;
         return 0;
     }
     return 1;
 }
+
+int getNextMessage() {
+    /*
+    get the oldest message in the queue
+    */
+    if(messageBufferWritePtr == messageBufferReadPtr) {
+        return 0;
+    }
+    uint8_t retval = pMessageBuffer[messageBufferReadPtr];
+    messageBufferReadPtr = (messageBufferReadPtr+1) % MESSAGEBUFFERSIZE;
+    return retval;
+}
+
+int addMessage(uint8_t message) {
+    /*
+    Add a message to the message queue
+    */
+    pMessageBuffer[messageBufferWritePtr] = message;
+    messageBufferWritePtr = (messageBufferWritePtr+1) % MESSAGEBUFFERSIZE;
+    Serial.println(message);
+    return 0;
+}
+

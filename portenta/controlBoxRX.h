@@ -12,7 +12,7 @@
 #ifndef CONTROL_BOX_RX_H
 #define CONTROL_BOX_RX_H
 
-#define CONTROL_BOX_BAUDRATE 9600
+#define CONTROL_BOX_BAUDRATE 115200
 
 // State of Control-Box buttons and switches
 union ControlBoxStateMessage {

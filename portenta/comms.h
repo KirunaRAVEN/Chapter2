@@ -24,10 +24,13 @@
 #define BUFFERSIZE 536
 #define BUFFERMEMORYSIZE (BUFFERSIZE+80)
 enum packettypes {NORMAL_PACKET=1, HIGH_SPEED_PACKET=2};
+#define MESSAGEBUFFERSIZE 16
 
 /* Functions */
 int initComms();
 int sendTelemetry(uint8_t type, void *buf, size_t size);
+int getNextMessage();
+int addMessage(uint8_t message);
 
 /* Global variables */
 

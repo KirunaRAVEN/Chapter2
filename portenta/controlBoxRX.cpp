@@ -7,7 +7,7 @@
  *
  */
 
-#include "ControlBoxRX.h"
+#include "controlBoxRX.h"
 
 void ControlBoxRX::begin(HardwareSerial* serial = &Serial) {
     _serial = serial;

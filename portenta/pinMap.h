@@ -5,7 +5,7 @@
 #include <Arduino_PortentaBreakout.h>
 
 // UART
-UART UART0Breakout = UART(UART0_TX, UART0_RX);
+//UART UART0Breakout = UART(UART0_TX, UART0_RX);
 
 // I2C
 
@@ -39,13 +39,23 @@ enum ControlBoxButton { // TODO
     EMERGENCY_BUTTON,
     BUTTON_COUNT
 };
-breakoutPin relayPins[] = {PWM0, PWM1, PWM2, CAN1_TX, CAMERA_D0P, CAMERA_D0N, GPIO_4}; //TODO
+//breakoutPin relayPins[] = {PWM0, PWM1, PWM2, CAN1_TX, CAMERA_D0P, CAMERA_D0N, GPIO_4}; //TODO
+enum relayPins {
+    RELAY1,
+    RELAY2,
+    RELAY3,
+    RELAY4,
+    RELAY5,
+    RELAY6,
+    RELAY7
+};
 
+/*
 breakoutPin digitalOutputs[] = {};
 void setOutputPins(){
   for(auto i : digitalOutputs[]) {
       Breakout.pinMode(i, OUTPUT);
   }
 }
-
+*/
 #endif /* PINMAP_H */

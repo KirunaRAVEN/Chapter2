@@ -1,8 +1,14 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
+#include "pinMap.h"
+//#include "I2Csensors.h"
 #include "comms.h"
-#include <RPC.h>
+#include "controlBoxRX.h"
+#include "sensors.h"
+#include "verification.h"
 
+/* Timing */
+#define MAIN_LOOP_PERIOD 100
 
 /* Ignition sequence (times in ms) */
 #define IGNITION_SAFE_TIME  (1 * 1000)
@@ -33,12 +39,13 @@ struct dataPoint {
     float engineTemperature;        //Piping temperature
 };
 
-/* Internal software storage struct. 12 bytes due to padding
+/* Internal software storage struct. 16 bytes due to padding
 Will always get sent with the datapoint, so no need for a timestamp */
 struct softwareState {
     // Software modes
-    int mode;                       //What mode is the software in
-    int subState;                   //What substate is the software in
+    uint8_t mode;                       //What mode is the software in
+    uint8_t subState;                   //What substate is the software in
+    uint8_t message;
 
     // Button states
     bool dumpValveButton : 1;       //Is dump valve button pressed (normally open)
@@ -51,15 +58,14 @@ struct softwareState {
     // Software control states
     bool valveActive : 1;           //Is the valve opened by the software
     bool ignitionEngagedActive : 1; //Is the ignition activated by the software
+
 };
 
-/* Normal packet. 44 bytes */
+/* Normal packet. 48 bytes */
 struct normalPacket {
     struct dataPoint data;
     struct softwareState state;
 };
-
-
 
 enum messageIndices {
     MSG_TEST_SEQUENCE_START = 1,
@@ -123,6 +129,9 @@ enum subStates {
 const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"};
 const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SHUTDOWN"};
 
+/* global variables */
+extern struct normalPacket g_packet;
+extern ControlBoxRX g_controlBox;
 
 
 #endif /* GLOBALS_H */
