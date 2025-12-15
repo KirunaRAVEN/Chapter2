@@ -17,7 +17,7 @@ void ControlBoxRX::begin(HardwareSerial* serial = &Serial) {
 int ControlBoxRX::receiveMessage() {
     _message.allButtons = 0x01; // Reset the message
     int availableBytes = _serial->available();
-    if (availableBytes > 20) {
+    if (availableBytes > 10) {
         while (_serial->available() > 0) {
             _serial->read();  // Dump everything
         }

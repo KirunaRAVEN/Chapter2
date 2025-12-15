@@ -12,7 +12,7 @@
 #ifndef CONTROL_BOX_TX
 #define CONTROL_BOX_TX
 
-#define CONTROL_BOX_BAUDRATE 115200
+#define CONTROL_BOX_BAUDRATE 9600
 #define CONTROL_BOX_UPDATE_TIME 10 // ms
 
 enum ControlBoxButton {

@@ -12,18 +12,7 @@
 #ifndef CONTROL_BOX_RX_H
 #define CONTROL_BOX_RX_H
 
-#define CONTROL_BOX_BAUDRATE 115200
-
-enum ControlBoxButton {
-    IGNITION_BUTTON,
-    OXIDIZER_VALVE_BUTTON,
-    N2_FEEDING_BUTTON,
-    DUMP_VALVE_BUTTON,
-    HEATING_BLANKET_1_SWITCH,
-    HEATING_BLANKET_2_SWITCH,
-    EMERGENCY_BUTTON,
-    BUTTON_COUNT
-};
+#define CONTROL_BOX_BAUDRATE 9600
 
 // State of Control-Box buttons and switches
 union ControlBoxStateMessage {
