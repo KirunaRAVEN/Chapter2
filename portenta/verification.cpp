@@ -45,8 +45,8 @@ int stepVerification() {
                 testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_24_OFF);
                 testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_GND_OFF);
                 testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_SW_OFF);
-                testsFailed += _testActuator((false == (buttonStates.heatingBlanket1Switch + buttonStates.heatingBlanket2Switch)), MSG_HEAT_OFF);
-                testsFailed += _testActuator((false == buttonStates.oxidizerValveButton), MSG_OX_OFF);
+                testsFailed += _testActuator((false == (buttonStates.heating1Switch + buttonStates.heating2Switch)), MSG_HEAT_OFF);
+                testsFailed += _testActuator((false == buttonStates.oxidizerButton), MSG_OX_OFF);
 
                 if(0 == testsFailed) {
                     testState = HEAT_ON_BUTTON;
@@ -56,7 +56,7 @@ int stepVerification() {
             break;
 
         case HEAT_ON_BUTTON:
-            if(2 == (buttonStates.heatingBlanket1Switch + buttonStates.heatingBlanket2Switch)) {
+            if(2 == (buttonStates.heating1Switch + buttonStates.heating2Switch)) {
                 addMessage(MSG_HEAT_BUTTON);
                 testStateChangeTime = millis();
                 testState = HEAT_ON_TEST;
@@ -65,7 +65,7 @@ int stepVerification() {
         case HEAT_ON_TEST:
             //TODO: update once we have control sensing.
             if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = _testActuator((2 == (buttonStates.heatingBlanket1Switch + buttonStates.heatingBlanket2Switch)), MSG_HEAT_ON_RESULT);
+                int testsFailed = _testActuator((2 == (buttonStates.heating1Switch + buttonStates.heating2Switch)), MSG_HEAT_ON_RESULT);
 
                 if(0 == testsFailed) {
                     addMessage(MSG_HEAT_RELEASE);
@@ -74,14 +74,14 @@ int stepVerification() {
             }
             break;
         case HEAT_RELEASE:
-            if(false == (buttonStates.heatingBlanket1Switch + buttonStates.heatingBlanket2Switch)) {
+            if(false == (buttonStates.heating1Switch + buttonStates.heating2Switch)) {
                 addMessage(MSG_OX_ON_START);
                 testState = VALVE_ON_BUTTON;
             }
             break;
 
         case VALVE_ON_BUTTON:
-            if(true == buttonStates.oxidizerValveButton) {
+            if(true == buttonStates.oxidizerButton) {
                 addMessage(MSG_OX_BUTTON);
                 testStateChangeTime = millis();
                 testState = VALVE_ON_TEST;
@@ -90,7 +90,7 @@ int stepVerification() {
         case VALVE_ON_TEST:
             // TODO: update once we have control sensing
             if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = _testActuator((true == buttonStates.oxidizerValveButton), MSG_OX_ON_RESULT);
+                int testsFailed = _testActuator((true == buttonStates.oxidizerButton), MSG_OX_ON_RESULT);
 
                 if(0 == testsFailed) {
                     addMessage(MSG_OX_RELEASE);
@@ -99,7 +99,7 @@ int stepVerification() {
             }
             break;
         case VALVE_RELEASE:
-            if(false == buttonStates.oxidizerValveButton) {
+            if(false == buttonStates.oxidizerButton) {
                 addMessage(MSG_IGN_ON_START);
                 testState = IGN_ON_BUTTON;
             }

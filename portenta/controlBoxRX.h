@@ -18,11 +18,11 @@
 union ControlBoxStateMessage {
     struct {
         uint8_t ignitionButton : 1;
-        uint8_t oxidizerValveButton : 1;
-        uint8_t n2FeedingButton : 1;
-        uint8_t dumpValveButton : 1;
-        uint8_t heatingBlanket1Switch : 1;
-        uint8_t heatingBlanket2Switch : 1;
+        uint8_t oxidizerButton : 1;
+        uint8_t nitrogenButton : 1;
+        uint8_t dumpButton : 1;
+        uint8_t heating1Switch : 1;
+        uint8_t heating2Switch : 1;
         uint8_t emergencyButton : 1;
         uint8_t reserved : 1; // Padding to make the struct size a multiple of 1 byte
     };

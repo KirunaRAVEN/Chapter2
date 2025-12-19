@@ -40,16 +40,29 @@ enum ControlBoxButton { // TODO
     BUTTON_COUNT
 };
 //breakoutPin relayPins[] = {PWM0, PWM1, PWM2, CAN1_TX, CAMERA_D0P, CAMERA_D0N, GPIO_4}; //TODO
-enum relayPins {
-    RELAY1,
-    RELAY2,
-    RELAY3,
-    RELAY4,
-    RELAY5,
-    RELAY6,
-    RELAY7
+enum outPins {
+    SIREN_SIGNAL,
+    LIGHT_SIGNAL,
+    HEATING1_RELAY,
+    HEATING2_RELAY
+    IGNITION_ARM,
+    IGNITION_RELAY,
+    NITROGEN_RELAY,
+    OXIDIZER1_RELAY,
+    OXIDIZER2_RELAY,
+    DUMP_SIGNAL,
+    TEST_LED_SIGNAL,
+    HIGH_SPEED_SIGNAL
 };
 
+enum inPins {
+    IGNITION_BUTTON,
+    RESET_BUTTON,
+    TEST_MODE_BUTTON
+};
+
+#define RELAY_ON LOW
+#define RELAY_OFF HIGH
 /*
 breakoutPin digitalOutputs[] = {};
 void setOutputPins(){

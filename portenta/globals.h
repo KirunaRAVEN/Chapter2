@@ -6,6 +6,9 @@
 #include "controlBoxRX.h"
 #include "sensors.h"
 #include "verification.h"
+#include "sequence.h"
+
+#define DEBUG 1
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100
@@ -132,6 +135,7 @@ const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SH
 /* global variables */
 extern struct normalPacket g_packet;
 extern ControlBoxRX g_controlBox;
-
+extern breakoutPin g_outPins[];
+extern breakoutPin g_inPins[];
 
 #endif /* GLOBALS_H */
