@@ -223,8 +223,11 @@ def temperatureChange(timeBuffer, tempBuffer):
     t = np.array(timeBuffer)
     y = np.array(tempBuffer)
 
-    # Linear fit: slope = daöltaT/deltat, it is basically the slope of a first deg function
-    slope, _ = np.polyfit(t, y, 1)
+    # Linear fit: slope = deltaT/deltat, it is basically the slope of a first deg function
+    try:
+        slope, _ = np.polyfit(t, y, 1)
+    except:
+        slope = 0;
     return slope
 
 # Function to calculate the loss of pressure
@@ -238,5 +241,8 @@ def pressureDrop(timeBuffer, pressureBuffer):
     p = np.array(pressureBuffer)
 
     # Linear fit: slope = deltaP/deltat, it is basically the slope of a first deg function
-    slope, _ = np.polyfit(t, p, 1)  # slope in bar/sec
+    try:
+        slope, _ = np.polyfit(t, p, 1)  # slope in bar/sec
+    except:
+        slope = 0;
     return slope

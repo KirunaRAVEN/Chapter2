@@ -25,9 +25,12 @@ void setup() {
     while (!Serial) {
         ;
     }
+    Serial.println("initializing");
+    Serial.println(sizeof(g_packet));
+
+
 #endif
 
-    Serial.println("initializing");
 
 
     for(auto i: g_outPins){

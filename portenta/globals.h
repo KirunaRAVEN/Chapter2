@@ -25,7 +25,7 @@
 #define CAMERA_TRIGGER_TIME (VALVE_OFF_TIME + 2000)
 #define PURGING_TIME        (OXIDIZER_EMPTY_TIME + 4*1000)
 
-/* Main storage struct. 32 bytes */
+/* Main storage struct. 36 bytes */
 struct dataPoint {
     long int timestamp;
 
@@ -42,7 +42,7 @@ struct dataPoint {
     float engineTemperature;        //Piping temperature
 };
 
-/* Internal software storage struct. 16 bytes due to padding
+/* Internal software storage struct. 4 bytes due to padding
 Will always get sent with the datapoint, so no need for a timestamp */
 struct softwareState {
     // Software modes

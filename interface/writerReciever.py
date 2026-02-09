@@ -3,6 +3,8 @@ import socket
 import time
 import struct
 import threading
+import sys
+import random
 
 PORT = 4000
 LEN_NORMAL = 48
@@ -10,44 +12,57 @@ LEN_HIGH_SPEED = 4
 
 g_dataQueue = b''
 
+g_data = {
+"timestamp":0,
+"N20FeedingPressure1":0.0,
+"N20FeedingPressure2":0.0,
+"linePressure":0.0,
+"chamberPressure":0.0,
+"N2FeedingPressure":0.0,
+"bottleTemperature1":0.0,
+"bottleTemperature2":0.0,
+"engineTemperature":0.0,
+"mode":0,
+"subState":0,
+"message":0,
+"dumpValveButton":0,
+"heatingBlanketButton1":0,
+"heatingBlanketButton2":0,
+"ignitionButton":0,
+"N2ValveButton":0,
+"N20ValveButton":0,
+"valveActive":0,
+"ignitionEngagedActive":0,
+}
+
 
 def reciever(sock):
     """
-    Recieves data from the socket and puts it into the dataqueue
+    Recieves data from the socket and puts it into the dataqueue.
+    Designed as a thread.
     """
+    print("[+] connected")
+    global g_dataQueue
     while True:
         try:
             msg = sock.recv(1024)
             g_dataQueue += msg
-        except:
-            pass
+        except Exception as e:
+            print(e)
+
+def printTelemetry(datafile):
+    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['engineTemperature']},{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
+    datafile.flush()
 
 def parseData():
     """
-    Parses the data recieved and prints it to data.csv
+    Parses the data recieved and prints it to data.csv.
+    Designed as a thread.
     """
-    global g_dataQueue
+    global g_dataQueue, g_data
     print("!")
 
     ## initialize data
-    timestamp = 0
-    N20FeedingPressure1 = 0.0
-    N20FeedingPressure2 = 0.0
-    linePressure = 0.0
-    chamberPressure = 0.0
-    N2FeedingPressure = 0.0
-    bottleTemperature1 = 0.0
-    bottleTemperature2 = 0.0
-    engineTemperature = 0.0
-    dumpValveButton = 0
-    heatingBlanketButton = 0
-    ignitionButton = 0
-    N2ValveButton = 0
-    N20ValveButton = 0
-    valveActive = 0
-    ignitionEngagedActive = 0
-    mode = 0
-    subState = 0
 
     datafile = open("data.csv", "a")
     while True:
@@ -56,32 +71,32 @@ def parseData():
             match packetType:
                 case 1: #normal packet
                     try:
-                        data = struct.unpack_from("<l8f3i", g_dataQueue, 1)
+                        data = struct.unpack_from("<l8f4i", g_dataQueue, 1)
                         # TODO: make this prettier:
-                        timestamp = data[0]
-                        N20FeedingPressure1 = data[1]
-                        N20FeedingPressure2 = data[2]
-                        linePressure = data[3]
-                        chamberPressure = data[4]
-                        N2FeedingPressure = data[5]
-                        bottleTemperature1 = data[6]
-                        bottleTemperature2 = data[7]
-                        engineTemperature = data[8]
-                        mode = data[9]
-                        subState = data[10]
+                        g_data["timestamp"] = data[0]
+                        g_data["N20FeedingPressure1"] = data[1]
+                        g_data["N20FeedingPressure2"] = data[2]
+                        g_data["linePressure"] = data[3]
+                        g_data["chamberPressure"] = data[4]
+                        g_data["N2FeedingPressure"] = data[5]
+                        g_data["bottleTemperature1"] = data[6]
+                        g_data["bottleTemperature2"] = data[7]
+                        g_data["engineTemperature"] = data[8]
+                        g_data["mode"] = data[9]
+                        g_data["subState"] = data[10]
+                        g_data["message"] = data[11]
 
                         #TODO: manual byte unpacking or some lib, idk
-                        dumpValveButton = 0
-                        heatingBlanketButton1 = 0
-                        heatingBlanketButton2 = 0
-                        ignitionButton = 0
-                        N2ValveButton = 0
-                        N20ValveButton = 0
-                        valveActive = 0
-                        ignitionEngagedActive = 0
+                        g_data["dumpValveButton"] = 0
+                        g_data["heatingBlanketButton1"] = 0
+                        g_data["heatingBlanketButton2"] = 0
+                        g_data["ignitionButton"] = 0
+                        g_data["N2ValveButton"] = 0
+                        g_data["N20ValveButton"] = 0
+                        g_data["valveActive"] = 0
+                        g_data["ignitionEngagedActive"] = 0
 
-                        datafile.write(f"{timestamp},{N20FeedingPressure1},{N20FeedingPressure2},{linePressure},{chamberPressure},{N2FeedingPressure},{N2FeedingPressure},{bottleTemperature1},{bottleTemperature2},{engineTemperature},{mode},{subState},{dumpValveButton},{heatingBlanketButton1},{heatingBlanketButton2},{ignitionButton},{N2ValveButton},{valveActive},{ignitionEngagedActive}\n")
-                        datafile.flush()
+                        printTelemetry(datafile)
                         g_dataQueue = g_dataQueue[(1+LEN_NORMAL):]
                     except exception as e:
                         print(f"[!] {e}")
@@ -89,19 +104,37 @@ def parseData():
                     pass
             time.sleep(0.1)
 
+def fakeData():
+    """
+    generate fake data for testing purposes
+    """
+    datafile = open("data.csv", "a")
+    g_data["N20FeedingPressure1"] = 67.0
+    g_data["N20FeedingPressure2"] = 45.0
+    while True:
+        g_data["timestamp"] += 100
+        g_data["N20FeedingPressure1"] += random.random()-0.5
+        g_data["N20FeedingPressure2"] += random.random()-0.5
+        printTelemetry(datafile)
+        time.sleep(0.1)
+
 
 if __name__ == '__main__':
-    listenSock = socket.socket(type=socket.SOCK_STREAM)
-    print("[+] setting up incoming connection ", end="", flush=True)
-    while True:
-        try:
-            listenSock.bind(("", 4000))
-            break
-        except:
-            print(".", end="", flush=True)
-            time.sleep(0.5)
-    print("!")
-    listenSock.listen(10)
+    if "-d" in sys.argv:
+        print("[+] setting up fake data")
+        fakeData()
+    else:
+        listenSock = socket.socket(type=socket.SOCK_STREAM)
+        print("[+] setting up incoming connection ", end="", flush=True)
+        while True:
+            try:
+                listenSock.bind(("", PORT))
+                break
+            except:
+                print(".", end="", flush=True)
+                time.sleep(0.5)
+        print("!")
+        listenSock.listen(10)
 
     print("[+] setting up parser ...", end="", flush=True)
     threading.Thread(target=parseData).start()
@@ -111,4 +144,3 @@ if __name__ == '__main__':
         print("[+] listening for data conn ... ")
         dataSock, addr = listenSock.accept()
         threading.Thread(target=reciever, args=(dataSock,)).start()
-        print("[+] connected")

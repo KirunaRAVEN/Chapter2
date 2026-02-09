@@ -7,26 +7,26 @@ import os
 # Dict of all indices
 INDEX = {
     "MegaTime": 0,
-    "Line_Pres": 1,
-    "Chamber_Pres": 2,
-    "OxBottle1_Pres": 3,
-    "OxBottle2_Pres": 4,
-    "LoadCell": 5,
-    "NozzleTemp":7,
-    "IRsensor": 9,
-    "Dump_Relay": 10,
-    "N2_Relay": 12,
-    "IgnRelay": 14,
-    "Ox1Valve_Realy": 15,
-    "Software_mode": 16,
-    "Software_substrate": 17,
-    "Arduino_uno_time": 18,
-    "N2Bottle_Pres": 19,
-    "OxBottle1_temp": 20,
-    "OxBottle2_temp": 21,
-    "OxBottle1_Relay": 22,
-    "OxBottle2_Relay": 23,
-    "MsgIndex": 24, 
+    "OxBottle1_Pres": 1,
+    "OxBottle2_Pres": 2,
+    "Line_Pres": 3,
+    "Chamber_Pres": 4,
+    "N2Bottle_Pres": 5,
+    "OxBottle1_temp": 6,
+    "OxBottle2_temp": 7,
+    "NozzleTemp": 8,
+    "IRsensor":8,
+    "Software_mode": 9,
+    "Software_substrate": 10,
+    "MsgIndex": 11,
+    "Dump_Relay": 12,
+    "OxBottle1_Relay": 13,
+    "OxBottle2_Relay": 14,
+    "IgnRelay": 15,
+    "N2_Relay": 16,
+    "Ox1Valve_Realy": 17,
+    "valveActive": 18,
+    "ignitionActive": 19
 }
 
 # Full message string list
@@ -138,8 +138,10 @@ class telemetryReader:
     def getNextData(self):
         # Return the next row of data, caching it for the current frame.
 
-        if self.cacheFresh:
+
+        if self.cacheFresh and self.cachedRow != None:
             return self.cachedRow
+
 
         MAX_ROWS_PER_FRAME = 2000
 
@@ -243,7 +245,7 @@ def updateAllDataDisplays(data, t):
     updateDisplay("data_display:_chamber_pressure:", data.Chamber_Pres)
     updateDisplay("data_display:_plume_temperature:", data.IRsensor)
     updateDisplay("data_display:_nozzle_temperature:", data.NozzleTemp)
-    updateDisplay("data_display:_load_cell:", data.LoadCell)
+#    updateDisplay("data_display:_load_cell:", data.LoadCell)
     updateDisplay("data_display:_mega_time:", t)
 
     updateDisplay("Ox1TempPrintout", data.OxBottle1_temp)
@@ -291,8 +293,8 @@ def updateFrame():
     data = reader.getNextData()
     if not data:
         return
-    t = data.MegaTime * 1e-6 #Converting to seconds
-    try: 
+    t = data.MegaTime * 1e-3 #Converting to seconds
+    try:
         updatePipingDiagram(data, t)
         updateAllPlots(data, t)
         updateAllDataDisplays(data, t)
