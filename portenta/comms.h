@@ -23,7 +23,7 @@
 
 #define BUFFERSIZE 536
 #define BUFFERMEMORYSIZE (BUFFERSIZE+80)
-enum packettypes {NORMAL_PACKET=1, HIGH_SPEED_PACKET=2};
+enum packettypes {NORMAL_PACKET=1, FAST_PACKET=2};
 #define MESSAGEBUFFERSIZE 16
 
 /* Functions */

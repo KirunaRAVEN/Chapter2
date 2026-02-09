@@ -5,31 +5,30 @@ struct normalPacket g_packet;
 ControlBoxRX g_controlBox;
 breakoutPin g_outPins[] = {CAN1_TX, CAMERA_D0N, CAMERA_D1N, CAMERA_D2N, GPIO_4, GPIO_5, PWM0, PWM1, PWM2, PWM9, SPI1_CS};
 breakoutPin g_inPins[] = {GPIO_0, PCIE_CKN, PCIE_TXP};
+breakoutPin g_analogPins[] = {ANALOG_A0, ANALOG_A1, ANALOG_A2, ANALOG_A3, ANALOG_A4, ANALOG_A5, ANALOG_A6, ANALOG_A7};
 
 /* non-global "global" vars */
 long int lastLoopTime = 0;
+long int fastLoopTime = 0;
+
 UART UART0Breakout = UART(UART0_TX, UART0_RX);
 #ifdef DEBUG 1
 long int activeTime = 0;
 int loops = 0;
+long int lastLoopMicros = 0;
 #endif
 
 
 void setup() {
+#ifdef DEBUG 1
     Serial.begin(9600);
     while (!Serial) {
-        ; // TODO: remove this from prod code, this forces Serial connection to boot
+        ;
     }
-    /*
-#ifdef CORE_CM7
-    bootM4();
 #endif
-    */
 
     Serial.println("initializing");
-    Serial.println(sizeof(struct normalPacket));
 
-    initComms(); // blocking
 
     for(auto i: g_outPins){
         Breakout.pinMode(i, OUTPUT);
@@ -42,6 +41,8 @@ void setup() {
 
     g_packet.state.mode = INIT;
     g_controlBox.begin(&UART0Breakout);
+
+    initComms(); // blocking
 
     Serial.println("initialized");
 }
@@ -61,11 +62,21 @@ void loop () {
     }
 #endif
 
-    Breakout.digitalWrite(g_outPins[OXIDIZER_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+    /* TODO: break out into a wrapper */
+    /* (and be made more readable) */
+    Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+    Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+    g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
     Breakout.digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
+    g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
     Breakout.digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
+    g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
     Breakout.digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
+    g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
     Breakout.digitalWrite(g_outPins[IGNITION_ARM], g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
+    g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
+
+    readAllSensors();
 
     switch(g_packet.state.mode) {
         case INIT:
@@ -77,25 +88,30 @@ void loop () {
             }
             break;
         case TEST:
+            Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
             if(0 == stepVerification()) {
                 Breakout.digitalWrite(g_outPins[TEST_LED_SIGNAL], LOW);
                 g_packet.state.mode = WAIT;
             }
             break;
         case WAIT:
+            Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
             if(1 == g_controlBox.getMessage().ignitionButton) {
                 g_packet.state.mode = SEQUENCE;
             }
             break;
         case SEQUENCE:
+            Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
             if(0 == stepSequence()) {
                 g_packet.state.mode = SHUTDOWN;
             }
             break;
         case SAFE:
+            Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
             g_packet.state.subState = FINISHED;
             break;
         case SHUTDOWN:
+            Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
             Breakout.digitalWrite(g_outPins[HIGH_SPEED_SIGNAL], LOW);
             break;
         default:
@@ -104,21 +120,37 @@ void loop () {
 
     sendTelemetry(NORMAL_PACKET, (void *) &g_packet, sizeof(struct normalPacket));
 
-    //constant time loop
 #ifdef DEBUG 1
-    activeTime += (millis() - lastLoopTime);
+    activeTime += (micros() - lastLoopMicros);
     loops -=- 1; // >:3
     if(millis() % 1000 < MAIN_LOOP_PERIOD) {
         Serial.print("average execution time last second: ");
-        Serial.print(activeTime/loops);
-        Serial.print(" ms, with a period of ");
+        Serial.print((float) activeTime/loops);
+        Serial.print(" us, with a period of ");
         Serial.print(MAIN_LOOP_PERIOD);
-        Serial.println(" ms.");
+        Serial.print(" ms. (");
+        Serial.print(loops);
+        Serial.print(" loops, ");
+        Serial.print(activeTime);
+        Serial.println(" us.)");
         activeTime = loops = 0;
     }
 #endif
+
+    //constant time loop
     while(millis() - lastLoopTime < MAIN_LOOP_PERIOD) {
-        ; // TODO: change this
+        if(SEQUENCE == g_packet.state.mode) {
+            float sample = fastRead();
+            sendTelemetry(FAST_PACKET, (void *) &sample, sizeof(float));
+            while(micros() - fastLoopTime < FAST_LOOP_PERIOD) {
+                ;
+            }
+            fastLoopTime = micros();
+        }
     }
     lastLoopTime = millis();
+
+#ifdef DEBUG 1
+    lastLoopMicros = micros();
+#endif
 }

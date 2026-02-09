@@ -3,21 +3,21 @@ Chapter 2 is the fully functional test-bench.
 
 *codebase is under development at the moment.* Due to changes in hardware, the software is being refactored from the ground up.
 ## TODO
-Needed:
-[x] TCP communication
-[x] UART communication
-[ ] Functionality
- [x] Verification
- [x] Sequence
- [ ] Sensor data aquisition
- [ ] Hardware integration
- [x] Automated flashing
-Wanted
-[ ] Automated software testing
-[ ] Library for data.csv
-[ ] Wrappers for struct and pin access
-[ ] External eyes on the code
-[ ] A sane person to write the `README`
+#### Needed:
+- [x] TCP communication
+- [x] UART communication
+- [ ] Functionality
+ - [x] Verification
+ - [x] Sequence
+ - [ ] Sensor data aquisition
+ - [ ] Hardware integration
+ - [x] Automated flashing
+#### Wanted
+- [ ] Automated software testing
+- [ ] Library for data.csv
+- [ ] Wrappers for struct and pin access
+- [ ] External eyes on the code
+- [ ] A sane person to write the `README`
 
 ## Hardware design 
 ``` 
@@ -34,11 +34,12 @@ Wanted
                                  |-<-| Control Sensing |-<-|
                                      |-----------------|
 ```
-## directories
+## Structure
 * `portenta`: all the code for the microcontroller in the testbench.
 * `toolKit`: all tools that do not involve the test itself, such as updaters and analysis tools.
 * `interface`: everything related to the G/S laptop.
 * `controlBox`: code for the microcontroller in the controlbox.
+
 (`TestStandSoftware` is living on borrowed time, will be deleted as soon as the refactor is done.)
 
 ## Design philosophy
@@ -55,6 +56,7 @@ The communications suite *needs* to be fixed. As of now, there are three differe
 ## Pinmap (for GPIO on the portenta)
 **Outputs**
 | Pin        | Control          | Name in code      | Comment                   |
+|:-----------|:-----------------|:------------------|:--------------------------|
 |`CAN1_TX`   |`SIREN_SIG`       |`SIREN_SIGNAL`     | Siren control             |
 |`CAMERA_D0N`|`LIGHT_SIG`       |`LIGHT_SIGNAL`     | Light control             |
 |`CAMERA_D1N`|`HEATBLANKET1_SIG`|`HEATING1_RELAY`   | Heating blanket 1         |
@@ -68,6 +70,8 @@ The communications suite *needs* to be fixed. As of now, there are three differe
 |`PDM_CK`    |`TEST_LED_SIG`    |`TEST_LED_SIGNAL`  | Test mode indicator       |
 |`SPI1_CS`   |`HIGH_SPEED_SIG`  |`HIGH_SPEED_SIGNAL`| High-speed camera control |
 **Inputs**
+| Pin        | Control          | Name in code      | Comment                   |
+|:-----------|:-----------------|:------------------|:--------------------------|
 |`GPIO_0`    |`IGN_SNS`         |`IGNITION_BUTTON`  | Ignition button sensing   |
 |`PCIE_CKN`  |`RESET_SNS`       |`RESET_BUTTON`     | Reset button sensing      |
 |`PCIE_TXP`  |`TESTMODE_SNS`    |`TEST_MODE_BUTTON` | Testmode button sensing   |

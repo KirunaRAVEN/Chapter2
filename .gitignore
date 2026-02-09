@@ -5,3 +5,4 @@ InterfaceSoftware/resources/__pycache__/dataDefinitions.cpython-311.pyc
 /PortentaH7_Tests
 *.swp
 interface/data.csv
+interface__pycache__/

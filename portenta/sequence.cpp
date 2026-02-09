@@ -20,8 +20,7 @@ int stepSequence() {
                     countdownStartTime = millis();
                     g_packet.state.subState = IGNIT_ON;
                     Breakout.digitalWrite(g_outPins[IGNITION_RELAY], RELAY_ON);
-                } else {
-
+                    g_packet.state.ignitionEngagedActive = 1;
                 }
             }
             break;
@@ -29,14 +28,18 @@ int stepSequence() {
         case IGNIT_ON:
             if(millis() - countdownStartTime > VALVE_ON_TIME) {
                 g_packet.state.subState = VALVE_ON;
-                Breakout.digitalWrite(g_outPins[OXIDIZER_RELAY], RELAY_ON);
+                Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], RELAY_ON);
+                Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], RELAY_ON);
+                g_packet.state.valveActive = 1;
             }
             break;
 
         case VALVE_ON:
             if(millis() - countdownStartTime > IGNITION_OFF_TIME) {
                 g_packet.state.subState = IGNIT_OFF;
-                Breakout.digitalWrite(g_outPins[OXIDIZER_RELAY], RELAY_OFF);
+                Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], RELAY_OFF);
+                Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], RELAY_OFF);
+                g_packet.state.valveActive = 0;
             }
             break;
 
@@ -44,6 +47,7 @@ int stepSequence() {
             if(millis() - countdownStartTime > VALVE_OFF_TIME) {
                 g_packet.state.subState = VALVE_OFF;
                 Breakout.digitalWrite(g_outPins[IGNITION_RELAY], RELAY_OFF);
+                g_packet.state.ignitionEngagedActive = 0;
             }
             break;
 

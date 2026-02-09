@@ -4,33 +4,8 @@
 #include <Arduino.h>
 #include <Arduino_PortentaBreakout.h>
 
-// UART
-//UART UART0Breakout = UART(UART0_TX, UART0_RX);
-
-// I2C
-
-// DIGITAL INPUTS
-
-// breakoutPin digitalInputs[] = {};
-// void setInputPins(){
-//   for(auto i : digitalInputs[]) {
-//       Breakout.pinMode(i, INPUT);
-//   }
-// }
-
-// ANALOG INPUTS: pressure, themperature and other sensors
-
-// breakoutPin analogInputs[] = {};
-// void setInputPins(){
-//   for(auto i : analogInputs[]) {
-//       Breakout.pinMode(i, INPUT);
-//   }
-// }
-
-// DIGITAL OUTPUTS
-
 enum ControlBoxButton { // TODO
-    IGNITION_BUTTON,
+    IGNITION_KEY,
     OXIDIZER_VALVE_BUTTON,
     N2_FEEDING_BUTTON,
     DUMP_VALVE_BUTTON,
@@ -44,7 +19,7 @@ enum outPins {
     SIREN_SIGNAL,
     LIGHT_SIGNAL,
     HEATING1_RELAY,
-    HEATING2_RELAY
+    HEATING2_RELAY,
     IGNITION_ARM,
     IGNITION_RELAY,
     NITROGEN_RELAY,
@@ -61,14 +36,18 @@ enum inPins {
     TEST_MODE_BUTTON
 };
 
+enum analogPins {
+    OXIDIZER1_TEMP,
+    OXIDIZER1_PRESSURE,
+    OXIDIZER2_TEMP,
+    OXIDIZER2_PRESSURE,
+    NITROGEN_PRESSURE,
+    LINE_PRESSURE,
+    CHAMBER_TEMP,
+    CHAMBER_PRESSURE
+};
+
 #define RELAY_ON LOW
 #define RELAY_OFF HIGH
-/*
-breakoutPin digitalOutputs[] = {};
-void setOutputPins(){
-  for(auto i : digitalOutputs[]) {
-      Breakout.pinMode(i, OUTPUT);
-  }
-}
-*/
+
 #endif /* PINMAP_H */

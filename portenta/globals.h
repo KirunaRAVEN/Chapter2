@@ -1,7 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 #include "pinMap.h"
-//#include "I2Csensors.h"
 #include "comms.h"
 #include "controlBoxRX.h"
 #include "sensors.h"
@@ -11,7 +10,8 @@
 #define DEBUG 1
 
 /* Timing */
-#define MAIN_LOOP_PERIOD 100
+#define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
+#define FAST_LOOP_PERIOD 333 //us, 3 kHz
 
 /* Ignition sequence (times in ms) */
 #define IGNITION_SAFE_TIME  (1 * 1000)
@@ -56,7 +56,7 @@ struct softwareState {
     bool heatingBlanketButton2 : 1; //Is heating button 2 pressed
     bool ignitionButton : 1;        //Is ignition button pressed
     bool N2ValveButton : 1;         //Is N2 feeding valve button pressed (normally closed)
-    bool N20ValveButton : 1;        //Is the oxidizer valve button pressed (normally closed)
+    bool N2OValveButton : 1;        //Is the oxidizer valve button pressed (normally closed)
 
     // Software control states
     bool valveActive : 1;           //Is the valve opened by the software
@@ -137,5 +137,5 @@ extern struct normalPacket g_packet;
 extern ControlBoxRX g_controlBox;
 extern breakoutPin g_outPins[];
 extern breakoutPin g_inPins[];
-
+extern breakoutPin g_analogPins[];
 #endif /* GLOBALS_H */
