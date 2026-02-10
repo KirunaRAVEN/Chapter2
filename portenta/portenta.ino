@@ -12,7 +12,7 @@ long int lastLoopTime = 0;
 long int fastLoopTime = 0;
 
 UART UART0Breakout = UART(UART0_TX, UART0_RX);
-#ifdef DEBUG 1
+#ifdef DEBUG
 long int activeTime = 0;
 int loops = 0;
 long int lastLoopMicros = 0;
@@ -20,17 +20,14 @@ long int lastLoopMicros = 0;
 
 
 void setup() {
-#ifdef DEBUG 1
+#ifdef DEBUG
     Serial.begin(9600);
     while (!Serial) {
         ;
     }
     Serial.println("initializing");
     Serial.println(sizeof(g_packet));
-
-
 #endif
-
 
 
     for(auto i: g_outPins){
@@ -46,8 +43,9 @@ void setup() {
     g_controlBox.begin(&UART0Breakout);
 
     initComms(); // blocking
-
+#ifdef DEBUG
     Serial.println("initialized");
+#endif
 }
 
 
@@ -57,7 +55,7 @@ void loop () {
     g_packet.state.message = getNextMessage();
 
     int retVal = g_controlBox.receiveMessage();
-#ifdef DEBUG 1
+#ifdef DEBUG
     if(millis() % 1000 < MAIN_LOOP_PERIOD) {
         Serial.print(byte(g_controlBox.getMessage().allButtons), BIN);
         Serial.print(", ");
@@ -67,15 +65,18 @@ void loop () {
 
     /* TODO: break out into a wrapper */
     /* (and be made more readable) */
-    Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
-    Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
-    g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
-    Breakout.digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
-    g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
-    Breakout.digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
-    g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
-    Breakout.digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
-    g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
+    if(SEQUENCE != g_packet.state.mode) {
+        Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+        Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+        g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
+        Breakout.digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
+        g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
+        Breakout.digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
+        g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
+        Breakout.digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
+        g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
+    }
+
     Breakout.digitalWrite(g_outPins[IGNITION_ARM], g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
     g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
 
@@ -123,7 +124,9 @@ void loop () {
 
     sendTelemetry(NORMAL_PACKET, (void *) &g_packet, sizeof(struct normalPacket));
 
-#ifdef DEBUG 1
+    flushTelemetry();
+
+#ifdef DEBUG
     activeTime += (micros() - lastLoopMicros);
     loops -=- 1; // >:3
     if(millis() % 1000 < MAIN_LOOP_PERIOD) {
@@ -153,7 +156,7 @@ void loop () {
     }
     lastLoopTime = millis();
 
-#ifdef DEBUG 1
+#ifdef DEBUG
     lastLoopMicros = micros();
 #endif
 }

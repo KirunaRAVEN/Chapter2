@@ -39,7 +39,7 @@ def _readBitFromByte(byte, bit):
     """
     Read a single bit from a byte
     """
-    if byte & 1 << (7-bit):
+    if byte & 1 << bit: # somehow it is reversed when it is sent, idk.
         return 1
     else:
         return 0
@@ -59,7 +59,7 @@ def reciever(sock):
             print(e)
 
 def printTelemetry(datafile):
-    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['engineTemperature']},{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
+    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['engineTemperature']},{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['N20ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
     datafile.flush()
 
 def parseData():
@@ -79,7 +79,7 @@ def parseData():
             match packetType:
                 case 1: #normal packet
                     try:
-                        data = struct.unpack_from("<l8f4i", g_dataQueue, 1)
+                        data = struct.unpack_from("<l8f4b", g_dataQueue, 1)
                         # TODO: make this prettier:
                         g_data["timestamp"] = data[0]
                         g_data["N20FeedingPressure1"] = data[1]
@@ -94,7 +94,6 @@ def parseData():
                         g_data["subState"] = data[10]
                         g_data["message"] = data[11]
 
-                        #TODO: manual byte unpacking or some lib, idk
                         g_data["dumpValveButton"] = _readBitFromByte(data[12], 0)
                         g_data["heatingBlanketButton1"] = _readBitFromByte(data[12], 1)
                         g_data["heatingBlanketButton2"] = _readBitFromByte(data[12], 2)

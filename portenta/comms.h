@@ -1,6 +1,5 @@
 /*
  * Contains all code for communication between the Portenta and the ground station.
- * TODO: reverse client/server relationship?
  */
 
 /*
@@ -29,9 +28,9 @@ enum packettypes {NORMAL_PACKET=1, FAST_PACKET=2};
 /* Functions */
 int initComms();
 int sendTelemetry(uint8_t type, void *buf, size_t size);
+int flushTelemetry();
 int getNextMessage();
 int addMessage(uint8_t message);
-
 /* Global variables */
 
 #endif /* COMMS_H */

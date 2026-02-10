@@ -26,7 +26,7 @@ INDEX = {
     "N2_Relay": 16,
     "Ox1Valve_Realy": 17,
     "valveActive": 18,
-    "ignitionActive": 19
+    "ignitionActive": 18,
 }
 
 # Full message string list

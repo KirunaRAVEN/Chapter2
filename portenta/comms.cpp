@@ -50,11 +50,18 @@ int sendTelemetry(uint8_t type, void *buf, size_t size) {
     memcpy((void *) (pPacketBuffer+packetBufferPtr+1), buf, size);
     packetBufferPtr += size + 1;
     if(BUFFERSIZE <= packetBufferPtr) {
-        client.write(pPacketBuffer, packetBufferPtr);
-        packetBufferPtr = 0;
-        return 0;
+        flushTelemetry();
     }
     return 1;
+}
+
+int flushTelemetry() {
+    /*
+    Flush the telemetry buffer (force a send)
+    */
+    client.write(pPacketBuffer, packetBufferPtr);
+    packetBufferPtr = 0;
+    return 0;
 }
 
 int getNextMessage() {
@@ -75,7 +82,9 @@ int addMessage(uint8_t message) {
     */
     pMessageBuffer[messageBufferWritePtr] = message;
     messageBufferWritePtr = (messageBufferWritePtr+1) % MESSAGEBUFFERSIZE;
+#ifdef DEBUG
     Serial.println(message);
+#endif
     return 0;
 }
 

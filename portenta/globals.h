@@ -7,7 +7,7 @@
 #include "verification.h"
 #include "sequence.h"
 
-#define DEBUG 1
+//#define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
