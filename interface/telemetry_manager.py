@@ -273,11 +273,11 @@ def updateAllRelays(data):
     updateRelay("IgnRelayStateText", "IgnRelayStatusCircle", data.IgnRelay)
 
 # Logs all new messages in the SW log, avoids null messages (Index = 0)
-def updateAllLogs(data):
+def updateAllLogs(data, t):
     if data.MsgIndex == 0:
         return
     else:
-        updateLog("software_log", data.message)
+        updateLog("software_log", data.message, t)
 
 def updateSoftwareModeAndSubstrate(data):
     updateSoftwareMode("softwareModeText", data.Software_mode)
@@ -299,7 +299,7 @@ def updateFrame():
         updateAllPlots(data, t)
         updateAllDataDisplays(data, t)
         updateAllRelays(data)
-        updateAllLogs(data)
+        updateAllLogs(data, t)
         updateSoftwareModeAndSubstrate(data)
     finally:
         reader.invalidateCache()

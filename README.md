@@ -1,16 +1,15 @@
 # RAVEN Chapter 2 Software
 Chapter 2 is the fully functional test-bench.
 
-*codebase is under development at the moment.* Due to changes in hardware, the software is being refactored from the ground up.
 ## TODO
 #### Needed:
 - [x] TCP communication
 - [x] UART communication
-- [ ] Functionality
+- [x] Functionality
  - [x] Verification
  - [x] Sequence
- - [ ] Sensor data aquisition
- - [ ] Hardware integration
+ - [x] Sensor data aquisition
+ - [x] Hardware integration
  - [x] Automated flashing
 #### Wanted
 - [ ] Automated software testing
@@ -39,8 +38,6 @@ Chapter 2 is the fully functional test-bench.
 * `toolKit`: all tools that do not involve the test itself, such as updaters and analysis tools.
 * `interface`: everything related to the G/S laptop.
 * `controlBox`: code for the microcontroller in the controlbox.
-
-(`TestStandSoftware` is living on borrowed time, will be deleted as soon as the refactor is done.)
 
 ## Design philosophy
 As the lead programmer, and the one leading the charge for the refactoring, I am tasked with the impossible; code that will outlive me. As such, I am spending too much of my time writing documentation and justifications for my actions. I am under consultation with as many people as I can to make sure that the code is good. What is good? Efficient? Sure. Elegant? I'd hope so. But my primary focus is on maintainability. Is worth is to sacrifice efficiency and elegance for maintainability? I'd argue that it is. But it is such a hard-defined goal. I've been on this endeavour a while at this point, and I'll bear it for the rest of my life. I know that my name will be cursed, as I have cursed others. But I pray, with every line of code, that I've made a difference.
@@ -71,7 +68,6 @@ The communications suite *needs* to be fixed. As of now, there are three differe
 |`SPI1_CS`   |`HIGH_SPEED_SIG`  |`HIGH_SPEED_SIGNAL`| High-speed camera control |
 **Inputs**
 | Pin        | Control          | Name in code      | Comment                   |
-|:-----------|:-----------------|:------------------|:--------------------------|
 |`GPIO_0`    |`IGN_SNS`         |`IGNITION_BUTTON`  | Ignition button sensing   |
 |`PCIE_CKN`  |`RESET_SNS`       |`RESET_BUTTON`     | Reset button sensing      |
 |`PCIE_TXP`  |`TESTMODE_SNS`    |`TEST_MODE_BUTTON` | Testmode button sensing   |

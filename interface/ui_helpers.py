@@ -122,14 +122,18 @@ def updatePressureLine(status, lineTag, label):
     dpg.configure_item(lineTag, color=COLOR_MAP[status])
     return messages[status]
 
+lastUpdateTime = 0 # used for log debouncing
 # Updating the data log
-def updateLog(tag, newData):
-    # Obtaining the old messages
-    prevLog = dpg.get_value(tag)
-    # Adding the new message to the old messages (ensures we dont erase old messages)
-    newLog = str(newData) + prevLog + "\n"
-    # Updating the log
-    dpg.set_value(tag, newLog)
+def updateLog(tag, newData, t):
+    global lastUpdateTime
+    if t != lastUpdateTime:
+        lastUpdateTime = t
+        # Obtaining the old messages
+        prevLog = dpg.get_value(tag)
+        # Adding the new message to the old messages (ensures we dont erase old messages)
+        newLog = str(newData) + prevLog + "\n"
+        # Updating the log
+        dpg.set_value(tag, newLog)
 
 
 DROP_OK = -0.33

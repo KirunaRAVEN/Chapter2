@@ -129,6 +129,12 @@ def fakeData():
         g_data["N20FeedingPressure1"] += random.random()-0.5
         g_data["N20FeedingPressure2"] += random.random()-0.5
         printTelemetry(datafile)
+        if random.randint(0,10) == 1:
+            g_data["message"] = random.randint(0,26)
+            printTelemetry(datafile)
+            time.sleep(0.5)
+            g_data["message"] = 0
+        
         time.sleep(0.1)
 
 
