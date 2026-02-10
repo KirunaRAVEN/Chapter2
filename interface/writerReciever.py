@@ -7,7 +7,7 @@ import sys
 import random
 
 PORT = 4000
-LEN_NORMAL = 48
+LEN_NORMAL = 40
 LEN_HIGH_SPEED = 4
 
 g_dataQueue = b''
@@ -35,6 +35,14 @@ g_data = {
 "ignitionEngagedActive":0,
 }
 
+def _readBitFromByte(byte, bit):
+    """
+    Read a single bit from a byte
+    """
+    if byte & 1 << (7-bit):
+        return 1
+    else:
+        return 0
 
 def reciever(sock):
     """
@@ -87,22 +95,28 @@ def parseData():
                         g_data["message"] = data[11]
 
                         #TODO: manual byte unpacking or some lib, idk
-                        g_data["dumpValveButton"] = 0
-                        g_data["heatingBlanketButton1"] = 0
-                        g_data["heatingBlanketButton2"] = 0
-                        g_data["ignitionButton"] = 0
-                        g_data["N2ValveButton"] = 0
-                        g_data["N20ValveButton"] = 0
-                        g_data["valveActive"] = 0
-                        g_data["ignitionEngagedActive"] = 0
+                        g_data["dumpValveButton"] = _readBitFromByte(data[12], 0)
+                        g_data["heatingBlanketButton1"] = _readBitFromByte(data[12], 1)
+                        g_data["heatingBlanketButton2"] = _readBitFromByte(data[12], 2)
+                        g_data["ignitionButton"] = _readBitFromByte(data[12], 3)
+                        g_data["N2ValveButton"] = _readBitFromByte(data[12], 4)
+                        g_data["N20ValveButton"] = _readBitFromByte(data[12], 5)
+                        g_data["valveActive"] = _readBitFromByte(data[12], 6)
+                        g_data["ignitionEngagedActive"] = _readBitFromByte(data[12], 7)
 
                         printTelemetry(datafile)
                         g_dataQueue = g_dataQueue[(1+LEN_NORMAL):]
-                    except exception as e:
+                    except Exception as e:
                         print(f"[!] {e}")
                 case 2: #high-speed packet
-                    pass
-            time.sleep(0.1)
+                    try:
+                        data = struct.unpack_from("<f", g_dataQueue, 1)
+                        g_data["chamberPressure"] = data[0]
+                        printTelemetry(datafile)
+                        g_dataQueue = g_dataQueue[(1+LEN_HIGH_SPEED):]
+
+                    except Exception as e:
+                        print(f"[!] {e}")
 
 def fakeData():
     """
