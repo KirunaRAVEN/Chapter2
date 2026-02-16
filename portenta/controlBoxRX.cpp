@@ -21,6 +21,7 @@ int ControlBoxRX::receiveMessage() {
         while (_serial->available() > 0) {
             _serial->read();  // Dump everything
         }
+        _message.allButtons = 0x01; // Reset the message
         return -3; // Error in message: too much strange data (reconnection)
     } else if (availableBytes > 0) {
         while (_serial->available() > 1) {
@@ -28,12 +29,14 @@ int ControlBoxRX::receiveMessage() {
         }
         _message.allButtons = _serial->read();
         if (_message.reserved == 1) {
+            _message.allButtons = 0x01; // Reset the message
             return -2; // Error in message
         }
         else {
             return 0; // Message received correctly
         }
     } else {
+        _message.allButtons = 0x01; // Reset the message
         return -1; // No data received
     }
 }
