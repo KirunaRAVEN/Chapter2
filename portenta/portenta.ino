@@ -3,7 +3,7 @@
 /* global vars */
 struct normalPacket g_packet;
 ControlBoxRX g_controlBox;
-breakoutPin g_outPins[] = {CAN1_TX, CAMERA_D0N, CAMERA_D1N, CAMERA_D2N, GPIO_4, GPIO_5, PWM0, PWM1, PWM2, PWM9, SPI1_CS};
+breakoutPin g_outPins[] = {CAN1_TX, CAMERA_D0N, CAMERA_D1N, CAMERA_D2N, GPIO_4, GPIO_5, PWM0, PWM1, PWM2, PWM3, SPI1_CS};
 breakoutPin g_inPins[] = {GPIO_0, PCIE_CKN, PCIE_TXP};
 breakoutPin g_analogPins[] = {ANALOG_A0, ANALOG_A1, ANALOG_A2, ANALOG_A3, ANALOG_A4, ANALOG_A5, ANALOG_A6, ANALOG_A7};
 
@@ -12,6 +12,7 @@ long int lastLoopTime = 0;
 long int fastLoopTime = 0;
 
 UART UART0Breakout = UART(UART0_TX, UART0_RX);
+Servo dumpValve;
 #ifdef DEBUG
 long int activeTime = 0;
 int loops = 0;
@@ -34,10 +35,14 @@ void setup() {
         Breakout.pinMode(i, OUTPUT);
         Breakout.digitalWrite(i, RELAY_OFF);
     }
+    Breakout.digitalWrite(g_outPins[TEST_LED_SIGNAL], LOW);
+
 
     for(auto i: g_inPins) {
         Breakout.pinMode(i, INPUT);
     }
+
+    dumpValve.attach(PWM8);
 
     g_packet.state.mode = INIT;
     g_controlBox.begin(&UART0Breakout);
@@ -47,7 +52,6 @@ void setup() {
     Serial.println("initialized");
 #endif
 }
-
 
 
 void loop () {
@@ -65,26 +69,29 @@ void loop () {
 
     /* TODO: break out into a wrapper */
     /* (and be made more readable) */
-    if(SEQUENCE != g_packet.state.mode) {
-        Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
-        Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
-        g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
-        Breakout.digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
-        g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
-        Breakout.digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
-        g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
-        Breakout.digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
-        g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
+    if(0 == retVal) {
+        if(SEQUENCE != g_packet.state.mode) {
+            Breakout.digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+            Breakout.digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+            g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
+            Breakout.digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
+            g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
+            Breakout.digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
+            g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
+            Breakout.digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
+            g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
+
+            dumpValve.write((g_controlBox.getMessage().dumpButton ? DUMP_OPEN : DUMP_CLOSE));
+            g_packet.state.dumpValveButton = g_controlBox.getMessage().dumpButton;
+        }
+        Breakout.digitalWrite(g_outPins[IGNITION_ARM], g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
+        g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
     }
-
-    Breakout.digitalWrite(g_outPins[IGNITION_ARM], g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
-    g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
-
     readAllSensors();
 
     switch(g_packet.state.mode) {
         case INIT:
-            if(true == Breakout.digitalRead(g_inPins[TEST_MODE_BUTTON])) {
+            if(true) { // == Breakout.digitalRead(g_inPins[TEST_MODE_BUTTON])) {
                 g_packet.state.mode = TEST;
                 Breakout.digitalWrite(g_outPins[TEST_LED_SIGNAL], HIGH);
             } else {
@@ -106,6 +113,7 @@ void loop () {
             break;
         case SEQUENCE:
             Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
+            Breakout.digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_ON);
             if(0 == stepSequence()) {
                 g_packet.state.mode = SHUTDOWN;
             }
@@ -116,6 +124,7 @@ void loop () {
             break;
         case SHUTDOWN:
             Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
+            Breakout.digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_OFF);
             Breakout.digitalWrite(g_outPins[HIGH_SPEED_SIGNAL], LOW);
             break;
         default:

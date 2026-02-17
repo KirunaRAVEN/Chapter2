@@ -6,6 +6,7 @@
 #include "sensors.h"
 #include "verification.h"
 #include "sequence.h"
+#include <Servo.h>
 
 //#define DEBUG
 
@@ -24,6 +25,10 @@
 #define OXIDIZER_EMPTY_TIME (VALVE_OFF_TIME + 500)
 #define CAMERA_TRIGGER_TIME (VALVE_OFF_TIME + 2000)
 #define PURGING_TIME        (OXIDIZER_EMPTY_TIME + 4*1000)
+
+/* angles for dump valve */
+#define DUMP_CLOSE 0
+#define DUMP_OPEN 180
 
 /* Main storage struct. 36 bytes */
 struct dataPoint {
