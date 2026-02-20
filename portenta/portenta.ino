@@ -4,7 +4,7 @@
 struct normalPacket g_packet;
 ControlBoxRX g_controlBox;
 breakoutPin g_outPins[] = {CAN1_TX, CAMERA_D0N, CAMERA_D1N, CAMERA_D2N, GPIO_4, GPIO_5, PWM0, PWM1, PWM2, PWM3, SPI1_CS};
-breakoutPin g_inPins[] = {GPIO_0, PCIE_CKN, PCIE_TXP};
+breakoutPin g_inPins[] = {GPIO_0, PCIE_CKN, PCIE_TXP};//ignition, reset, test
 breakoutPin g_analogPins[] = {ANALOG_A0, ANALOG_A1, ANALOG_A2, ANALOG_A3, ANALOG_A4, ANALOG_A5, ANALOG_A6, ANALOG_A7};
 
 /* non-global "global" vars */
@@ -39,7 +39,7 @@ void setup() {
 
 
     for(auto i: g_inPins) {
-        Breakout.pinMode(i, INPUT);
+        Breakout.pinMode(i, INPUT_PULLUP);
     }
 
     dumpValve.attach(PWM8);
