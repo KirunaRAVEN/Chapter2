@@ -37,6 +37,7 @@ void setup() {
     }
     Breakout.digitalWrite(g_outPins[TEST_LED_SIGNAL], LOW);
 
+    analogReadResolution(SENSOR_RESOLUTION);
 
     for(auto i: g_inPins) {
         Breakout.pinMode(i, INPUT_PULLUP);
@@ -89,9 +90,17 @@ void loop () {
     }
     readAllSensors();
 
+    /* switch on the light if pressure in the system */
+    if (
+    g_packet.data.linePressure >= 20 || g_packet.data.N2OFeedingPressure1 >= 20 || g_packet.data.N2OFeedingPressure2 >= 20) {
+        Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
+    } else {
+        Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
+    }
+
     switch(g_packet.state.mode) {
         case INIT:
-            if(true) { // == Breakout.digitalRead(g_inPins[TEST_MODE_BUTTON])) {
+            if(false == Breakout.digitalRead(g_inPins[TEST_MODE_BUTTON])) {
                 g_packet.state.mode = TEST;
                 Breakout.digitalWrite(g_outPins[TEST_LED_SIGNAL], HIGH);
             } else {
@@ -107,6 +116,7 @@ void loop () {
             break;
         case WAIT:
             Breakout.digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
+            Breakout.digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_OFF);
             if(1 == g_controlBox.getMessage().ignitionButton) {
                 g_packet.state.mode = SEQUENCE;
             }

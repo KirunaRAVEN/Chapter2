@@ -100,11 +100,11 @@ def buildLinePressurePanel():
 def buildN2PressurePanel():
     with dpg.group():
         with dpg.plot(label="Nitrogen Pressure", width=600, height=320, tag="N2Pressure"):
-            
-            # X-axis: time 
+
+            # X-axis: time
             with dpg.plot_axis(dpg.mvXAxis, label="Time [s]", tag="N2PresXAxis", no_gridlines=True, no_tick_marks=True, no_tick_labels=True):
-                pass  
-            
+                pass
+
              #  Y-axis: Pressure
             with dpg.plot_axis(dpg.mvYAxis, label="Pressure [Bar]", tag="N2PressYAxis") as y_axis:
                 dpg.set_axis_limits(y_axis, 0, 80)

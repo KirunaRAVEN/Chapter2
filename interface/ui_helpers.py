@@ -1,6 +1,7 @@
 import dearpygui.dearpygui as dpg
 import numpy as np
 import math
+import sys
 from scipy.interpolate import interp1d
 
 # Updates data displays
@@ -12,7 +13,7 @@ def updateDisplay(tag, newValue):
         print(f"[Warning] Tried to update missing item: {tag}")
         
 # Updates graph data
-def updateGraph(tag, newX, newY, xAxisTag=None, windowSeconds=5.0):
+def updateGraph(tag, newX, newY, xAxisTag=None, windowSeconds=100.0):
     # Checks if the specified object does not have a specified attribute  
     if not hasattr(updateGraph, "dataBuffers"):
         # Appending a buffer to the function, works similar to a gloabal variable
@@ -40,7 +41,6 @@ def updateGraph(tag, newX, newY, xAxisTag=None, windowSeconds=5.0):
     # Update X-axis limits to match the windowSeconds
     if xAxisTag and dpg.does_item_exist(xAxisTag):
         dpg.set_axis_limits(xAxisTag, newX - windowSeconds, newX)
-
 
 
 # Update the relay data

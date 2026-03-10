@@ -2,6 +2,7 @@ import csv
 from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
 from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstrate
+
 import os
 
 # Dict of all indices
@@ -217,13 +218,13 @@ def updatePipingDiagram(data, t):
 
 # updating plots
 def updateAllPlots(data, t):
-
     updateGraph("Ox1TempPlot", t, data.OxBottle1_temp, "Ox1TempXAxis")
     updateGraph("Ox2TempPlot", t, data.OxBottle2_temp, "Ox2TempXAxis")
     updateGraph("Ox1PressurePlot", t, data.OxBottle1_Pres, "Ox1PresXAxis")
     updateGraph("Ox2PressurePlot", t, data.OxBottle2_Pres, "Ox2PresXAxis")
     updateGraph("LinePressurePlot", t, data.Line_Pres, "LinePresXAxis")
     updateGraph("N2PressurePlot", t, data.N2Bottle_Pres, "N2PresXAxis")
+
 
 # Tabel for temp channels + declaration of buffer
 TIME_TEMP_BUFFER_SIZE = 300
@@ -288,18 +289,24 @@ def updateSoftwareModeAndSubstrate(data):
 # Update function for the main loop, ensures we update all data within the data display and then mark the cache as stale
 reader = telemetryReader("data.csv", INDEX, MESSAGE_STRINGS)
 
+lastTime = 0
+timeOffset = 0
 def updateFrame():
+    global lastTime, timeOffset
     # Ensures we dont run updatre function without having data
     data = reader.getNextData()
     if not data:
         return
     t = data.MegaTime * 1e-3 #Converting to seconds
+    if t < lastTime:
+        timeOffset += lastTime
     try:
         updatePipingDiagram(data, t)
-        updateAllPlots(data, t)
+        updateAllPlots(data, t+timeOffset)
         updateAllDataDisplays(data, t)
         updateAllRelays(data)
         updateAllLogs(data, t)
         updateSoftwareModeAndSubstrate(data)
     finally:
         reader.invalidateCache()
+    lastTime = t

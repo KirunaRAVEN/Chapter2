@@ -8,7 +8,7 @@
 #include "sequence.h"
 #include <Servo.h>
 
-//#define DEBUG
+#define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
