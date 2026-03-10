@@ -18,7 +18,7 @@ def buildInterface(largeFont):
                 buildSoftwareModePanel(largeFont)
             with dpg.group():
                 buildHeatingHelperPanel(largeFont)
-                buildSoftwareSubstratePanel(largeFont)
+                buildSoftwareSubstatePanel(largeFont)
         with dpg.group(horizontal=True):
             buildLinePressurePanel()
             buildN2PressurePanel()
@@ -170,12 +170,12 @@ def buildSoftwareModePanel(largeFont):
             modeDisplay = dpg.add_text("Current Mode",tag="softwareModeText")
             dpg.bind_item_font(modeDisplay, largeFont)
 
-def buildSoftwareSubstratePanel(largeFont):
-    with dpg.child_window(tag="SubstrateBox1", border=True, auto_resize_x=True, auto_resize_y=True):
-        substrateTitle = dpg.add_text("Software Substrate:")
-        with dpg.child_window(tag="SoftwareSubstrateDisplay", border=True, width=200, auto_resize_y=True):
-            substrateDisplay = dpg.add_text("Current Substrate",tag="softwareSubstrateText")
-            dpg.bind_item_font(substrateDisplay, largeFont)
+def buildSoftwareSubstatePanel(largeFont):
+    with dpg.child_window(tag="SubstateBox1", border=True, auto_resize_x=True, auto_resize_y=True):
+        substateTitle = dpg.add_text("Software Substate:")
+        with dpg.child_window(tag="SoftwareSubstateDisplay", border=True, width=200, auto_resize_y=True):
+            substateDisplay = dpg.add_text("Current Substate",tag="softwareSubstateText")
+            dpg.bind_item_font(substateDisplay, largeFont)
 
 
 def buildIndicatorPanel(largeFont):

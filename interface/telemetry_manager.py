@@ -1,7 +1,7 @@
 import csv
 from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
-from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstrate
+from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstate
 
 import os
 
@@ -18,7 +18,7 @@ INDEX = {
     "NozzleTemp": 8,
     "IRsensor":8,
     "Software_mode": 9,
-    "Software_substrate": 10,
+    "Software_substate": 10,
     "MsgIndex": 11,
     "Dump_Relay": 12,
     "OxBottle1_Relay": 13,
@@ -280,9 +280,9 @@ def updateAllLogs(data, t):
     else:
         updateLog("software_log", data.message, t)
 
-def updateSoftwareModeAndSubstrate(data):
+def updateSoftwareModeAndSubstate(data):
     updateSoftwareMode("softwareModeText", data.Software_mode)
-    updateSoftwareSubstrate("softwareSubstrateText", data.Software_substrate)
+    updateSoftwareSubstate("softwareSubstateText", data.Software_substate)
 
 
 
@@ -306,7 +306,7 @@ def updateFrame():
         updateAllDataDisplays(data, t)
         updateAllRelays(data)
         updateAllLogs(data, t)
-        updateSoftwareModeAndSubstrate(data)
+        updateSoftwareModeAndSubstate(data)
     finally:
         reader.invalidateCache()
     lastTime = t

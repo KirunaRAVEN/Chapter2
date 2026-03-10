@@ -86,20 +86,20 @@ def updateSoftwareMode(textTag, currentMode):
         print(f"[Warning] Tried to update missing items: {textTag}, {modeIdx}")
         return
 
-# Update the software substrate
-def updateSoftwareSubstrate(textTag, currentSubstrate):
+# Update the software substate
+def updateSoftwareSubstate(textTag, currentSubstate):
     # Creating a map for the names
-    SUBSTRATE_NAMES = ["ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"]
-    if currentSubstrate is None or not isinstance(currentSubstrate, (int, float)) or math.isnan(currentSubstrate):
-        print(f"[Warning] Software_substate invalid: {currentSubstrate}")
+    SUBSTATE_NAMES = ["ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"]
+    if currentSubstate is None or not isinstance(currentSubstate, (int, float)) or math.isnan(currentSubstate):
+        print(f"[Warning] Software_substate invalid: {currentSubstate}")
         return
-    substrateIdx = int(currentSubstrate)
-    # Validates the tag and current substrate is within range and updates said tag
-    if dpg.does_item_exist(textTag) and 0 <= substrateIdx <= 6:
-        substrate_name = SUBSTRATE_NAMES[substrateIdx]
-        dpg.set_value(textTag, substrate_name)
+    substateIdx = int(currentSubstate)
+    # Validates the tag and current substate is within range and updates said tag
+    if dpg.does_item_exist(textTag) and 0 <= substateIdx <= 6:
+        substate_name = SUBSTATE_NAMES[substateIdx]
+        dpg.set_value(textTag, substate_name)
     else:
-        print(f"[Warning] Tried to update missing items: {textTag}, {substrateIdx}")
+        print(f"[Warning] Tried to update missing items: {textTag}, {substateIdx}")
         
 
 
