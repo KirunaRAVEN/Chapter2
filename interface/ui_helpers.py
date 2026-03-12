@@ -122,6 +122,16 @@ def updatePressureLine(status, lineTag, label):
     dpg.configure_item(lineTag, color=COLOR_MAP[status])
     return messages[status]
 
+
+def updateValve(valveTag, state):
+    if state == 0:
+        dpg.configure_item(valveTag, fill=(20,20,20,255))
+    else:
+        dpg.configure_item(valveTag, fill=(200,200,200,255))
+
+
+
+
 lastUpdateTime = 0 # used for log debouncing
 # Updating the data log
 def updateLog(tag, newData, t):

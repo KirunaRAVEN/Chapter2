@@ -128,8 +128,21 @@ def fakeData():
         g_data["timestamp"] += 100
         g_data["N20FeedingPressure1"] += random.random()-0.5
         g_data["N20FeedingPressure2"] += random.random()-0.5
-        printTelemetry(datafile)
 
+        if random.randint(0,10) == 1:
+            g_data["N20ValveButton"] = 1
+        else:
+            g_data["N20ValveButton"] = 0
+        if random.randint(0,10) == 1:
+            g_data["N2ValveButton"] = 1
+        else:
+            g_data["N2ValveButton"] = 0
+        if random.randint(0,10) == 1:
+            g_data["dumpValveButton"] = 1
+        else:
+            g_data["dumpValveButton"] = 0
+
+        printTelemetry(datafile)
         time.sleep(0.1)
 
 

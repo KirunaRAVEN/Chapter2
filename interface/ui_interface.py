@@ -117,29 +117,50 @@ def buildPipingPanel(largeFont):
         dpg.bind_item_font(pipingDiagramTitle, largeFont) 
         with dpg.group(horizontal=True):
             with dpg.group():
-                with dpg.drawlist(width=400, height=300, tag="piping_diagram"):
+                with dpg.drawlist(width=600, height=300, tag="piping_diagram"):
 
-                    # Line Pressure - vertical center line
-                    dpg.draw_line((200, 60), (200, 200), color=(128, 128, 128, 255), thickness=6, tag="line_pressure_line")
-                    dpg.draw_circle(center=(200, 60), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
-                    dpg.draw_text((210, 40), "Line Pressure", size=14, color=(200, 255, 255, 255))
+                    #shorthand for the valve symbol polygon
+                    valve = lambda x,y: ((x-12.5,y-7.5),(x-12.5,y+7.5),(x+12.5,y-7.5),(x+12.5,y+7.5), (x-12.5,y-7.5),(x-12.5,y+7.5))
 
-                    # Ox. Bottle 1 Pressure - left horizontal
-                    dpg.draw_line((50, 125), (200, 125), color=(128, 128, 128, 255), thickness=6, tag="ox1_pressure_line")
-                    dpg.draw_circle(center=(50, 125), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
-                    dpg.draw_text((50, 90), "Ox. Bottle 1\nPressure", size=14, color=(200, 255, 255, 255))
+                    # Ox. Bottle 1 Line
+                    dpg.draw_line((25, 100), (100, 100), color=(128, 128, 128, 255), thickness=6, tag="ox1_pressure_line")
+                    dpg.draw_circle(center=(25, 100), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_text((25, 60), "Ox. Bottle 1\nPressure", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_polygon(valve(112.5,100), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="ox1_pressure_valve")
 
-                    # Ox. Bottle 2 Pressure - downward vertical
-                    dpg.draw_line((200, 125), (200, 250), color=(128, 128, 128, 255), thickness=6, tag="ox2_pressure_line")
-                    dpg.draw_circle(center=(200, 250), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
-                    dpg.draw_text((210, 240), "Ox. Bottle 2\nPressure", size=14, color=(200, 255, 255, 255))
+                    # Ox. Bottle 2 Line
+                    dpg.draw_line((25, 200), (100, 200), color=(128, 128, 128, 255), thickness=6, tag="ox2_pressure_line")
+                    dpg.draw_circle(center=(25, 200), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_text((25, 160), "Ox. Bottle 2\nPressure", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_polygon(valve(112.5,200), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="ox2_pressure_valve")
 
-                    # N2 Pressure - right horizontal
-                    dpg.draw_line((200, 125), (350, 125), color=(128, 128, 128, 255), thickness=6, tag="n2_pressure_line")
-                    dpg.draw_circle(center=(350, 125), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
-                    dpg.draw_text((280, 100), "N2 Pressure", size=14, color=(200, 255, 255, 255))
 
-                    dpg.draw_circle(center=(200, 125), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    # Line Pressure Line
+                    linePressureLine =((125, 100), (150, 100), (150, 200), (124,200), (125,200), (150,200), (150,150), \
+                    (200, 150), (200, 225), (225, 225), (224, 225), (200, 225), (200, 150), \
+                    (200, 75), (225, 75), (224, 75), (200, 75), (200, 150), \
+                    (450, 150))
+                    dpg.draw_polyline(linePressureLine, color=(128, 128, 128, 255), thickness=6, tag="line_pressure_line")
+                    dpg.draw_circle(center=(450, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_text((375, 125), "Line Pressure", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_circle(center=(200, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_circle(center=(150, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+
+
+                    # N2 Pressure Line
+                    dpg.draw_line((325, 225), (250, 225), color=(128, 128, 128, 255), thickness=6, tag="n2_pressure_line")
+                    dpg.draw_circle(center=(325, 225), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_text((280, 200), "N2 Pressure", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_polygon(valve(237.5,225), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="n2_pressure_valve")
+
+                    # Dump line
+                    dpg.draw_line((325, 75), (250, 75), color=(128, 128, 128, 255), thickness=6)
+                    dpg.draw_circle(center=(325, 75), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+                    dpg.draw_text((280, 50), "Dump line", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_polygon(valve(237.5,75), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="dump_pressure_valve")
+
+
+                    dpg.draw_circle(center=(600, 300), radius=8, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
 
             with dpg.group():
                 # Output message

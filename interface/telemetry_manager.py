@@ -1,7 +1,7 @@
 import csv
 from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
-from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstate
+from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstate, updateValve
 
 import os
 
@@ -189,8 +189,12 @@ pipeTimeBuf = deque(maxlen=BUFFER_SIZE_PD)
 pressureBuffer = defaultdict(lambda: deque(maxlen=BUFFER_SIZE_PD))
 
 
-    
 def updatePipingDiagram(data, t):
+    updateValve("ox1_pressure_valve", data.Ox1Valve_Realy)
+    updateValve("ox2_pressure_valve", data.Ox1Valve_Realy)
+    updateValve("n2_pressure_valve", data.N2_Relay)
+    updateValve("dump_pressure_valve", data.Dump_Relay)
+
     #returning if there is no pressure drop test needs to be fixed before deployment
     if not (data.Dump_Relay == 0 and data.N2_Relay == 0):
         dpg.set_value("pipe_warning_msg", "")
@@ -203,7 +207,7 @@ def updatePipingDiagram(data, t):
     # Returning if we dont have more then 2 data points in the piping buffer
     if len(pipeTimeBuf) < 2:
         return
-    
+
     messageStrings = []
 
     for name, tag, label, _ in PRESSURE_CHANNELS:
@@ -266,12 +270,12 @@ def updateAllDataDisplays(data, t):
 
 # Updating all the relays indivdually using the update relay helper
 def updateAllRelays(data):
-
     updateRelay("HeatingRelay1StateText", "HeatingRelay1StatusCircle", data.OxBottle1_Relay)
     updateRelay("HeatingRelay2StateText", "HeatingRelay2StatusCircle", data.OxBottle2_Relay)
     updateRelay("OxRelay1StateText", "OxRelay1StatusCircle", data.Ox1Valve_Realy)
     updateRelay("OxRelay2StateText", "OxRelay2StatusCircle", data.Ox1Valve_Realy)
     updateRelay("IgnRelayStateText", "IgnRelayStatusCircle", data.IgnRelay)
+
 
 # Logs all new messages in the SW log, avoids null messages (Index = 0)
 def updateAllLogs(data, t):
