@@ -21,10 +21,8 @@ int initComms() {
     byte ip[] = IP;
     byte targetIP[] = TARGETIP;
 
-    while(0 == Ethernet.begin(mac, ip)) {
-        Serial.println("[!] Ethernet error");
-        delay(0.1);
-    }
+    Ethernet.begin(mac, ip);
+
     while(false == client.connect(targetIP, PORT)) {
         Serial.println("[!] TCP error");
         delay(0.1);

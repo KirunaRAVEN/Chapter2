@@ -2,7 +2,6 @@
 #define PINMAP_H
 
 #include <Arduino.h>
-#include <Arduino_PortentaBreakout.h>
 
 enum ControlBoxButton { // TODO
     IGNITION_KEY,
@@ -14,20 +13,19 @@ enum ControlBoxButton { // TODO
     EMERGENCY_BUTTON,
     BUTTON_COUNT
 };
-//breakoutPin relayPins[] = {PWM0, PWM1, PWM2, CAN1_TX, CAMERA_D0P, CAMERA_D0N, GPIO_4}; //TODO
-enum outPins {
-    SIREN_SIGNAL,
-    LIGHT_SIGNAL,
-    HEATING1_RELAY,
-    HEATING2_RELAY,
-    IGNITION_ARM,
-    IGNITION_RELAY,
-    NITROGEN_RELAY,
-    OXIDIZER1_RELAY,
-    OXIDIZER2_RELAY,
-    TEST_LED_SIGNAL,
-    HIGH_SPEED_SIGNAL
-};
+
+/* OUTPUT PINS */
+#define    SIREN_SIGNAL 22
+#define    LIGHT_SIGNAL 23
+#define    HEATING1_RELAY 24
+#define    HEATING2_RELAY 25
+#define    IGNITION_ARM 26
+#define    IGNITION_RELAY 27
+#define    NITROGEN_RELAY 28
+#define    OXIDIZER1_RELAY 29
+#define    OXIDIZER2_RELAY 30
+#define    TEST_LED_SIGNAL 31
+#define    HIGH_SPEED_SIGNAL 32
 
 enum inPins {
     IGNITION_BUTTON,
@@ -35,16 +33,15 @@ enum inPins {
     TEST_MODE_BUTTON
 };
 
-enum analogPins {
-    OXIDIZER1_TEMP,
-    OXIDIZER1_PRESSURE,
-    OXIDIZER2_TEMP,
-    OXIDIZER2_PRESSURE,
-    NITROGEN_PRESSURE,
-    LINE_PRESSURE,
-    CHAMBER_TEMP,
-    CHAMBER_PRESSURE
-};
+/* ANALOG INPUT PINS */
+#define    OXIDIZER1_TEMP A0
+#define    OXIDIZER1_PRESSURE A1
+#define    OXIDIZER2_TEMP A2
+#define    OXIDIZER2_PRESSURE A3
+#define    NITROGEN_PRESSURE A4
+#define    LINE_PRESSURE A5
+#define    CHAMBER_TEMP A6
+#define    CHAMBER_PRESSURE A7
 
 #define RELAY_ON LOW
 #define RELAY_OFF HIGH

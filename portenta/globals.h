@@ -140,7 +140,7 @@ const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SH
 /* global variables */
 extern struct normalPacket g_packet;
 extern ControlBoxRX g_controlBox;
-extern breakoutPin g_outPins[];
-extern breakoutPin g_inPins[];
-extern breakoutPin g_analogPins[];
+extern int g_outPins[];
+extern int g_inPins[];
+extern int g_analogPins[];
 #endif /* GLOBALS_H */
