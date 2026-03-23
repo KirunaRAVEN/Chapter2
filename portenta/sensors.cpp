@@ -19,7 +19,7 @@ int readAllSensors() {
     // gives the temp in celsius if i am able to read.
     g_packet.data.bottleTemperature1 = analogRead(OXIDIZER1_TEMP)*tempConversionFactor+25;
     g_packet.data.bottleTemperature2 = analogRead(OXIDIZER2_TEMP)*tempConversionFactor+25;
-    g_packet.data.engineTemperature = analogRead(CHAMBER_TEMP);
+    g_packet.data.engineTemperature = analogRead(PLUME_TEMP);
 
     return 0;
 }

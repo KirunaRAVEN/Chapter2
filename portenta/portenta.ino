@@ -3,9 +3,10 @@
 /* global vars */
 struct normalPacket g_packet;
 ControlBoxRX g_controlBox;
-int g_outPins[] = { SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY, TEST_LED_SIGNAL, HIGH_SPEED_SIGNAL};
-int g_inPins[] = {8};//ignition, reset, test
-int g_analogPins[] = {OXIDIZER1_TEMP, OXIDIZER1_PRESSURE, OXIDIZER2_TEMP, OXIDIZER1_PRESSURE, NITROGEN_PRESSURE, LINE_PRESSURE, CHAMBER_TEMP, CHAMBER_PRESSURE};
+int g_outRelays[] = {SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY};
+int g_outPins[] = {TEST_LED_SIGNAL, HIGH_SPEED_SIGNAL, ERROR_LED_SIGNAL};
+int g_inPins[] = {TEST_MODE_BUTTON};
+int g_analogPins[] = {OXIDIZER1_TEMP, OXIDIZER1_PRESSURE, OXIDIZER2_TEMP, OXIDIZER1_PRESSURE, NITROGEN_PRESSURE, LINE_PRESSURE, PLUME_TEMP, CHAMBER_PRESSURE};
 
 /* non-global "global" vars */
 long int lastLoopTime = 0;
@@ -30,19 +31,22 @@ void setup() {
 #endif
 
 
-    for(auto i: g_outPins){
+    for(auto i: g_outRelays){
         pinMode(i, OUTPUT);
         digitalWrite(i, RELAY_OFF);
     }
-    digitalWrite(TEST_LED_SIGNAL, LOW);
 
-//    analogReadResolution(SENSOR_RESOLUTION);
+    for(auto i: g_outPins){
+        pinMode(i, OUTPUT);
+        digitalWrite(i, LOW);
+    }
+
 
     for(auto i: g_inPins) {
         pinMode(i, INPUT_PULLUP);
     }
 
-    dumpValve.attach(9);
+    dumpValve.attach(DUMP_PIN);
 
     g_packet.state.mode = INIT;
     g_controlBox.begin(&Serial2);
@@ -58,6 +62,7 @@ void loop () {
     g_packet.data.timestamp = millis();
     g_packet.state.message = getNextMessage();
 
+
     int retVal = g_controlBox.receiveMessage();
 #ifdef DEBUG
     if(millis() % 1000 < MAIN_LOOP_PERIOD) {
@@ -67,74 +72,74 @@ void loop () {
     }
 #endif
 
+
     /* TODO: break out into a wrapper */
     /* (and be made more readable) */
     if(0 == retVal) {
         if(SEQUENCE != g_packet.state.mode) {
-            digitalWrite(g_outPins[OXIDIZER1_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
-            digitalWrite(g_outPins[OXIDIZER2_RELAY], g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+            digitalWrite(OXIDIZER1_RELAY, g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
+            digitalWrite(OXIDIZER2_RELAY, g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
             g_packet.state.N2OValveButton = g_controlBox.getMessage().oxidizerButton;
-            digitalWrite(g_outPins[NITROGEN_RELAY], g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
+            digitalWrite(NITROGEN_RELAY, g_controlBox.getMessage().nitrogenButton ? LOW : HIGH);
             g_packet.state.N2ValveButton = g_controlBox.getMessage().nitrogenButton;
-            digitalWrite(g_outPins[HEATING1_RELAY], g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
+            digitalWrite(HEATING1_RELAY, g_controlBox.getMessage().heating1Switch ? LOW : HIGH);
             g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
-            digitalWrite(g_outPins[HEATING2_RELAY], g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
+            digitalWrite(HEATING2_RELAY, g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
             g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
 
             dumpValve.write((g_controlBox.getMessage().dumpButton ? DUMP_OPEN : DUMP_CLOSE));
             g_packet.state.dumpValveButton = g_controlBox.getMessage().dumpButton;
         }
-        digitalWrite(g_outPins[IGNITION_ARM], g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
+        digitalWrite(IGNITION_ARM, g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
         g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
     }
     readAllSensors();
 
     /* switch on the light if pressure in the system */
-    if (
-    g_packet.data.linePressure >= 20 || g_packet.data.N2OFeedingPressure1 >= 20 || g_packet.data.N2OFeedingPressure2 >= 20) {
-        digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
+    if (g_packet.data.linePressure >= 2.0) {
+        digitalWrite(LIGHT_SIGNAL, RELAY_ON);
     } else {
-        digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
+        digitalWrite(LIGHT_SIGNAL, RELAY_OFF);
+
     }
 
     switch(g_packet.state.mode) {
         case INIT:
-            if(false == digitalRead(g_inPins[TEST_MODE_BUTTON])) {
+            if(LOW == digitalRead(TEST_MODE_BUTTON)) {
                 g_packet.state.mode = TEST;
-                digitalWrite(g_outPins[TEST_LED_SIGNAL], HIGH);
+                digitalWrite(TEST_LED_SIGNAL, HIGH);
             } else {
                 g_packet.state.mode = WAIT;
             }
             break;
         case TEST:
-            digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
+            digitalWrite(LIGHT_SIGNAL, RELAY_ON);
             if(0 == stepVerification()) {
-                digitalWrite(g_outPins[TEST_LED_SIGNAL], LOW);
+                digitalWrite(TEST_LED_SIGNAL, LOW);
                 g_packet.state.mode = WAIT;
+                digitalWrite(LIGHT_SIGNAL, RELAY_OFF);
             }
             break;
         case WAIT:
-            digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
-            digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_OFF);
             if(1 == g_controlBox.getMessage().ignitionButton) {
                 g_packet.state.mode = SEQUENCE;
             }
             break;
         case SEQUENCE:
-            digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
-            digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_ON);
+            digitalWrite(LIGHT_SIGNAL, RELAY_ON);
+            digitalWrite(SIREN_SIGNAL, RELAY_ON);
             if(0 == stepSequence()) {
                 g_packet.state.mode = SHUTDOWN;
+                digitalWrite(LIGHT_SIGNAL, RELAY_OFF);
+                digitalWrite(SIREN_SIGNAL, RELAY_OFF);
             }
             break;
         case SAFE:
-            digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_ON);
+            digitalWrite(LIGHT_SIGNAL, RELAY_ON);
             g_packet.state.subState = FINISHED;
             break;
         case SHUTDOWN:
-            digitalWrite(g_outPins[LIGHT_SIGNAL], RELAY_OFF);
-            digitalWrite(g_outPins[SIREN_SIGNAL], RELAY_OFF);
-            digitalWrite(g_outPins[HIGH_SPEED_SIGNAL], LOW);
+            digitalWrite(HIGH_SPEED_SIGNAL, LOW);
             break;
         default:
             g_packet.state.mode = SAFE;

@@ -14,34 +14,37 @@ enum ControlBoxButton { // TODO
     BUTTON_COUNT
 };
 
-/* OUTPUT PINS */
-#define    SIREN_SIGNAL 22
-#define    LIGHT_SIGNAL 23
-#define    HEATING1_RELAY 24
-#define    HEATING2_RELAY 25
-#define    IGNITION_ARM 26
-#define    IGNITION_RELAY 27
-#define    NITROGEN_RELAY 28
-#define    OXIDIZER1_RELAY 29
-#define    OXIDIZER2_RELAY 30
-#define    TEST_LED_SIGNAL 31
-#define    HIGH_SPEED_SIGNAL 32
+/** OUTPUT PINS **/
+/* RELAYS */
+#define    LIGHT_SIGNAL        22
+#define    SIREN_SIGNAL        25
+#define    HEATING2_RELAY      24
+#define    HEATING1_RELAY      23
+#define    OXIDIZER2_RELAY     26
+#define    OXIDIZER1_RELAY     27
+#define    NITROGEN_RELAY      28
+#define    IGNITION_ARM        29
+#define    IGNITION_RELAY      47
 
-enum inPins {
-    IGNITION_BUTTON,
-    RESET_BUTTON,
-    TEST_MODE_BUTTON
-};
+/* NORMAL OUTPUT PINS */
+#define    TEST_LED_SIGNAL     35
+#define    ERROR_LED_SIGNAL    33
+#define    HIGH_SPEED_SIGNAL   32
 
-/* ANALOG INPUT PINS */
-#define    OXIDIZER1_TEMP A0
-#define    OXIDIZER1_PRESSURE A1
-#define    OXIDIZER2_TEMP A2
-#define    OXIDIZER2_PRESSURE A3
-#define    NITROGEN_PRESSURE A4
-#define    LINE_PRESSURE A5
-#define    CHAMBER_TEMP A6
-#define    CHAMBER_PRESSURE A7
+/* OTHER GPIO */
+#define    DUMP_PIN            31
+#define    TEST_MODE_BUTTON    37
+
+/** ANALOG INPUT PINS **/
+#define    OXIDIZER1_TEMP      A0
+#define    OXIDIZER1_PRESSURE  A1
+#define    OXIDIZER2_TEMP      A2
+#define    OXIDIZER2_PRESSURE  A3
+#define    NITROGEN_PRESSURE   A4
+#define    LINE_PRESSURE       A5
+#define    PLUME_TEMP          A6
+#define    CHAMBER_PRESSURE    A7
+#define    PRECHAMBER_PRESSURE A8
 
 #define RELAY_ON LOW
 #define RELAY_OFF HIGH

@@ -8,7 +8,7 @@
 #include "sequence.h"
 #include <Servo.h>
 
-#define DEBUG
+//#define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
@@ -45,6 +45,8 @@ struct dataPoint {
     float bottleTemperature1;       //Bottle temperature
     float bottleTemperature2;       //Nozzle temperature
     float engineTemperature;        //Piping temperature
+
+    //TODO: Add new sensors
 };
 
 /* Internal software storage struct. 4 bytes due to padding
