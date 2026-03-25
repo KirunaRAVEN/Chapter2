@@ -87,6 +87,8 @@ void loop () {
             digitalWrite(HEATING2_RELAY, g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
             g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
 
+            digitalWrite(SIREN_SIGNAL, g_controlBox.getMessage().emergencyButton ? LOW : HIGH);
+
             dumpValve.write((g_controlBox.getMessage().dumpButton ? DUMP_OPEN : DUMP_CLOSE));
             g_packet.state.dumpValveButton = g_controlBox.getMessage().dumpButton;
         }
@@ -127,11 +129,9 @@ void loop () {
             break;
         case SEQUENCE:
             digitalWrite(LIGHT_SIGNAL, RELAY_ON);
-            digitalWrite(SIREN_SIGNAL, RELAY_ON);
             if(0 == stepSequence()) {
                 g_packet.state.mode = SHUTDOWN;
                 digitalWrite(LIGHT_SIGNAL, RELAY_OFF);
-                digitalWrite(SIREN_SIGNAL, RELAY_OFF);
             }
             break;
         case SAFE:

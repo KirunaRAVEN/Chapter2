@@ -34,17 +34,20 @@ enum ControlBoxButton { // TODO
 /* OTHER GPIO */
 #define    DUMP_PIN            31
 #define    TEST_MODE_BUTTON    37
+#define    LOADCELL_DATA       44
+#define    LOADCELL_CLOCK      45
 
 /** ANALOG INPUT PINS **/
-#define    OXIDIZER1_TEMP      A0
+#define    ADC_FUCKED          A0
 #define    OXIDIZER1_PRESSURE  A1
 #define    OXIDIZER2_TEMP      A2
 #define    OXIDIZER2_PRESSURE  A3
-#define    NITROGEN_PRESSURE   A4
+#define    OXIDIZER1_TEMP      A4
 #define    LINE_PRESSURE       A5
-#define    PLUME_TEMP          A6
 #define    CHAMBER_PRESSURE    A7
-#define    PRECHAMBER_PRESSURE A8
+#define    NITROGEN_PRESSURE   A9
+#define    PLUME_TEMP          A10
+#define    PRECHAMBER_PRESSURE A11
 
 #define RELAY_ON LOW
 #define RELAY_OFF HIGH
