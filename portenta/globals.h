@@ -7,7 +7,7 @@
 #include "verification.h"
 #include "sequence.h"
 #include <Servo.h>
-#include "Adafruit_HX711.h"
+#include "HX711.h" // Rob Tilaart library
 
 #define DEBUG
 

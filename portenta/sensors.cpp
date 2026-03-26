@@ -1,15 +1,17 @@
 #include "globals.h"
 
-Adafruit_HX711 loadcell(LOADCELL_DATA, LOADCELL_CLOCK);
+HX711 loadcell;
 static const float pressureConversionFactor = MAX_PRESSURE / ((1 << SENSOR_RESOLUTION) - 1);
 static const float tempConversionFactor = V_REF / ((1 << SENSOR_RESOLUTION) - 1);
 
 void initLoadcell() {
-    loadcell.begin();
-    for (uint8_t t=0; t<3; t++) {  //Tare (no load)
-        loadcell.tareA(loadcell.readChannelRaw(CHAN_A_GAIN_128));
-        loadcell.tareA(loadcell.readChannelRaw(CHAN_A_GAIN_128));
-    }
+    loadcell.begin(LOADCELL_DATA, LOADCELL_CLOCK);
+    loadcell.set_scale(1.0f);
+    loadcell.tare();
+    // Serial.println(loadcell.read())
+    // for (uint8_t t=0; t<3; t++) {  //Tare (no load)
+    //     loadcell.
+    // }
 }
 
 int readAllSensors() {
