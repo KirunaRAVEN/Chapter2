@@ -9,7 +9,7 @@
 #include <Servo.h>
 #include "Adafruit_HX711.h"
 
-//#define DEBUG
+#define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz

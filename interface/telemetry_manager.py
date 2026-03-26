@@ -15,18 +15,19 @@ INDEX = {
     "N2Bottle_Pres": 5,
     "OxBottle1_temp": 6,
     "OxBottle2_temp": 7,
-    "NozzleTemp": 8,
     "IRsensor":8,
-    "Software_mode": 9,
-    "Software_substate": 10,
-    "MsgIndex": 11,
-    "Dump_Relay": 12,
-    "OxBottle1_Relay": 13,
-    "OxBottle2_Relay": 14,
-    "IgnRelay": 15,
-    "N2_Relay": 16,
-    "Ox1Valve_Realy": 17,
-    "valveActive": 18,
+    "NozzleTemp": 8,
+    "LoadCell":9,
+    "Software_mode": 10,
+    "Software_substate": 11,
+    "MsgIndex": 12,
+    "Dump_Relay": 13,
+    "OxBottle1_Relay": 14,
+    "OxBottle2_Relay": 15,
+    "IgnRelay": 16,
+    "N2_Relay": 17,
+    "Ox1Valve_Realy": 18,
+    "valveActive": 19,
     "ignitionActive": 18,
 }
 
@@ -250,7 +251,7 @@ def updateAllDataDisplays(data, t):
     updateDisplay("data_display:_chamber_pressure:", data.Chamber_Pres)
     updateDisplay("data_display:_plume_temperature:", data.IRsensor)
     updateDisplay("data_display:_nozzle_temperature:", data.NozzleTemp)
-#    updateDisplay("data_display:_load_cell:", data.LoadCell)
+    updateDisplay("data_display:_load_cell:", data.LoadCell)
     updateDisplay("data_display:_mega_time:", t)
 
     updateDisplay("Ox1TempPrintout", data.OxBottle1_temp)

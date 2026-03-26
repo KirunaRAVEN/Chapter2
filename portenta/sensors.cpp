@@ -26,6 +26,10 @@ int readAllSensors() {
     g_packet.data.N2FeedingPressure = analogRead(NITROGEN_PRESSURE)*pressureConversionFactor;
     g_packet.data.loadcellReading = loadcell.readChannelRaw(CHAN_A_GAIN_128);
 
+#ifdef DEBUG
+    Serial.println(g_packet.data.loadcellReading);
+#endif
+
     // gives the temp in celsius if i am able to read.
     g_packet.data.bottleTemperature1 = (((analogRead(OXIDIZER1_TEMP)*tempConversionFactor)-0.75)*100)+25;
     g_packet.data.bottleTemperature2 = (((analogRead(OXIDIZER2_TEMP)*tempConversionFactor)-0.75)*100)+25;
