@@ -7,6 +7,7 @@
 #include "verification.h"
 #include "sequence.h"
 #include <Servo.h>
+#include "Adafruit_HX711.h"
 
 //#define DEBUG
 
@@ -47,6 +48,7 @@ struct dataPoint {
     float engineTemperature;        //Piping temperature
 
     //TODO: Add new sensors
+    int32_t loadcellReading;        //Loadcell raw measurement
 };
 
 /* Internal software storage struct. 4 bytes due to padding

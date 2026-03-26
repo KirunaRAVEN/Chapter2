@@ -50,6 +50,7 @@ void setup() {
 
     g_packet.state.mode = INIT;
     g_controlBox.begin(&Serial2);
+    initLoadcell();
 
     initComms(); // blocking
 #ifdef DEBUG
