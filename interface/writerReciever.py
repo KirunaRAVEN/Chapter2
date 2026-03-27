@@ -7,7 +7,7 @@ import sys
 import random
 
 PORT = 4000
-LEN_NORMAL = 44
+LEN_NORMAL = 52
 LEN_HIGH_SPEED = 4
 
 g_dataQueue = b''
@@ -21,7 +21,9 @@ g_data = {
 "N2FeedingPressure":0.0,
 "bottleTemperature1":0.0,
 "bottleTemperature2":0.0,
-"engineTemperature":0.0,
+"plumeTemperature":0.0,
+"pipingTemperature":0.0,
+"chamberTemperature":0.0,
 "loadCell":0.0,
 "mode":0,
 "subState":0,
@@ -60,7 +62,7 @@ def reciever(sock):
             print(e)
 
 def printTelemetry(datafile):
-    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['engineTemperature']},{g_data['loadCell']}{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['N20ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
+    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['plumeTemperature']},{g_data['pipingTemperature']},{g_data['chamberTemperature']},{g_data['loadCell']}{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['N20ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
     datafile.flush()
 
 def parseData():
@@ -80,7 +82,7 @@ def parseData():
             match packetType:
                 case 1: #normal packet
                     try:
-                        data = struct.unpack_from("<l9f4b", g_dataQueue, 1)
+                        data = struct.unpack_from("<l11f4b", g_dataQueue, 1)
                         # TODO: make this prettier:
                         g_data["timestamp"] = data[0]
                         g_data["N20FeedingPressure1"] = data[1]
@@ -90,20 +92,22 @@ def parseData():
                         g_data["N2FeedingPressure"] = data[5]
                         g_data["bottleTemperature1"] = data[6]
                         g_data["bottleTemperature2"] = data[7]
-                        g_data["engineTemperature"] = data[8]
-                        g_data["loadCell"] = data[9]
-                        g_data["mode"] = data[10]
-                        g_data["subState"] = data[11]
-                        g_data["message"] = data[12]
+                        g_data["plumeTemperature"] = data[8]
+                        g_data["pipingTemperature"] = data[9]
+                        g_data["chamberTemperature"] = data[10]
+                        g_data["loadCell"] = data[11]
+                        g_data["mode"] = data[12]
+                        g_data["subState"] = data[13]
+                        g_data["message"] = data[14]
 
-                        g_data["dumpValveButton"] = _readBitFromByte(data[13], 0)
-                        g_data["heatingBlanketButton1"] = _readBitFromByte(data[13], 1)
-                        g_data["heatingBlanketButton2"] = _readBitFromByte(data[13], 2)
-                        g_data["ignitionButton"] = _readBitFromByte(data[13], 3)
-                        g_data["N2ValveButton"] = _readBitFromByte(data[13], 4)
-                        g_data["N20ValveButton"] = _readBitFromByte(data[13], 5)
-                        g_data["valveActive"] = _readBitFromByte(data[13], 6)
-                        g_data["ignitionEngagedActive"] = _readBitFromByte(data[13], 7)
+                        g_data["dumpValveButton"] = _readBitFromByte(data[15], 0)
+                        g_data["heatingBlanketButton1"] = _readBitFromByte(data[15], 1)
+                        g_data["heatingBlanketButton2"] = _readBitFromByte(data[15], 2)
+                        g_data["ignitionButton"] = _readBitFromByte(data[15], 3)
+                        g_data["N2ValveButton"] = _readBitFromByte(data[15], 4)
+                        g_data["N20ValveButton"] = _readBitFromByte(data[15], 5)
+                        g_data["valveActive"] = _readBitFromByte(data[15], 6)
+                        g_data["ignitionEngagedActive"] = _readBitFromByte(data[15], 7)
 
                         printTelemetry(datafile)
                         g_dataQueue = g_dataQueue[(1+LEN_NORMAL):]
