@@ -37,6 +37,11 @@ enum ControlBoxButton { // TODO
 #define    LOADCELL_DATA       44
 #define    LOADCELL_CLOCK      45
 
+// #define    SPI_MISO            50
+// #define    SPI_CLK             52
+#define    SPI_CS_TC_CHAMBER    46
+#define    SPI_CS_TC_PIPING    48
+
 /** ANALOG INPUT PINS **/
 #define    ADC_FUCKED          A0
 #define    OXIDIZER1_PRESSURE  A1

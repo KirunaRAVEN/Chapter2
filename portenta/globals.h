@@ -7,9 +7,10 @@
 #include "verification.h"
 #include "sequence.h"
 #include <Servo.h>
-#include "HX711.h" // Rob Tilaart library
+#include <HX711.h> // Rob Tilaart library
+#include "Adafruit_MAX31855.h"
 
-#define DEBUG
+// #define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
@@ -45,10 +46,12 @@ struct dataPoint {
     // Temperatures
     float bottleTemperature1;       //Bottle temperature
     float bottleTemperature2;       //Nozzle temperature
-    float engineTemperature;        //Piping temperature
+    float plumeTemperature;        //Plume temperature
+    float pipingTemperature;        // Piping (green)
+    float chamberTemperature;        //Chamber temperature (green and white)
+    float loadcellReading;        //Loadcell measurement in N
 
     //TODO: Add new sensors
-    int32_t loadcellReading;        //Loadcell raw measurement
 };
 
 /* Internal software storage struct. 4 bytes due to padding
