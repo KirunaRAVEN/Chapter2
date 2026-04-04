@@ -1,9 +1,5 @@
-InterfaceSoftware/.vscode/
-InterfaceSoftware/resources/__pycache__/indicatorDefinitions.cpython-311.pyc
-InterfaceSoftware/resources/__pycache__/displayElements.cpython-311.pyc
-InterfaceSoftware/resources/__pycache__/dataDefinitions.cpython-311.pyc
 /PortentaH7_Tests
 *.swp
-interface/data.csv
-interface__pycache__/*
-interface__pycache__
+**/__pycache__/
+**/.vscode/
+**/data.csv
