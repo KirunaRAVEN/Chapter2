@@ -117,10 +117,12 @@ def find_test_folder(test_id):
 
     date = row["Date"].dt.strftime("%Y_%m_%d").iloc[0]
 
+    print(os.listdir(root_dir.parent))
+
     matches = [
         os.path.join(root_dir.parent, f)
         for f in os.listdir(root_dir.parent)
-        if f.startswith(date) and os.path.isdir(os.path.join(root_dir.parent, f))
+        if f.startswith(date) #and os.path.isdir(os.path.join(root_dir.parent, f))
     ]
     if not matches: # check if no matching folder is found
         raise FileNotFoundError(f"No folder found for {date}")
@@ -141,9 +143,10 @@ def find_indices(data, column_names):
             - valve closing index (int)
             - all ignition transition indices (pd.Index)
     """
-    ign_col = data.iloc[:, get_column_number(column_names, "IgnitionSwState")].astype(int)
+    ign_col = data.iloc[:, get_column_number(column_names, "ValveSwState")].astype(int)
     
     n_rows = len(data)
+    print(f"find_indices len(data): {len(data)}")
 
     # Identify 0 → 1 transitions with at least 100 samples quiet period before
     quiet_period = 100
@@ -158,7 +161,8 @@ def find_indices(data, column_names):
     else:
         print("Couldn't find ignition index, trying substate column...")
         substate_col = data.iloc[:, get_column_number(column_names, "CurrentSwSubstate")]
-        substate_candidates = substate_col[(substate_col == 1) & (substate_col.shift(1).fillna(0) == 0)].index
+        print(substate_col)
+        substate_candidates = substate_col[(substate_col == 1) & (substate_col.shift(1).fillna(0) == 2)].index
         if not substate_candidates.empty:
             index_ign = substate_candidates[-1]
         else:
@@ -207,12 +211,18 @@ def read_csv(test_id, column_names, all=False, rounding=False):
 
     data_frame = pd.read_csv(csv_path)
 
+    print(f"len data_frame: {len(data_frame)}")
+
     # Find ignition and valve indices
     ign_idx, valve_idx, _ = find_indices(data_frame, column_names)
 
+    ign_offset = ign_idx - max(ign_idx - 20000, 0)
+
     # Trim around ignition and valve, exactly like the old version
     if not all:
-        data_frame = data_frame.iloc[ign_idx - 20000 : valve_idx + 30000]
+        data_frame = data_frame.iloc[max(ign_idx - 20000, 0) : min(valve_idx + 30000, len(data_frame))]
+
+    print(f"len data_frame (after trimming): {len(data_frame)}")
 
     # Remove baseline offset from ChamberPressure and LoadCell
     for sensor in ["ChamberPressure", "LoadCell"]:
@@ -220,21 +230,15 @@ def read_csv(test_id, column_names, all=False, rounding=False):
         offset = data_frame.iloc[3500:4000, col_idx].mean()
         data_frame.iloc[:, col_idx] -= offset
 
-    # Normalize time column using fixed row 20000 as reference
+    # Normalize time column using ignition time as offset
     time_idx = get_column_number(column_names, "ArduinoMegaTime")
     time_diff = np.diff(data_frame.iloc[0:10, time_idx]).mean()
 
-    if time_diff < 10:  # milliseconds
-        data_frame.iloc[:, time_idx] = (data_frame.iloc[:, time_idx] - data_frame.iloc[20000, time_idx]) / 1000
-        data_frame_out = data_frame
-    else:  # microseconds
-        data_frame.iloc[:, time_idx] = (data_frame.iloc[:, time_idx] - data_frame.iloc[20000, time_idx]) / 1000000
-        data_frame_out = data_frame.reset_index(drop=True)
-        if rounding:
-            data_frame.iloc[:, time_idx] = data_frame.iloc[:, time_idx].round(2)
+    data_frame.iloc[:, time_idx] = (data_frame.iloc[:, time_idx] - data_frame.iloc[ign_offset, time_idx]) / 1000
+    data_frame_out = data_frame
 
     return data_frame_out
-   
+
 
 def get_pressure_index(data,column_names):
     """

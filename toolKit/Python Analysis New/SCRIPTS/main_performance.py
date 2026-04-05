@@ -24,7 +24,7 @@ from pathlib import Path
 # ----------------------------------
 
 # ENTER A VALID TEST ID
-test_id = 'HFT21'
+test_id = 'CFT16'
 
 # GET COLUMN NAMES FOR CSV FILE
 # Note that the current file is only for the new test bench format
@@ -57,7 +57,9 @@ else:
 
 # Compute burn time
 valve_time = data.iloc[line_index[-1], 0] - data.iloc[line_index[0], 0]
+print(f"end: {data.iloc[line_index[-1], 0]}, start: {data.iloc[line_index[0], 0]}")
 burn_time = data.iloc[line_index[-1], 0] - data.iloc[press_index, 0]
+print(f"end: {data.iloc[line_index[-1], 0]}, start: {data.iloc[press_index, 0]}")
 
 # Compute approximate mass flow rate
 m_dot_ox, ox_flow = helper_functions.mass_flow_rate(data,test_id,prop_mass,column_names)

@@ -62,7 +62,7 @@ def reciever(sock):
             print(e)
 
 def printTelemetry(datafile):
-    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['plumeTemperature']},{g_data['pipingTemperature']},{g_data['chamberTemperature']},{g_data['loadCell']}{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['N20ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
+    datafile.write(f"{g_data['timestamp']},{g_data['N20FeedingPressure1']},{g_data['N20FeedingPressure2']},{g_data['linePressure']},{g_data['chamberPressure']},{g_data['N2FeedingPressure']},{g_data['bottleTemperature1']},{g_data['bottleTemperature2']},{g_data['plumeTemperature']},{g_data['pipingTemperature']},{g_data['chamberTemperature']},{g_data['loadCell']},{g_data['mode']},{g_data['subState']},{g_data['message']},{g_data['dumpValveButton']},{g_data['heatingBlanketButton1']},{g_data['heatingBlanketButton2']},{g_data['ignitionButton']},{g_data['N2ValveButton']},{g_data['N20ValveButton']},{g_data['valveActive']},{g_data['ignitionEngagedActive']}\n")
     datafile.flush()
 
 def parseData():

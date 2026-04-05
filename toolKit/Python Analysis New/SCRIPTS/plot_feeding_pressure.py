@@ -21,7 +21,7 @@ import colors
 # -------------
 print_all = False       # If True, shows all data without zoom around ignition
 save_figures = False     # If True, saves the plots
-test_id = 'HFT21'        # Test ID from Prop_mass.xlsx
+test_id = 'CFT16'        # Test ID from Prop_mass.xlsx
 output_folder = None    # If None, saves in the test folder or 'Files/'
 
 # ---------
@@ -83,12 +83,14 @@ def plot_feeding_pressure(data, test_id=None, print_all=False, save=True, output
     if not print_all:
         ax0.xaxis.set_major_locator(plt.MultipleLocator(1))
         ax0.xaxis.set_minor_locator(plt.MultipleLocator(0.25))
-        ax0.set_xlim(-1, 7)
+        ax0.set_xlim(-1, 8)
 
     # Main plots
     ax0.plot(data.iloc[:, time_col], data.iloc[:, N2O_2_col], color=colors.color[8], label='N$_2$O Feeding Pressure 2')
     ax0.plot(data.iloc[:, time_col], data.iloc[:, N2O_1_col], color=colors.color[7], label='N$_2$O Feeding Pressure 1')
     ax0.plot(data.iloc[:, time_col], data.iloc[:, line_col], color=colors.color[9], label='Line Pressure')
+
+    print(data.iloc[35000,:])
 
     # Open valve window
     ax1.plot(data.iloc[:, time_col], data.iloc[:, valve_col], linestyle='--', color='grey', label='Open valve window')
