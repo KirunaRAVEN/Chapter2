@@ -32,7 +32,7 @@ int readAllSensors() {
     g_packet.data.N2OFeedingPressure1 = analogRead(OXIDIZER1_PRESSURE)*pressureConversionFactor;
     g_packet.data.N2OFeedingPressure2 = analogRead(OXIDIZER2_PRESSURE)*pressureConversionFactor;
     g_packet.data.linePressure = analogRead(LINE_PRESSURE)*pressureConversionFactor;
-    g_packet.data.chamberPressure = analogRead(CHAMBER_PRESSURE)*pressureConversionFactor;
+    g_packet.data.chamberPressure = analogRead(CHAMBER_PRESSURE)*pressureConversionFactor*0.25; // chamberPressure is only 0-25 bar
     g_packet.data.N2FeedingPressure = analogRead(NITROGEN_PRESSURE)*pressureConversionFactor;
     g_packet.data.loadcellReading = loadcell.get_value()*loadcellConversionFactor;
     g_packet.data.pipingTemperature = thermocouplePiping.readCelsius();
@@ -40,17 +40,17 @@ int readAllSensors() {
 
 
 #ifdef DEBUG
-    // Serial.print("Loadcell reading: ");
-    // Serial.println(g_packet.data.loadcellReading);
-    // Serial.print("Tc Cham: ");
-    // Serial.println(thermocoupleChamber.readCelsius());
+    Serial.print("Loadcell reading: ");
+    Serial.println(g_packet.data.loadcellReading);
+    Serial.print("Tc Cham: ");
+    Serial.println(thermocoupleChamber.readCelsius());
 
-    // Serial.print("Tc Piping: ");
-    // Serial.println(thermocouplePiping.readCelsius());
+    Serial.print("Tc Piping: ");
+    Serial.println(thermocouplePiping.readCelsius());
 
 #endif
 
-    // gives the temp in celsius if i am able to read.
+    // gives the temp in Celsius
     g_packet.data.bottleTemperature1 = (((analogRead(OXIDIZER1_TEMP)*tempConversionFactor)-0.75)*100)+25;
     g_packet.data.bottleTemperature2 = (((analogRead(OXIDIZER2_TEMP)*tempConversionFactor)-0.75)*100)+25;
     g_packet.data.plumeTemperature = analogRead(PLUME_TEMP);
@@ -62,5 +62,5 @@ float fastRead() {
     /*
     read only chamberPressure
     */
-    return analogRead(CHAMBER_PRESSURE);
+    return analogRead(CHAMBER_PRESSURE)*pressureConversionFactor*0.25;
 }
