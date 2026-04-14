@@ -1,16 +1,17 @@
 #include "globals.h"
 
 HX711 loadcell;
-// Adafruit_MAX31855 thermocouplePiping(SPI_CLK, SPI_CS_TC_PIPING, SPI_MISO);
 Adafruit_MAX31855 thermocoupleChamber(SPI_CS_TC_CHAMBER);
 Adafruit_MAX31855 thermocouplePiping(SPI_CS_TC_PIPING);
 
-// Adafruit_MAX31855 thermocoupleChamber(SPI_CLK, , SPI_MISO);
 static const float pressureConversionFactor = MAX_PRESSURE / ((1 << SENSOR_RESOLUTION) - 1);
 static const float tempConversionFactor = V_REF / ((1 << SENSOR_RESOLUTION) - 1);
 static const float loadcellConversionFactor = .539f/-7766.0f*9.81f;
 //Standard measured 0.5L Monster Can Weight (539 g) 
 //divided by measured raw value for that weight (-7766) and transformed to N (1kg = 9.81N).
+static const float plumeSensorOffset = -26.18;
+static const float plumeSensorFactor = 0.8678;
+// Regression from (temp/rawMeasurement): (10/42)(23/56)(27/60)(34/70)
 
 void initLoadcell() {
     thermocoupleChamber.begin();
@@ -53,7 +54,7 @@ int readAllSensors() {
     // gives the temp in Celsius
     g_packet.data.bottleTemperature1 = (((analogRead(OXIDIZER1_TEMP)*tempConversionFactor)-0.75)*100)+25;
     g_packet.data.bottleTemperature2 = (((analogRead(OXIDIZER2_TEMP)*tempConversionFactor)-0.75)*100)+25;
-    g_packet.data.plumeTemperature = analogRead(PLUME_TEMP);
+    g_packet.data.plumeTemperature = analogRead(PLUME_TEMP)*plumeSensorFactor+plumeSensorOffset;
 
     return 0;
 }
