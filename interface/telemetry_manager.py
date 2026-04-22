@@ -3,6 +3,8 @@ from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
 from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstate, updateValve
 
+from telemetry_processor import telemetryProcessor
+
 import os
 
 # Dict of all indices
@@ -290,7 +292,7 @@ def updateSoftwareModeAndSubstate(data):
     updateSoftwareMode("softwareModeText", data.Software_mode)
     updateSoftwareSubstate("softwareSubstateText", data.Software_substate)
 
-
+processor = telemetryProcessor(window_size = 5)
 
 # Update function for the main loop, ensures we update all data within the data display and then mark the cache as stale
 reader = telemetryReader("data.csv", INDEX, MESSAGE_STRINGS)
@@ -300,7 +302,9 @@ timeOffset = 0
 def updateFrame():
     global lastTime, timeOffset
     # Ensures we dont run updatre function without having data
-    data = reader.getNextData()
+    # data = reader.getNextData()
+    raw_data = reader.getNextData()
+    data = processor.process(raw_data)
     if not data:
         return
     t = data.MegaTime * 1e-3 #Converting to seconds
