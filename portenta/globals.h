@@ -18,7 +18,7 @@
 
 /* Ignition sequence (times in ms) */
 #define IGNITION_SAFE_TIME  (1 * 1000)
-#define BURN_TIME           (4 * 1000)
+#define BURN_TIME           (3 * 1000)
 #define IGNITER_BURN_LENGTH (900)
 #define IGNITER_DELAY       (50)
 #define VALVE_ON_TIME       (100)
