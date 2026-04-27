@@ -8,10 +8,12 @@
  */
 
 #include <Arduino.h>
+#include "iDevice.h"
 
 #ifndef CONTROL_BOX_RX_H
 #define CONTROL_BOX_RX_H
 
+#define CONTROL_BOX_NAME "ControlBoxRX"
 #define CONTROL_BOX_BAUDRATE 115200
 
 // State of Control-Box buttons and switches
@@ -29,22 +31,36 @@ union ControlBoxStateMessage {
     uint8_t allButtons; // Access all buttons as a single byte
 };
 
-class ControlBoxRX {
+class ControlBoxRX : iDevice {
 public:
+
+    /* Function:    ControlBoxRX constructor.
+    *
+    *  IN:          Class nameHardwareSerial instance (e.g. &Serial2)
+    *  OUT:         Nothing
+    */
+    ControlBoxRX(HardwareSerial* serial = &Serial2);
 
     /* Function:    ControlBoxRX initialiser.
     *
-    *  IN:          HardwareSerial instance (e.g. &Serial2)
+    *  IN:          Nothing
     *  OUT:         Nothing
     */
-    void begin(HardwareSerial* serial);
+    void begin();
 
     /* Function:    Read the state of the buttons and switches via UART.
     *
-    *  IN:          &Serial pointer for comunication.
+    *  IN:          Nothing.
     *  OUT:         0 if message received correctly. -1 if no data received. -2 if error in message.
     */
     int receiveMessage();
+    
+    /* Function:    Read the state of the buttons and switches via UART void.
+    *
+    *  IN:          Nothing
+    *  OUT:         Nothing.
+    */
+    void update() {receiveMessage();}
 
     /* Function:   Get the stored state of the buttons and switches.
     *
@@ -52,6 +68,7 @@ public:
     *  OUT:         int 0 if ok, -1 if not received, -2 if received with error, -3 if strange data (boot/reconnection).
     */
     ControlBoxStateMessage getMessage() { return _message; }
+    int read() { return (int)_message.allButtons; }
 
 private:
     HardwareSerial* _serial; // Reference to the HardwareSerial instance (e.g. &Serial2)

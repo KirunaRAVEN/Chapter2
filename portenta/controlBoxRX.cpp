@@ -8,9 +8,10 @@
  */
 
 #include "controlBoxRX.h"
+ControlBoxRX::ControlBoxRX(HardwareSerial* serial)
+    : iDevice(CONTROL_BOX_NAME), _serial(serial) {}
 
-void ControlBoxRX::begin(HardwareSerial* serial = &Serial) {
-    _serial = serial;
+void ControlBoxRX::begin() {
     _serial->begin(CONTROL_BOX_BAUDRATE);
 }
 

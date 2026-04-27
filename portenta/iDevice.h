@@ -14,17 +14,16 @@
 class iDevice {
 public:
     // Constructor & Destructor
-    iDevice(const char* name):_name(name), _value(0.0f) {}
-    virtual ~iDevice();
+    iDevice(const char* name):_name(name), _value(0) {}
 
     // Core interface methods
     virtual void begin() = 0;       // Initialize device
     virtual void update() = 0;      // Update readings
-    float read() {return _value;};  // Read stored value (generic return)
+    int read() {return _value;};  // Read stored value (generic return)
     void test(bool updateBefore=false);    // Self-test / health check Serial print
 protected:
     const char* _name;
-    float _value;
+    int _value;
 };
 
 #endif

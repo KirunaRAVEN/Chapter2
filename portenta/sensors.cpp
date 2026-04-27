@@ -1,11 +1,8 @@
 #include "globals.h"
 
 // GENERIC SENSOR
-Sensor::Sensor(const char* name, int pin, float factor, float offset)
-    : iDevice(name),
-      _pin(pin),
-      _factor(factor),
-      _offset(offset) {}
+Sensor::Sensor(const char* name, int pin)
+    : iDevice(name), _pin(pin) {}
 
 void Sensor::begin() {
     pinMode(_pin, INPUT);
@@ -13,15 +10,12 @@ void Sensor::begin() {
 
 void Sensor::update() {
     // TODO: recalculate factors using V_REF and ADC_RESOLUTION
-    iDevice::_value = analogRead(_pin) * _factor + _offset;
+    iDevice::_value = analogRead(_pin);
 }
 
 // LOADCELL HX711
-Loadcell::Loadcell(const char* name, int dataPin, int clockPin, float factor)
-    : iDevice(name),
-      _dataPin(dataPin),
-      _clockPin(clockPin),
-      _factor(factor) {}
+Loadcell::Loadcell(const char* name, int dataPin, int clockPin)
+    : iDevice(name), _dataPin(dataPin), _clockPin(clockPin) {}
       
 void Loadcell::begin()
 {
@@ -31,14 +25,13 @@ void Loadcell::begin()
     loadcell.set_scale(1.0f);
 }
 void Loadcell::update() {
-    iDevice::_value = loadcell.get_value() * _factor;
+    iDevice::_value = (int)(loadcell.get_value()*LOADCELL_PRESCALER);
 }
 
 
 // THERMOCOUPLE Adafruit_MAX31855
 Thermocouple::Thermocouple(const char* name, int csPin)
-    : iDevice(name), 
-      thermocouple(csPin) {}
+    : iDevice(name), thermocouple(csPin) {}
 
 void Thermocouple::begin()
 {
@@ -46,7 +39,7 @@ void Thermocouple::begin()
 }
 void Thermocouple::update()
 {
-    iDevice::_value = thermocouple.readCelsius();
+    iDevice::_value = (int)(thermocouple.readCelsius()*THERMOCOUPLE_PRESCALER);
 }
 
 

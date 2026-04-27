@@ -2,7 +2,7 @@
 
 /* global vars */
 struct normalPacket g_packet;
-ControlBoxRX g_controlBox;
+ControlBoxRX g_controlBox(&Serial2);
 int g_outRelays[] = {SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY, DUMP_RELAY};
 int g_outPins[] = {TEST_LED_SIGNAL, HIGH_SPEED_SIGNAL, ERROR_LED_SIGNAL};
 int g_inPins[] = {TEST_MODE_BUTTON};
@@ -42,7 +42,7 @@ void setup() {
     //dumpValve.attach(DUMP_PIN);
 
     g_packet.state.mode = INIT;
-    g_controlBox.begin(&Serial2);
+    g_controlBox.begin();
     initLoadcell();
 
     initComms(); // blocking
