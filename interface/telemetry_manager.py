@@ -300,7 +300,8 @@ timeOffset = 0
 def updateFrame():
     global lastTime, timeOffset
     # Ensures we dont run updatre function without having data
-    data = reader.getNextData()
+    raw_data = reader.getNextData()
+    data = processor.process(raw_data)
     if not data:
         return
     t = data.MegaTime * 1e-3 #Converting to seconds

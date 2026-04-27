@@ -38,41 +38,41 @@ class telemetryProcessor:
         }
 
 
-        # Function to find calibrated values
-        def calibrate(self, field_name, value):
-            if isinstance(value, float) and math.isnan(value):
-                return value
-            
-            # Looking fo calibration settings
-            params = self.calibration.get(field_name)
-            if params is None:
-                return value
-            
-            return value*params["gain"] + params["offset"]
+    # Function to find calibrated values
+    def calibrate(self, field_name, value):
+        if isinstance(value, float) and math.isnan(value):
+            return value
         
-        # Function to filter values
-        def filter_value(self, field_name, value):
-            if isinstance(value, float) and math.isnan(value):
-                return value
+        # Looking fo calibration settings
+        params = self.calibration.get(field_name)
+        if params is None:
+            return value
         
-            # Looking for fields that aren't supposed to be filtered
-            if field_name not in self.fields_to_filter:
-                return value
-            
-            # Mean values of the latest values in the buffer
-            self.buffers[field_name].append(value)
-            return sum(self.buffers[field_name])/len(self.buffers[field_name])
+        return value*params["gain"] + params["offset"]
+    
+    # Function to filter values
+    def filter_value(self, field_name, value):
+        if isinstance(value, float) and math.isnan(value):
+            return value
+    
+        # Looking for fields that aren't supposed to be filtered
+        if field_name not in self.fields_to_filter:
+            return value
         
-        # Main function
-        def process(self, data):
-            processed = {}
+        # Mean values of the latest values in the buffer
+        self.buffers[field_name].append(value)
+        return sum(self.buffers[field_name])/len(self.buffers[field_name])
+    
+    # Main function
+    def process(self, data):
+        processed = {}
 
-            for field_name, value in vars(data).items():
-                if isinstance(value, (int, float)):
-                    value = self.calibrate(field_name, value)
-                    value = self.filter_value(field_name, value)
+        for field_name, value in vars(data).items():
+            if isinstance(value, (int, float, str)):
+                value = self.calibrate(field_name, value)
+                value = self.filter_value(field_name, value)
 
-                    processed[field_name] = value
+                processed[field_name] = value
 
-            return type(data)(**processed)
-        
+        return type(data)(**processed)
+    
