@@ -1,142 +1,194 @@
 #include "verification.h"
 
-static int testState = TEST_START;
-static int testStateChangeTime;
+static VerificationContext g_ctx;
 
-int _testActuator(bool passed, uint8_t message) {
-    /*
-    test a single actuator, with all the bells and whisles around it
-    */
+static int testActuator(bool passed, uint8_t message) {
     addMessage(message);
+
     if(passed) {
         addMessage(MSG_PASS);
         return 0;
-    } else {
-        addMessage(MSG_FAIL);
-        return 1;
     }
-}
 
-int stepVerification() {
-    /*
-    Main verification function. Returns 0 once all tests have passed, and 1 otherwise.
-    */
-    union ControlBoxStateMessage buttonStates = g_controlBox.getMessage();
-    switch(testState) {
-        case TEST_START:
-            addMessage(MSG_TEST_SEQUENCE_START);
-            testState = OFF_STATE_BUTTON;
-            break;
-        case OFF_STATE_BUTTON:
-            if(0 == buttonStates.allButtons) {
-                addMessage(MSG_NO_BUTTONS);
-                testState = OFF_STATE_TEST;
-                testStateChangeTime = millis();
-            } else {
-                if(millis() % 1000 < MAIN_LOOP_PERIOD) {
-                    addMessage(MSG_RELEASE_OX);
-                }
-            }
-            break;
-        case OFF_STATE_TEST:
-            //TODO: Change this once we have control sensing
-            if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = 0;
-                testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_24_OFF);
-                testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_GND_OFF);
-                testsFailed += _testActuator((false == buttonStates.ignitionButton), MSG_IGN_SW_OFF);
-                testsFailed += _testActuator((false == (buttonStates.heating1Switch + buttonStates.heating2Switch)), MSG_HEAT_OFF);
-                testsFailed += _testActuator((false == buttonStates.oxidizerButton), MSG_OX_OFF);
-
-                if(0 == testsFailed) {
-                    testState = HEAT_ON_BUTTON;
-                    addMessage(MSG_HEAT_ON_START);
-                }
-            }
-            break;
-
-        case HEAT_ON_BUTTON:
-            if(2 == (buttonStates.heating1Switch + buttonStates.heating2Switch)) {
-                addMessage(MSG_HEAT_BUTTON);
-                testStateChangeTime = millis();
-                testState = HEAT_ON_TEST;
-            }
-            break;
-        case HEAT_ON_TEST:
-            //TODO: update once we have control sensing.
-            if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = _testActuator((2 == (buttonStates.heating1Switch + buttonStates.heating2Switch)), MSG_HEAT_ON_RESULT);
-
-                if(0 == testsFailed) {
-                    addMessage(MSG_HEAT_RELEASE);
-                    testState = HEAT_RELEASE;
-                }
-            }
-            break;
-        case HEAT_RELEASE:
-            if(false == (buttonStates.heating1Switch + buttonStates.heating2Switch)) {
-                addMessage(MSG_OX_ON_START);
-                testState = VALVE_ON_BUTTON;
-            }
-            break;
-
-        case VALVE_ON_BUTTON:
-            if(true == buttonStates.oxidizerButton) {
-                addMessage(MSG_OX_BUTTON);
-                testStateChangeTime = millis();
-                testState = VALVE_ON_TEST;
-            }
-            break;
-        case VALVE_ON_TEST:
-            // TODO: update once we have control sensing
-            if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = _testActuator((true == buttonStates.oxidizerButton), MSG_OX_ON_RESULT);
-
-                if(0 == testsFailed) {
-                    addMessage(MSG_OX_RELEASE);
-                    testState = VALVE_RELEASE;
-                }
-            }
-            break;
-        case VALVE_RELEASE:
-            if(false == buttonStates.oxidizerButton) {
-                addMessage(MSG_IGN_ON_START);
-                testState = IGN_ON_BUTTON;
-            }
-            break;
-
-        case IGN_ON_BUTTON:
-            if(true == buttonStates.ignitionButton) {
-                addMessage(MSG_IGN_BUTTON);
-                testStateChangeTime = millis();
-                testState = IGN_ON_TEST;
-            }
-            break;
-        case IGN_ON_TEST:
-            // TODO: update once we have control sensing
-            if(millis() - testStateChangeTime > ACTUATOR_SETTLE_TIME) {
-                int testsFailed = 0;
-                testsFailed += _testActuator((true == buttonStates.ignitionButton), MSG_IGN_ON_24_RESULT);
-                testsFailed += _testActuator((true == buttonStates.ignitionButton), MSG_IGN_ON_GND_RESULT);
-                testsFailed += _testActuator((true == buttonStates.ignitionButton), MSG_IGN_ON_SW_RESULT);
-
-                if(0 == testsFailed) {
-                    addMessage(MSG_IGN_ON_RELEASE);
-                    testState = IGN_RELEASE;
-                }
-            }
-            break;
-        case IGN_RELEASE:
-            if(false == buttonStates.ignitionButton) {
-                addMessage(MSG_TEST_PASSED);
-                testState = TEST_END;
-            }
-            break;
-
-        case TEST_END:
-            addMessage(MSG_TEST_ENDING);
-            return 0;
-
-    }
+    addMessage(MSG_FAIL);
     return 1;
 }
+
+// -------------------------------------------------------
+// Button verification conditions
+static bool noButtonPressed(const Buttons& b) {
+    return b.allButtons == 0;
+}
+static bool heatOn(const Buttons& b) {
+    return (b.heating1Switch + b.heating2Switch) == 2;
+}
+static bool heatOff(const Buttons& b) {
+    return (b.heating1Switch + b.heating2Switch) == 0;
+}
+static bool oxidizerPressed(const Buttons& b) {
+    return b.oxidizerButton == true;
+}
+static bool oxidizerReleased(const Buttons& b) {
+    return b.oxidizerButton == false;
+}
+static bool ignitionPressed(const Buttons& b) {
+    return b.ignitionButton == true;
+}
+static bool ignitionReleased(const Buttons& b) {
+    return b.ignitionButton == false;
+}
+// -------------------------------------------------------
+
+
+// -------------------------------------------------------
+// Actuator verification functions
+static int verifyAllOff(const Buttons& b) {
+    int failed = 0;
+
+    failed += testActuator(!b.ignitionButton, MSG_IGN_24_OFF);
+    failed += testActuator(!b.ignitionButton, MSG_IGN_GND_OFF);
+    failed += testActuator(!b.ignitionButton, MSG_IGN_SW_OFF);
+    failed += testActuator(heatOff(b), MSG_HEAT_OFF);
+    failed += testActuator(!b.oxidizerButton, MSG_OX_OFF);
+
+    return failed;
+}
+static int verifyHeatOn(const Buttons& b) {
+    return testActuator(heatOn(b), MSG_HEAT_ON_RESULT);
+}
+static int verifyOxidizerOn(const Buttons& b) {
+    return testActuator(b.oxidizerButton, MSG_OX_ON_RESULT);
+}
+
+static int verifyIgnitionOn(const Buttons& b) {
+    int failed = 0;
+
+    failed += testActuator(b.ignitionButton, MSG_IGN_ON_24_RESULT);
+    failed += testActuator(b.ignitionButton, MSG_IGN_ON_GND_RESULT);
+    failed += testActuator(b.ignitionButton, MSG_IGN_ON_SW_RESULT);
+
+    return failed;
+}
+// -------------------------------------------------------
+
+
+// -------------------------------------------------------
+// Sequence table
+// Follows the following sequence:
+//      1. Message showing what to do
+//      2. Verify that the buttons have been pressed
+//      3. Wait for the actuators to settle
+//      4. Verify that the actuators did the thing
+//      5. Message showing what to do
+//      6. Verify that the buttons have been released
+static const TestStep steps[] = {
+        // 0 - ensure everything is off
+        {
+            MSG_NO_BUTTONS,
+            noButtonPressed,
+            ACTUATOR_SETTLE_TIME,
+            verifyAllOff,
+            0,
+            nullptr
+        },
+        // 1 - Heat test
+        {
+            MSG_HEAT_ON_START,
+            heatOn,
+            ACTUATOR_SETTLE_TIME,
+            verifyHeatOn,
+            MSG_HEAT_RELEASE,
+            heatOff
+        },
+        // 2 - Oxidizer test
+        {
+            MSG_OX_ON_START,
+            oxidizerPressed,
+            ACTUATOR_SETTLE_TIME,
+            verifyOxidizerOn,
+            MSG_OX_RELEASE,
+            oxidizerReleased
+        },
+        // 3 - Ignition test
+        {
+            MSG_IGN_ON_START,
+            ignitionPressed,
+            ACTUATOR_SETTLE_TIME,
+            verifyIgnitionOn,
+            MSG_IGN_ON_RELEASE,
+            ignitionReleased
+        }
+};
+
+static size_t STEP_COUNT = sizeof(steps)/sizeof(steps[0]);
+// -------------------------------------------------------
+
+static void nextStep() {
+    g_ctx.stepIndex++;
+
+    if(g_ctx.stepIndex >= STEP_COUNT) {
+        addMessage(MSG_TEST_PASSED);
+        g_ctx.phase = VerificationContext::Phase::Complete;
+    }
+}
+
+void resetVerification() {
+    g_ctx = {};
+}
+
+// -------------------------------------------------------
+// Main step verification code
+int stepVerification() {
+    Buttons buttons = g_controlBox.getMessage();
+
+    static bool started = false;
+    if(!started) {
+        addMessage(MSG_TEST_SEQUENCE_START);
+        started = true;
+    }
+
+    if(g_ctx.phase == VerificationContext::Phase::Complete) {
+        addMessage(MSG_TEST_ENDING);
+        return 0;
+    }
+
+    const TestStep& step = steps[g_ctx.stepIndex];
+
+    switch (g_ctx.phase) {
+        case VerificationContext::Phase::EnterStep:
+            addMessage(step.startMessage);
+            g_ctx.phase = VerificationContext::Phase::WaitForAction;
+            break;
+
+        case VerificationContext::Phase::WaitForAction:
+            if(step.actionCondition(buttons)) {
+                g_ctx.stateChangeTime = millis();
+                g_ctx.phase = VerificationContext::Phase::Settling;
+            }
+            break;
+
+        case VerificationContext::Phase::Settling:
+            if(millis() + g_ctx.stateChangeTime >= step.settleMs) {
+                g_ctx.phase = VerificationContext::Phase::Verify;
+            }
+            break;
+
+        case VerificationContext::Phase::Verify:
+            if(step.verifyFn(buttons) == 0) {
+                if(step.releaseCondition != nullptr) {
+                    addMessage(step.releaseMessage);
+                    g_ctx.phase = VerificationContext::Phase::WaitForRealese;
+                } else {
+                    nextStep();
+                }
+            }
+        case VerificationContext::Phase::WaitForRealese:
+            if(step.releaseCondition(buttons)) {
+                nextStep();
+            }
+        case VerificationContext::Phase::Complete:
+        default:
+            break;
+    }
+}
+// -------------------------------------------------------
