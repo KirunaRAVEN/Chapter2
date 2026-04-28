@@ -4,8 +4,8 @@
 #include "comms.h"
 #include "controlBoxRX.h"
 #include "sensors.h"
-#include "verification.h"
-#include "sequence.h"
+#include "buttonAndActuatorVerification.h"
+#include "firingSequence.h"
 
 // #define DEBUG
 

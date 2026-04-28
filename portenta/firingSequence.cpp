@@ -1,4 +1,4 @@
-#include "sequence.h"
+#include "firingSequence.h"
 
 static SequenceContext g_seq;
 
