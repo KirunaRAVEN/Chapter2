@@ -60,7 +60,7 @@ public:
     *  IN:          Nothing
     *  OUT:         Nothing.
     */
-    void update() {receiveMessage();}
+    void update() {receiveMessage(); iDevice::_value = (int)_message.allButtons;}
 
     /* Function:   Get the stored state of the buttons and switches.
     *
@@ -68,7 +68,6 @@ public:
     *  OUT:         int 0 if ok, -1 if not received, -2 if received with error, -3 if strange data (boot/reconnection).
     */
     ControlBoxStateMessage getMessage() { return _message; }
-    int read() { return (int)_message.allButtons; }
 
 private:
     HardwareSerial* _serial; // Reference to the HardwareSerial instance (e.g. &Serial2)

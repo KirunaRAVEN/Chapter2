@@ -1,15 +1,14 @@
 #include "comms.h"
 
 
-static uint8_t *pPacketBuffer;
-static size_t packetBufferPtr;
-static EthernetClient client;
-static uint8_t *pMessageBuffer;
-static size_t messageBufferReadPtr;
-static size_t messageBufferWritePtr;
+// static uint8_t *pPacketBuffer;
+// static size_t packetBufferPtr;
+// static EthernetClient client;
+// static uint8_t *pMessageBuffer;
+// static size_t messageBufferReadPtr;
+// static size_t messageBufferWritePtr;
 
-
-int initComms() {
+int EthernetCommunication::begin() {
     /*
     Initialize communications between the test bench and the portenta.
     returns 0 on success and will retry on any failure
@@ -38,7 +37,7 @@ int initComms() {
     return 0;
 }
 
-int sendTelemetry(uint8_t type, void *buf, size_t size) {
+int EthernetCommunication::send(uint8_t type, void *buf, size_t size) {
     /*
     Send a single packet of telemetry to the ground station.
     Output is currently buffered, so one call does not necessarily send packets.
@@ -48,12 +47,12 @@ int sendTelemetry(uint8_t type, void *buf, size_t size) {
     memcpy((void *) (pPacketBuffer+packetBufferPtr+1), buf, size);
     packetBufferPtr += size + 1;
     if(BUFFERSIZE <= packetBufferPtr) {
-        flushTelemetry();
+        flush();
     }
     return 1;
 }
 
-int flushTelemetry() {
+int EthernetCommunication::flush() {
     /*
     Flush the telemetry buffer (force a send)
     */
@@ -62,7 +61,7 @@ int flushTelemetry() {
     return 0;
 }
 
-int getNextMessage() {
+int EthernetCommunication::getNextMessage() {
     /*
     get the oldest message in the queue
     */
@@ -74,7 +73,7 @@ int getNextMessage() {
     return retval;
 }
 
-int addMessage(uint8_t message) {
+int EthernetCommunication::addMessage(uint8_t message) {
     /*
     Add a message to the message queue
     */

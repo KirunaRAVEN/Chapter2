@@ -1,11 +1,11 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
-#include "pinMap.h"
-#include "comms.h"
-#include "controlBoxRX.h"
-#include "sensors.h"
-#include "buttonAndActuatorVerification.h"
-#include "firingSequence.h"
+// #include "pinMap.h"
+// #include "comms.h"
+// #include "controlBoxRX.h"
+// #include "sensors.h"
+// #include "buttonAndActuatorVerification.h"
+// #include "firingSequence.h"
 
 // #define DEBUG
 
@@ -142,9 +142,9 @@ const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_O
 const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SHUTDOWN"};
 
 /* global variables */
-extern struct normalPacket g_packet;
-extern ControlBoxRX g_controlBox;
-extern int g_outPins[];
-extern int g_inPins[];
-extern int g_analogPins[];
+// extern struct normalPacket g_packet;
+// extern ControlBoxRX g_controlBox;
+// extern int g_outPins[];
+// extern int g_inPins[];
+// extern int g_analogPins[];
 #endif /* GLOBALS_H */

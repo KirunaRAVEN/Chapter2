@@ -26,11 +26,21 @@ enum packettypes {NORMAL_PACKET=1, FAST_PACKET=2};
 #define MESSAGEBUFFERSIZE 16
 
 /* Functions */
-int initComms();
-int sendTelemetry(uint8_t type, void *buf, size_t size);
-int flushTelemetry();
-int getNextMessage();
-int addMessage(uint8_t message);
-/* Global variables */
+class EthernetCommunication{
+public:
+  EthernetCommunication();
+  int begin();
+  int send(uint8_t type, void *buf, size_t size);
+  int flush();
+  int getNextMessage();
+  int addMessage(uint8_t message);
+private:
+  static uint8_t *pPacketBuffer;
+  static size_t packetBufferPtr;
+  static EthernetClient client;
+  static uint8_t *pMessageBuffer;
+  static size_t messageBufferReadPtr;
+  static size_t messageBufferWritePtr;
+};
 
 #endif /* COMMS_H */
