@@ -168,7 +168,7 @@ int stepVerification() {
             break;
 
         case VerificationContext::Phase::Settling:
-            if(millis() + g_ctx.stateChangeTime >= step.settleMs) {
+            if(millis() - g_ctx.stateChangeTime >= step.settleMs) {
                 g_ctx.phase = VerificationContext::Phase::Verify;
             }
             break;
