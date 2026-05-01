@@ -3,7 +3,7 @@
 /* global vars */
 struct normalPacket g_packet;
 ControlBoxRX g_controlBox;
-int g_outRelays[] = {SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY, DUMP_RELAY};
+int g_outRelays[] = {SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY};
 int g_outPins[] = {TEST_LED_SIGNAL, HIGH_SPEED_SIGNAL, ERROR_LED_SIGNAL};
 int g_inPins[] = {TEST_MODE_BUTTON};
 int g_analogPins[] = {OXIDIZER1_TEMP, OXIDIZER1_PRESSURE, OXIDIZER2_TEMP, OXIDIZER1_PRESSURE, NITROGEN_PRESSURE, LINE_PRESSURE, PLUME_TEMP, CHAMBER_PRESSURE};
@@ -11,6 +11,13 @@ int g_analogPins[] = {OXIDIZER1_TEMP, OXIDIZER1_PRESSURE, OXIDIZER2_TEMP, OXIDIZ
 /* non-global "global" vars */
 long int lastLoopTime = 0;
 long int fastLoopTime = 0;
+
+Servo dumpValve;
+#ifdef DEBUG
+long int activeTime = 0;
+int loops = 0;
+long int lastLoopMicros = 0;
+#endif
 
 
 void setup() {
@@ -39,7 +46,7 @@ void setup() {
         pinMode(i, INPUT_PULLUP);
     }
 
-    //dumpValve.attach(DUMP_PIN);
+    dumpValve.attach(DUMP_PIN);
 
     g_packet.state.mode = INIT;
     g_controlBox.begin(&Serial2);
@@ -80,11 +87,11 @@ void loop () {
             g_packet.state.heatingBlanketButton1 = g_controlBox.getMessage().heating1Switch;
             digitalWrite(HEATING2_RELAY, g_controlBox.getMessage().heating2Switch ? LOW : HIGH);
             g_packet.state.heatingBlanketButton2 = g_controlBox.getMessage().heating2Switch;
-            digitalWrite(DUMP_RELAY, g_controlBox.getMessage().dumpButton ? LOW : HIGH);
-            g_packet.state.dumpValveButton = g_controlBox.getMessage().dumpButton;
 
             digitalWrite(SIREN_SIGNAL, g_controlBox.getMessage().emergencyButton ? LOW : HIGH);
 
+            dumpValve.write((g_controlBox.getMessage().dumpButton ? DUMP_OPEN : DUMP_CLOSE));
+            g_packet.state.dumpValveButton = g_controlBox.getMessage().dumpButton;
         }
         digitalWrite(IGNITION_ARM, g_controlBox.getMessage().ignitionButton ? LOW : HIGH);
         g_packet.state.ignitionButton = g_controlBox.getMessage().ignitionButton;
@@ -177,4 +184,3 @@ void loop () {
     lastLoopMicros = micros();
 #endif
 }
-
