@@ -25,7 +25,6 @@ enum ControlBoxButton { // TODO
 #define    NITROGEN_RELAY      28
 #define    IGNITION_ARM        29
 #define    IGNITION_RELAY      47
-#define    DUMP_RELAY          11
 
 /* NORMAL OUTPUT PINS */
 #define    TEST_LED_SIGNAL     35
@@ -33,7 +32,7 @@ enum ControlBoxButton { // TODO
 #define    HIGH_SPEED_SIGNAL   32
 
 /* OTHER GPIO */
-#define    DUMP_PIN            11
+#define    DUMP_PIN            31
 #define    TEST_MODE_BUTTON    37
 #define    LOADCELL_DATA       44
 #define    LOADCELL_CLOCK      45
