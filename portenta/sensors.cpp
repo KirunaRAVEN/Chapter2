@@ -39,7 +39,6 @@ void Loadcell::update() {
     iDevice::_value = (int)(_loadcell.get_value()*LOADCELL_PRESCALER);
 }
 
-
 // THERMOCOUPLE Adafruit_MAX31855
 Thermocouple::Thermocouple(const char* name, int csPin)
     : iDevice(name), _thermocouple(csPin) {}

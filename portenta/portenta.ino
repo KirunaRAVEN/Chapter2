@@ -11,23 +11,20 @@ Testbench testbench;
 void setup() {
 #ifdef DEBUG
     Serial.begin(9600);
-    while (!Serial) {
-        ;
-    }
+    while (!Serial) {}
     Serial.println("initializing");
 #endif
-
     testbench.begin();
     // g_packet.state.mode = INIT;
-
 #ifdef DEBUG
     Serial.println("initialized");
 #endif
 }
 
-
 void loop () {
     testbench.normalCycle();
+}
+
 //     g_packet.data.timestamp = millis();
 //     // g_packet.state.message = getNextMessage();
 
@@ -151,5 +148,3 @@ void loop () {
 // #ifdef DEBUG
 //     lastLoopMicros = micros();
 // #endif
-}
-

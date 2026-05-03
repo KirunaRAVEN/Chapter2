@@ -1,3 +1,4 @@
+#include "Arduino.h"
 /* Filename:        system.cpp
  * Author:          Diego Almendro Wieczorek
  * Date:            26.04.2026
@@ -87,7 +88,7 @@ void Testbench::update()
     device->update();
   }
 }
-void Testbench::read()
+int Testbench::read()
 {
   static ControlBoxStateMessage message = controlbox.getMessage();
 
@@ -117,6 +118,8 @@ void Testbench::read()
   dataPacket.state.N2OValveButton     = message.oxidizerButton;
   // dataPacket.state.valveActive=;
   // dataPacket.state.ignitionEngagedActive=;
+
+  return 0;
 }
 void Testbench::send()
 {
@@ -134,12 +137,12 @@ void Testbench::normalCycle()
 }
 void Testbench::fastCycle()
 {
-  static unsigned long int fastTime = millis();
+  static unsigned long int fastTime = micros();
   if(millis()-fastTime > FAST_LOOP_PERIOD)
   {
     devices[D_P_CHAMBER]->update();
-    devices[D_P_CHAMBER]->read();
-    send();
+    int sample = devices[D_P_CHAMBER]->read();
+    ethernet.send(FAST_PACKET, (void *) &sample, sizeof(int));
   }
 }
 void Testbench::verification()

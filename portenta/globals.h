@@ -83,10 +83,4 @@ enum subStates {
 const char substateStrings[7][10] = {"ALL_OFF", "IGNIT_ON", "VALVE_ON", "IGNIT_OFF", "VALVE_OFF", "PURGING", "FINISHED"};
 const char modeStrings[6][10] = {"INIT", "TEST", "WAIT", "SEQUENCE", "SAFE", "SHUTDOWN"};
 
-/* global variables */
-// extern struct normalPacket g_packet;
-// extern ControlBoxRX g_controlBox;
-// extern int g_outPins[];
-// extern int g_inPins[];
-// extern int g_analogPins[];
 #endif /* GLOBALS_H */

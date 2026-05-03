@@ -50,6 +50,7 @@ enum device_list {
   D_R_CAMERA,
   // D_L_TEST,
   // D_L_ERROR,
+
   D_DEVICES_COUNT
 };
 
@@ -59,8 +60,9 @@ public:
 
   void begin();
   void update();
-  void read();
+  int read();
   void send();
+  void test(){};
 
   void normalCycle();
   void fastCycle(); //Only chamber pressure
