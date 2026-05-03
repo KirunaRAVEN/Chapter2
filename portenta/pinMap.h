@@ -3,59 +3,45 @@
 
 #include <Arduino.h>
 
-enum ControlBoxButton { // TODO
-    IGNITION_KEY,
-    OXIDIZER_VALVE_BUTTON,
-    N2_FEEDING_BUTTON,
-    DUMP_VALVE_BUTTON,
-    HEATING_BLANKET_1_SWITCH,
-    HEATING_BLANKET_2_SWITCH,
-    EMERGENCY_BUTTON,
-    BUTTON_COUNT
-};
-
 /** OUTPUT PINS **/
 /* RELAYS */
-#define    LIGHT_SIGNAL        22
-#define    SIREN_SIGNAL        25
-#define    HEATING2_RELAY      24
-#define    HEATING1_RELAY      23
-#define    OXIDIZER2_RELAY     26
-#define    OXIDIZER1_RELAY     27
-#define    NITROGEN_RELAY      28
-#define    IGNITION_ARM        29
-#define    IGNITION_RELAY      47
-#define    DUMP_RELAY          11
+#define    PIN_LIGHT_SIGNAL        22
+#define    PIN_SIREN_SIGNAL        25
+#define    PIN_HEATING2_RELAY      24
+#define    PIN_HEATING1_RELAY      23
+#define    PIN_OXIDIZER2_RELAY     26
+#define    PIN_OXIDIZER1_RELAY     27
+#define    PIN_NITROGEN_RELAY      28
+#define    PIN_IGNITION_ARM        29
+#define    PIN_IGNITION_RELAY      47
+#define    PIN_DUMP_RELAY          11
 
 /* NORMAL OUTPUT PINS */
-#define    TEST_LED_SIGNAL     35
-#define    ERROR_LED_SIGNAL    33
-#define    HIGH_SPEED_SIGNAL   32
+#define    PIN_TEST_LED_SIGNAL     35
+#define    PIN_ERROR_LED_SIGNAL    33
+#define    PIN_HIGH_SPEED_SIGNAL   32
 
 /* OTHER GPIO */
-#define    DUMP_PIN            11
-#define    TEST_MODE_BUTTON    37
-#define    LOADCELL_DATA       44
-#define    LOADCELL_CLOCK      45
+#define    PIN_DUMP_PIN            11
+#define    PIN_TEST_MODE_BUTTON    37
+#define    PIN_LOADCELL_DATA       44
+#define    PIN_LOADCELL_CLOCK      45
 
-// #define    SPI_MISO            50
-// #define    SPI_CLK             52
-#define    SPI_CS_TC_CHAMBER    46
-#define    SPI_CS_TC_PIPING    48
+// #define    PIN_SPI_MISO            50
+// #define    PIN_SPI_CLK             52
+#define    PIN_SPI_CS_TC_CHAMBER   46
+#define    PIN_SPI_CS_TC_PIPING    48
 
 /** ANALOG INPUT PINS **/
-#define    ADC_FUCKED          A0
-#define    OXIDIZER1_PRESSURE  A1
-#define    OXIDIZER2_TEMP      A2
-#define    OXIDIZER2_PRESSURE  A3
-#define    OXIDIZER1_TEMP      A4
-#define    LINE_PRESSURE       A5
-#define    CHAMBER_PRESSURE    A7
-#define    NITROGEN_PRESSURE   A9
-#define    PLUME_TEMP          A10
-#define    PRECHAMBER_PRESSURE A11
-
-#define RELAY_ON LOW
-#define RELAY_OFF HIGH
+#define    PIN_ADC_FUCKED          A0
+#define    PIN_OXIDIZER1_PRESSURE  A1
+#define    PIN_OXIDIZER2_TEMP      A2
+#define    PIN_OXIDIZER2_PRESSURE  A3
+#define    PIN_OXIDIZER1_TEMP      A4
+#define    PIN_LINE_PRESSURE       A5
+#define    PIN_CHAMBER_PRESSURE    A7
+#define    PIN_NITROGEN_PRESSURE   A9
+#define    PIN_PLUME_TEMP          A10
+#define    PIN_PRECHAMBER_PRESSURE A11
 
 #endif /* PINMAP_H */

@@ -26,4 +26,4 @@ protected:
     int _value;
 };
 
-#endif
+#endif /* IDEVICE_H */

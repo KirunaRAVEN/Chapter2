@@ -7,14 +7,24 @@
  *                  and switches on a control box via UART.
  */
 
-#include <Arduino.h>
-#include "iDevice.h"
-
 #ifndef CONTROL_BOX_RX_H
 #define CONTROL_BOX_RX_H
 
-#define CONTROL_BOX_NAME "ControlBoxRX"
+#include <Arduino.h>
+#include "iDevice.h"
+
 #define CONTROL_BOX_BAUDRATE 115200
+
+enum ControlBoxButton { // TODO
+    IGNITION_KEY,
+    OXIDIZER_VALVE_BUTTON,
+    N2_FEEDING_BUTTON,
+    DUMP_VALVE_BUTTON,
+    HEATING_BLANKET_1_SWITCH,
+    HEATING_BLANKET_2_SWITCH,
+    EMERGENCY_BUTTON,
+    BUTTON_COUNT
+};
 
 // State of Control-Box buttons and switches
 union ControlBoxStateMessage {
@@ -31,15 +41,15 @@ union ControlBoxStateMessage {
     uint8_t allButtons; // Access all buttons as a single byte
 };
 
-class ControlBoxRX : iDevice {
+class ControlBoxRX : public iDevice {
 public:
 
     /* Function:    ControlBoxRX constructor.
     *
-    *  IN:          Class nameHardwareSerial instance (e.g. &Serial2)
+    *  IN:          HardwareSerial instance (e.g. &Serial2)
     *  OUT:         Nothing
     */
-    ControlBoxRX(HardwareSerial* serial = &Serial2);
+    ControlBoxRX(const char* name, HardwareSerial* serial = &Serial2);
 
     /* Function:    ControlBoxRX initialiser.
     *

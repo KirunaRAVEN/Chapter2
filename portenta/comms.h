@@ -25,22 +25,70 @@
 enum packettypes {NORMAL_PACKET=1, FAST_PACKET=2};
 #define MESSAGEBUFFERSIZE 16
 
+/* Main storage struct. 36 bytes */
+struct dataPoint {
+    long int timestamp;
+
+    // Pressures
+    int N2OFeedingPressure1;      //Oxidizer feeding pressure
+    int N2OFeedingPressure2;      //Oxidizer feeding pressure
+    int linePressure;             //Line pressure
+    int chamberPressure;          //Combustion chamber pressure
+    int N2FeedingPressure;        //Nitrogen feeding pressure
+
+    // Temperatures
+    int bottleTemperature1;       //Bottle temperature
+    int bottleTemperature2;       //Nozzle temperature
+    int plumeTemperature;         //Plume temperature
+    int pipingTemperature;        //Piping (green)
+    int chamberTemperature;       //Chamber temperature (green and white)
+
+    int loadcellReading;          //Loadcell measurement
+};
+
+/* Internal software storage struct. 4 bytes due to padding
+Will always get sent with the datapoint, so no need for a timestamp */
+struct softwareState {
+    // Software modes
+    uint8_t mode;                 //What mode is the software in
+    uint8_t subState;             //What substate is the software in
+    uint8_t message;
+
+    // Button states
+    bool dumpValveButton : 1;       //Is dump valve button pressed (normally open)
+    bool heatingBlanketButton1 : 1; //Is heating button 1 pressed
+    bool heatingBlanketButton2 : 1; //Is heating button 2 pressed
+    bool ignitionButton : 1;        //Is ignition button pressed
+    bool N2ValveButton : 1;         //Is N2 feeding valve button pressed (normally closed)
+    bool N2OValveButton : 1;        //Is the oxidizer valve button pressed (normally closed)
+
+    // Software control states
+    bool valveActive : 1;           //Is the valve opened by the software
+    bool ignitionEngagedActive : 1; //Is the ignition activated by the software
+};
+
+/* Normal packet. 48 bytes */
+struct normalPacket {
+    struct dataPoint data;
+    struct softwareState state;
+};
+
 /* Functions */
-class EthernetCommunication{
+class Comms{
 public:
-  EthernetCommunication();
+  Comms(){};
   int begin();
   int send(uint8_t type, void *buf, size_t size);
   int flush();
   int getNextMessage();
   int addMessage(uint8_t message);
 private:
-  static uint8_t *pPacketBuffer;
-  static size_t packetBufferPtr;
-  static EthernetClient client;
-  static uint8_t *pMessageBuffer;
-  static size_t messageBufferReadPtr;
-  static size_t messageBufferWritePtr;
+  uint8_t *pPacketBuffer;
+  size_t packetBufferPtr;
+  EthernetClient client;
+  uint8_t *pMessageBuffer;
+  size_t messageBufferReadPtr;
+  size_t messageBufferWritePtr;
 };
 
 #endif /* COMMS_H */

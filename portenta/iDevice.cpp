@@ -15,4 +15,3 @@ void iDevice::test(bool updateBefore)
     Serial.print(": ");
     Serial.println(read());
 }
-

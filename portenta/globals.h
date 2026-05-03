@@ -1,13 +1,5 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
-// #include "pinMap.h"
-// #include "comms.h"
-// #include "controlBoxRX.h"
-// #include "sensors.h"
-// #include "buttonAndActuatorVerification.h"
-// #include "firingSequence.h"
-
-// #define DEBUG
 
 /* Timing */
 #define MAIN_LOOP_PERIOD 100 //ms, 10 Hz
@@ -15,7 +7,7 @@
 
 /* Ignition sequence (times in ms) */
 #define IGNITION_SAFE_TIME  (1 * 1000)
-#define BURN_TIME           (4 * 1000)
+#define BURN_TIME           (3 * 1000)
 #define IGNITER_BURN_LENGTH (900)
 #define IGNITER_DELAY       (50)
 #define VALVE_ON_TIME       (100)
@@ -28,56 +20,6 @@
 /* angles for dump valve */
 #define DUMP_CLOSE 0
 #define DUMP_OPEN 180
-
-/* Main storage struct. 36 bytes */
-struct dataPoint {
-    long int timestamp;
-
-    // Pressures
-    float N2OFeedingPressure1;      //Oxidizer feeding pressure
-    float N2OFeedingPressure2;      //Oxidizer feeding pressure
-    float linePressure;             //Line pressure
-    float chamberPressure;          //Combustion chamber pressure
-    float N2FeedingPressure;        //Nitrogen feeding pressure
-
-    // Temperatures
-    float bottleTemperature1;       //Bottle temperature
-    float bottleTemperature2;       //Nozzle temperature
-    float plumeTemperature;        //Plume temperature
-    float pipingTemperature;        // Piping (green)
-    float chamberTemperature;        //Chamber temperature (green and white)
-    float loadcellReading;        //Loadcell measurement in N
-
-    //TODO: Add new sensors
-};
-
-/* Internal software storage struct. 4 bytes due to padding
-Will always get sent with the datapoint, so no need for a timestamp */
-struct softwareState {
-    // Software modes
-    uint8_t mode;                       //What mode is the software in
-    uint8_t subState;                   //What substate is the software in
-    uint8_t message;
-
-    // Button states
-    bool dumpValveButton : 1;       //Is dump valve button pressed (normally open)
-    bool heatingBlanketButton1 : 1; //Is heating button 1 pressed
-    bool heatingBlanketButton2 : 1; //Is heating button 2 pressed
-    bool ignitionButton : 1;        //Is ignition button pressed
-    bool N2ValveButton : 1;         //Is N2 feeding valve button pressed (normally closed)
-    bool N2OValveButton : 1;        //Is the oxidizer valve button pressed (normally closed)
-
-    // Software control states
-    bool valveActive : 1;           //Is the valve opened by the software
-    bool ignitionEngagedActive : 1; //Is the ignition activated by the software
-
-};
-
-/* Normal packet. 48 bytes */
-struct normalPacket {
-    struct dataPoint data;
-    struct softwareState state;
-};
 
 enum messageIndices {
     MSG_TEST_SEQUENCE_START = 1,

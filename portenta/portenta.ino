@@ -1,19 +1,12 @@
-#include "globals.h"
+#include "pinMap.h"
 #include "testbench.h"
-
-Testbench testbench;
-/* global vars */
-struct normalPacket g_packet;
-ControlBoxRX g_controlBox(&Serial2);
-int g_outRelays[] = {SIREN_SIGNAL, LIGHT_SIGNAL, HEATING1_RELAY, HEATING2_RELAY, IGNITION_ARM, IGNITION_RELAY, NITROGEN_RELAY, OXIDIZER1_RELAY, OXIDIZER2_RELAY, DUMP_RELAY};
-int g_outPins[] = {TEST_LED_SIGNAL, HIGH_SPEED_SIGNAL, ERROR_LED_SIGNAL};
-int g_inPins[] = {TEST_MODE_BUTTON};
-int g_analogPins[] = {OXIDIZER1_TEMP, OXIDIZER1_PRESSURE, OXIDIZER2_TEMP, OXIDIZER1_PRESSURE, NITROGEN_PRESSURE, LINE_PRESSURE, PLUME_TEMP, CHAMBER_PRESSURE};
 
 /* non-global "global" vars */
 long int lastLoopTime = 0;
 long int fastLoopTime = 0;
+// #define DEBUG
 
+Testbench testbench;
 
 void setup() {
 #ifdef DEBUG
@@ -22,35 +15,15 @@ void setup() {
         ;
     }
     Serial.println("initializing");
-    Serial.println(sizeof(g_packet));
 #endif
 
+    testbench.begin();
 
-    for(auto i: g_outRelays){
-        pinMode(i, OUTPUT);
-        digitalWrite(i, RELAY_OFF);
-    }
+    // g_packet.state.mode = INIT;
 
-    for(auto i: g_outPins){
-        pinMode(i, OUTPUT);
-        digitalWrite(i, LOW);
-    }
-
-
-    for(auto i: g_inPins) {
-        pinMode(i, INPUT_PULLUP);
-    }
-
-//     //dumpValve.attach(DUMP_PIN);
-
-//     g_packet.state.mode = INIT;
-//     g_controlBox.begin();
-//     // initLoadcell();
-
-//     // initComms(); // blocking
-// #ifdef DEBUG
-//     Serial.println("initialized");
-// #endif
+#ifdef DEBUG
+    Serial.println("initialized");
+#endif
 }
 
 

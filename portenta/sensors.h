@@ -4,7 +4,7 @@ Sensors library
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include "globals.h"
+#include <Arduino.h>
 #include "iDevice.h"
 
 #define SENSOR_RESOLUTION 10  // ADC bits
@@ -14,10 +14,20 @@ Sensors library
 #define LOADCELL_PRESCALER 0.001f // To fit the measurement in the int range
 #define THERMOCOUPLE_PRESCALER 100.0f // To fit the measurement in the int range
 
-// GENERIC SENSOR
-class Sensor : public iDevice {
+// GENERIC ANALOG SENSOR
+class AnalogSensor : public iDevice {
 public:
-  Sensor(const char* name, int pin);
+  AnalogSensor(const char* name, int pin);
+  void begin() override;
+  void update() override;
+private:
+  const int _pin;
+};
+
+// GENERIC DIGITAL SENSOR
+class DigitalSensor : public iDevice {
+public:
+  DigitalSensor(const char* name, int pin);
   void begin() override;
   void update() override;
 private:
@@ -47,12 +57,5 @@ public:
 private:
   Adafruit_MAX31855 _thermocouple;
 };
-/*
-// FROM HERE ON, THE CODE IS TO BE DELETED AT THE END OF THE OOP REFACTOR
-void initLoadcell();
 
-int readAllSensors();
-
-float fastRead();
-*/
 #endif /* SENSORS_H */
