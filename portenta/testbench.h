@@ -9,7 +9,7 @@
 #ifndef TESTBENCH_H
 #define TESTBENCH_H
 
-// #include "globals.h"
+#include "globals.h"
 #include "pinMap.h"
 
 #include "iDevice.h"

@@ -18,7 +18,6 @@ void setup() {
 #endif
 
     testbench.begin();
-
     // g_packet.state.mode = INIT;
 
 #ifdef DEBUG
@@ -28,6 +27,7 @@ void setup() {
 
 
 void loop () {
+    testbench.normalCycle();
 //     g_packet.data.timestamp = millis();
 //     // g_packet.state.message = getNextMessage();
 

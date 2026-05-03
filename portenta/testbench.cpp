@@ -74,6 +74,11 @@ void Testbench::begin()
   for(auto device: devices) {
     device->begin();
   }
+
+  testSwitch.begin();
+  testLed.begin();
+  errorLed.begin();
+
   ethernet.begin();
 }
 void Testbench::update()
@@ -84,6 +89,8 @@ void Testbench::update()
 }
 void Testbench::read()
 {
+  static ControlBoxStateMessage message = controlbox.getMessage();
+
   dataPacket.data.timestamp           = millis();
   dataPacket.data.N2OFeedingPressure1 = devices[D_P_OX1]->read();
   dataPacket.data.N2OFeedingPressure2 = devices[D_P_OX2]->read();
@@ -102,18 +109,38 @@ void Testbench::read()
   // dataPacket.state.mode=;
   // dataPacket.state.subState=;
   // dataPacket.state.message=;
-  // dataPacket.state.dumpValveButton=;
-  // dataPacket.state.heatingBlanketButton1=;
-  // dataPacket.state.heatingBlanketButton2=;
-  // dataPacket.state.ignitionButton=;
-  // dataPacket.state.N2ValveButton=;
-  // dataPacket.state.N2OValveButton=;
+  dataPacket.state.dumpValveButton    = message.dumpButton;
+  dataPacket.state.heatingBlanketButton1=message.heating1Switch;
+  dataPacket.state.heatingBlanketButton2=message.heating2Switch;
+  dataPacket.state.ignitionButton     = message.ignitionButton;
+  dataPacket.state.N2ValveButton      = message.nitrogenButton;
+  dataPacket.state.N2OValveButton     = message.oxidizerButton;
   // dataPacket.state.valveActive=;
   // dataPacket.state.ignitionEngagedActive=;
 }
 void Testbench::send()
 {
   ethernet.send(NORMAL_PACKET, (void *) &dataPacket, sizeof(struct normalPacket));
+}
+void Testbench::normalCycle()
+{
+  static unsigned long int slowTime = millis();
+  if(millis()-slowTime > MAIN_LOOP_PERIOD)
+  {
+    update();
+    read();
+    send();
+  }
+}
+void Testbench::fastCycle()
+{
+  static unsigned long int fastTime = millis();
+  if(millis()-fastTime > FAST_LOOP_PERIOD)
+  {
+    devices[D_P_CHAMBER]->update();
+    devices[D_P_CHAMBER]->read();
+    send();
+  }
 }
 void Testbench::verification()
 {
