@@ -115,7 +115,9 @@ def find_test_folder(test_id):
     if row.empty: # check if the Test ID is not in Prop_mass.xlsx
         raise ValueError(f"Test ID {test_id} not found in Prop_mass.xlsx")
 
-    date = row["Date"].dt.strftime("%Y_%m_%d").iloc[0]
+    print(row["Date"])
+#    date = row["Date"].dt.strftime("%Y_%m_%d").iloc[0]
+    date = "2026_05_23"
 
     print(os.listdir(root_dir.parent))
 
@@ -169,18 +171,28 @@ def find_indices(data, column_names):
             raise ValueError("EMERGENCY: NO IGNITION DETECTED!")
 
     # Ensure index_ign is within bounds
-    index_ign = min(index_ign, n_rows - 1)
+    print(index_ign)
+    print(ign_col[(ign_col == 0)].index[0])
+
+    index_ign -= ign_col[(ign_col == 0)].index[0]
 
     # Find first valve closing transition 1 → 0 after ignition
     start = 0 if index_ign > len(ign_col) else index_ign
+    print(f"start: {start}")
+#    start = 0
     valve_col = data.iloc[start:, get_column_number(column_names, "ValveSwState")].astype(int)
     shifted_valve = valve_col.shift(1)
+    print(f"len(valve_col): {len(valve_col)}")
+    print(valve_col[valve_col == 1].index)
     valve_candidates = valve_col[(valve_col == 0) & (shifted_valve == 1)].index
     if valve_candidates.empty:
-        index_valve = None  
+        index_valve = None
         print("⚠️ Warning: No valve transition detected")
     else:
         index_valve = valve_candidates[0]
+
+    index_valve -= ign_col[(ign_col == 0)].index[0]
+
 
     if index_ign > len(ign_col):
         index_valve = 20000 + index_valve - index_ign
@@ -253,6 +265,8 @@ def get_pressure_index(data,column_names):
     """
     valve_idx = find_indices(data,column_names)[1]
 
+    print(valve_idx, len(data))
+
     pres_col = get_column_number(column_names,"ChamberPressure")
     pres_diff = np.diff(data.iloc[:, pres_col])
 
@@ -277,6 +291,9 @@ def get_line_indices(data, column_names):
     """
     _, valve_idx, _ = find_indices(data, column_names)
     line_col = get_column_number(column_names, "LinePressure")
+
+    print("foo")
+    print(len(data), valve_idx)
 
     # Compute absolute difference between consecutive line pressure values
     diff_line = np.abs(np.diff(data.iloc[:, line_col]))

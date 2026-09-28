@@ -3,6 +3,7 @@ from collections import deque, defaultdict
 import dearpygui.dearpygui as dpg
 from ui_helpers import updateDisplay, updateGraph, updateRelay, updateLog, assumedPressure, temperatureChange,classifyDrop, pressureDrop, updatePressureLine, updateSoftwareMode, updateSoftwareSubstate, updateValve
 
+from telemetry_processor import telemetryProcessor
 import os
 
 # Dict of all indices
@@ -290,6 +291,7 @@ def updateSoftwareModeAndSubstate(data):
     updateSoftwareMode("softwareModeText", data.Software_mode)
     updateSoftwareSubstate("softwareSubstateText", data.Software_substate)
 
+processor = telemetryProcessor(window_size = 20)
 
 
 # Update function for the main loop, ensures we update all data within the data display and then mark the cache as stale

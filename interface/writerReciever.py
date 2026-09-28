@@ -134,7 +134,7 @@ def fakeData():
     pressure = 40
     while True:
         g_data["timestamp"] += 100
-        g_data["N20FeedingPressure1"] = pressure+ 5*(random.random()-0.5)
+        g_data["N20FeedingPressure1"] = pressure+ 10*(random.random()-0.5)
         g_data["N20FeedingPressure2"] += random.random()-0.5
         g_data["loadCell"] += random.random()-0.5
 
