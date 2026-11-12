@@ -13,6 +13,7 @@
 #define CONTROL_BOX_RX_H
 
 #define CONTROL_BOX_BAUDRATE 115200
+#define CONTROL_BOX_TIMEOUT_MS 300 // link counts as dead after 300 ms without a valid byte (6 missed messages at 20 Hz)
 
 // State of Control-Box buttons and switches
 union ControlBoxStateMessage {
@@ -53,9 +54,18 @@ public:
     */
     ControlBoxStateMessage getMessage() { return _message; }
 
+    /* Function: Is the control box still talking to us? 
+    *
+    *  IN:          Nothing
+    *  OUT:         true if the control box is still sending messages, false otherwise.
+    */
+    bool isLinkAlive();
+
 private:
     HardwareSerial* _serial; // Reference to the HardwareSerial instance (e.g. &Serial2)
     ControlBoxStateMessage _message;
+    unsigned long _lastValidMs; // Timestamp of the last valid message received
+    bool _everReceived; // Flag to indicate if any valid message has ever been received
 };
 
 #endif

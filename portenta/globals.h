@@ -115,7 +115,8 @@ enum messageIndices {
     MSG_TEST_ENDING = 30,
     MSG_DUMP_WARNING = 31,
     MSG_N2_FEED_WARNING = 32,
-    MSG_OX_FEED_WARNING = 33
+    MSG_OX_FEED_WARNING = 33,
+    MSG_CONTROL_LINK_LOST = 34
 };
 
 

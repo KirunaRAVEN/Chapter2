@@ -68,7 +68,8 @@ MESSAGE_STRINGS = [
     "Starting SW in 10 seconds\n",
     "Warning:\nCannot begin sequence\nwith dump valve open.\n",
     "Warning:\nCannot begin sequence\nwith N2 feeding valve open.\n",
-    "Warning:\nCannot begin sequence\nwith Oxidizer valve open.\n"
+    "Warning:\nCannot begin sequence\nwith Oxidizer valve open.\n",
+    "Control box link lost!\nBench is in SAFE mode.\nReset the bench to continue.\n"
 ]
 
 # A quite nice way of creating a data dict

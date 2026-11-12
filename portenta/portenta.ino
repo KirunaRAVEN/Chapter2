@@ -19,6 +19,24 @@ int loops = 0;
 long int lastLoopMicros = 0;
 #endif
 
+/*
+ * Put every actuator in its safe state and latch SAFE mode.
+ * Leaving SAFE requires resetting the bench.
+ * IN:  Nothing
+ * OUT: Nothing
+ */
+void enterSafeMode() {
+    digitalWrite(IGNITION_ARM, RELAY_OFF);
+    digitalWrite(IGNITION_RELAY, RELAY_OFF);
+    digitalWrite(OXIDIZER1_RELAY, RELAY_OFF);
+    digitalWrite(OXIDIZER2_RELAY, RELAY_OFF);
+
+    g_packet.state.ignitionEngagedActive = false;
+    g_packet.state.valveActive = 0;
+    g_packet.state.N2OValveButton = 0;
+    g_packet.state.mode = SAFE;
+    addMessage(MSG_CONTROL_LINK_LOST);
+}
 
 void setup() {
 #ifdef DEBUG
@@ -73,10 +91,13 @@ void loop () {
     }
 #endif
 
+    if (!g_controlBox.isLinkAlive() && INIT != g_packet.state.mode && SAFE != g_packet.state.mode) {
+        enterSafeMode();
+    }
 
     /* TODO: break out into a wrapper */
     /* (and be made more readable) */
-    if(0 == retVal) {
+    if(0 == retVal && SAFE != g_packet.state.mode) {
         if(SEQUENCE != g_packet.state.mode) {
             digitalWrite(OXIDIZER1_RELAY, g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
             digitalWrite(OXIDIZER2_RELAY, g_controlBox.getMessage().oxidizerButton ? LOW : HIGH);
@@ -108,6 +129,9 @@ void loop () {
 
     switch(g_packet.state.mode) {
         case INIT:
+            if (!g_controlBox.isLinkAlive()) {
+                break;                       // stay in INIT until the control box is heard
+            }
             if(LOW == digitalRead(TEST_MODE_BUTTON)) {
                 g_packet.state.mode = TEST;
                 digitalWrite(TEST_LED_SIGNAL, HIGH);
