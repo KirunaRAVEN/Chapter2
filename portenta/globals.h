@@ -23,8 +23,8 @@
 #define IGNITER_DELAY       (50)
 #define VALVE_ON_TIME       (100)
 #define IGNITION_OFF_TIME   (IGNITER_BURN_LENGTH)
-#define VALVE_OFF_TIME      (IGNITION_OFF_TIME + BURN_TIME)
-#define OXIDIZER_EMPTY_TIME (VALVE_OFF_TIME + 500)
+#define VALVE_OFF_TIME      (BURN_TIME)
+#define OXIDIZER_EMPTY_TIME (VALVE_OFF_TIME + 200)
 #define CAMERA_TRIGGER_TIME (VALVE_OFF_TIME + 2000)
 #define PURGING_TIME        (OXIDIZER_EMPTY_TIME + 4*1000)
 
@@ -54,7 +54,7 @@ struct dataPoint {
     //TODO: Add new sensors
 };
 
-/* Internal software storage struct. 4 bytes due to padding
+/* Internal software storage struct. 5 bytes due to padding
 Will always get sent with the datapoint, so no need for a timestamp */
 struct softwareState {
     // Software modes
@@ -73,6 +73,7 @@ struct softwareState {
     // Software control states
     bool valveActive : 1;           //Is the valve opened by the software
     bool ignitionEngagedActive : 1; //Is the ignition activated by the software
+    bool engineValveActive : 1;     //Is the engine valve opened by software
 
 };
 

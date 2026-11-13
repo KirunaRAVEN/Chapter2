@@ -25,6 +25,7 @@ enum ControlBoxButton { // TODO
 #define    NITROGEN_RELAY      28
 #define    IGNITION_ARM        29
 #define    IGNITION_RELAY      47
+#define    ENGINE_VALVE_RELAY  07
 
 /* NORMAL OUTPUT PINS */
 #define    TEST_LED_SIGNAL     35

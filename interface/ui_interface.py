@@ -139,12 +139,19 @@ def buildPipingPanel(largeFont):
                     linePressureLine =((125, 100), (150, 100), (150, 200), (124,200), (125,200), (150,200), (150,150), \
                     (200, 150), (200, 225), (225, 225), (224, 225), (200, 225), (200, 150), \
                     (200, 75), (225, 75), (224, 75), (200, 75), (200, 150), \
-                    (450, 150))
+                    (437.5, 150))
                     dpg.draw_polyline(linePressureLine, color=(128, 128, 128, 255), thickness=6, tag="line_pressure_line")
-                    dpg.draw_circle(center=(450, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
-                    dpg.draw_text((375, 125), "Line Pressure", size=14, color=(200, 255, 255, 255))
+                    dpg.draw_text((325, 125), "Line Pressure", size=14, color=(200, 255, 255, 255))
                     dpg.draw_circle(center=(200, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
                     dpg.draw_circle(center=(150, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+
+
+                    # Engine valve
+                    dpg.draw_polygon(valve(450,150), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="engine_valve")
+                    dpg.draw_line((462.5,150),(500,150), color=(128, 128, 128, 255), thickness=6)
+                    dpg.draw_circle(center=(500, 150), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
+
+
 
 
                     # N2 Pressure Line
@@ -158,6 +165,7 @@ def buildPipingPanel(largeFont):
                     dpg.draw_circle(center=(325, 75), radius=6, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))
                     dpg.draw_text((280, 50), "Dump line", size=14, color=(200, 255, 255, 255))
                     dpg.draw_polygon(valve(237.5,75), color=(128, 128, 128, 255), fill=(128, 128, 128, 255), thickness=2, tag="dump_pressure_valve")
+
 
 
                     dpg.draw_circle(center=(600, 300), radius=8, color=(200, 200, 200, 255), fill=(128, 128, 128, 255))

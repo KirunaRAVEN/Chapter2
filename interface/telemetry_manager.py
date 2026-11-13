@@ -30,12 +30,13 @@ INDEX = {
     "N2_Relay": 19,
     "Ox1Valve_Realy": 20,
     "valveActive": 21,
-    "ignitionActive": 21,
+    "ignitionActive": 22,
+    "engineValveActive":23,
 }
 
 # Full message string list
 MESSAGE_STRINGS = [
-    " ",  
+    " ",
     "Running testing sequence\nTesting all OFF-states...\nRelease all buttons!\n",
     "No button presses detected\n",
     "Please release the oxidizer valve button.\n",
@@ -146,7 +147,6 @@ class telemetryReader:
         if self.cacheFresh and self.cachedRow != None:
             return self.cachedRow
 
-
         MAX_ROWS_PER_FRAME = 2000
 
         latest = None
@@ -197,6 +197,7 @@ def updatePipingDiagram(data, t):
     updateValve("ox2_pressure_valve", data.Ox1Valve_Realy)
     updateValve("n2_pressure_valve", data.N2_Relay)
     updateValve("dump_pressure_valve", data.Dump_Relay)
+    updateValve("engine_valve", data.engineValveActive)
 
     #returning if there is no pressure drop test needs to be fixed before deployment
     if not (data.Dump_Relay == 0 and data.N2_Relay == 0):
@@ -303,7 +304,8 @@ def updateFrame():
     global lastTime, timeOffset
     # Ensures we dont run updatre function without having data
     raw_data = reader.getNextData()
-    data = processor.process(raw_data)
+#    data = processor.process(raw_data)
+    data = raw_data
     if not data:
         return
     t = data.MegaTime * 1e-3 #Converting to seconds

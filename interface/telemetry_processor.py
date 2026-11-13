@@ -2,7 +2,7 @@ from collections import deque, defaultdict
 import math
 
 # Collecting all logic values
-class telemetryProcessor: 
+class telemetryProcessor:
     def __init__(self, window_size = 5):
         self.window_size = window_size
         self.buffers = defaultdict(lambda: deque(maxlen = window_size))

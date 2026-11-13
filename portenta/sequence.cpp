@@ -32,6 +32,8 @@ int stepSequence() {
                 digitalWrite(OXIDIZER2_RELAY, RELAY_ON);
                 g_packet.state.N2OValveButton = 1;
                 g_packet.state.valveActive = 1;
+                digitalWrite(ENGINE_VALVE_RELAY, RELAY_ON);
+                g_packet.state.engineValveActive = 1;
             }
             break;
 
@@ -66,9 +68,12 @@ int stepSequence() {
                 digitalWrite(HIGH_SPEED_SIGNAL, HIGH);
             }
 
-            if(millis() - countdownStartTime > OXIDIZER_EMPTY_TIME) {
+            if(millis() - countdownStartTime > PURGING_TIME) {
                 g_packet.state.subState = FINISHED;
                 digitalWrite(NITROGEN_RELAY, RELAY_OFF);
+                digitalWrite(ENGINE_VALVE_RELAY, RELAY_OFF);
+                g_packet.state.engineValveActive = 0;
+
             }
             break;
 
